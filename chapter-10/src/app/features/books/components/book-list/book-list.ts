@@ -1,11 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { Book } from '../../../../shared/models/book';
 
 @Component({
-  selector: 'app-book-list',
-  imports: [],
+  standalone: true,
+  selector: 'book-list',
   templateUrl: './book-list.html',
-  styleUrl: './book-list.scss'
 })
 export class BookList {
+  books = input<Book[]>([]);
+  book = output<Book>();
 
+  selectBook(book: Book) {
+    this.book.emit(book);
+  }
 }

@@ -1,1 +1,22 @@
-<p>book-list works!</p>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Genre</th>
+      <th>Price</th>
+      <th>Published</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (book of books(); track book.title) {
+      <tr (click)="selectBook(book)">
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.genre }}</td>
+        <td>{{ book.price }}</td>
+        <td>{{ book.published }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
