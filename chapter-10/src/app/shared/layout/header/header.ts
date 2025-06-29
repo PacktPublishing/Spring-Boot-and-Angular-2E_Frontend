@@ -9,6 +9,4 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header {
-
-}
+export class Header {}
