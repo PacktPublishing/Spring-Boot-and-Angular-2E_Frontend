@@ -15,7 +15,7 @@ export class List {
       genre: 'Software Engineering',
       price: 29.99,
       published: '2008-08-01'
-    }
+    },
   ];
 
   headers: { headerName: string; fieldName: keyof Book }[] = [
