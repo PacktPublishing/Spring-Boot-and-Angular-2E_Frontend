@@ -1,0 +1,23 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 14px;
+  z-index: 10;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+a[mat-button] {
+  color: #666;
+  text-decoration: none;
+}
