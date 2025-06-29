@@ -16,6 +16,27 @@ export class List {
       price: 29.99,
       published: '2008-08-01'
     },
+    {
+      title: 'The Great Gatsby',
+      author: 'F. Scott Fitzgerald',
+      genre: 'Fiction',
+      price: 15.99,
+      published: '1925-04-10'
+    },
+    {
+      title: 'The Girl with the Dragon Tattoo',
+      author: 'Stieg Larsson',
+      genre: 'Mystery',
+      price: 18.50,
+      published: '2005-08-01'
+    },
+    {
+      title: 'Dune',
+      author: 'Frank Herbert',
+      genre: 'Science Fiction',
+      price: 22.95,
+      published: '1965-08-01'
+    },
   ];
 
   headers: { headerName: string; fieldName: keyof Book }[] = [
