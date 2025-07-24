@@ -1,5 +1,5 @@
 {
-  "name": "chapter-10",
+  "name": "chapter-11",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:chapter-10": "node dist/chapter-10/server/server.mjs"
+    "serve:ssr:chapter-11": "node dist/chapter-11/server/server.mjs"
   },
   "private": true,
   "dependencies": {
