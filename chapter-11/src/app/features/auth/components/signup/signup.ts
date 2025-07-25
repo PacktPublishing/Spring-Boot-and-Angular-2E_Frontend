@@ -12,6 +12,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { SignupData } from '../../../../shared/models/auth';
+import { Router } from 'express';
+import { RouterModule } from '@angular/router';
 
 // Custom validator functions
 function noNumbersValidator(): ValidatorFn {
@@ -58,7 +60,8 @@ function minimumAgeValidator(minAge: number): ValidatorFn {
     MatDatepickerModule,
     MatNativeDateModule,
     MatCheckboxModule,
-    MatChipsModule
+    MatChipsModule,
+    RouterModule,
   ],
   templateUrl: './signup.html',
   styleUrl: './signup.scss'

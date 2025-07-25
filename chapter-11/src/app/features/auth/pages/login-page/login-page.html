@@ -1,4 +1,4 @@
-<div class="login-page-container">
+<div class="page-container">
   <div class="page-header">
     <h1>Welcome Back</h1>
     <p>Sign in to continue your reading journey</p>
@@ -10,12 +10,8 @@
     </div>
   }
 
-  <app-login></app-login>
-
-  <div class="page-footer">
-    <div class="signup-prompt">
-      <span>Don't have an account? </span>
-      <a routerLink="/auth/signup">Sign up here</a>
-    </div>
-  </div>
+  <app-login
+    (loginSubmit)="handleLoginAttempt($event)"
+    (forgotPassword)="handleForgotPassword($event)">
+  </app-login>
 </div>
