@@ -1,4 +1,5 @@
 <book-list
   [books]="books"
-  (book)="selectBook($event)">
+  (book)="selectBook($event)"
+  (bookCreated)="onBookCreated($event)">
 </book-list>

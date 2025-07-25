@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Book } from '../../../../shared/models/book';
+import { Book, BookCreateData } from '../../../../shared/models/book';
 import { BookList } from "../../components/book-list/book-list";
 
 @Component({
@@ -14,28 +14,28 @@ export class List {
       author: 'Robert C. Martin',
       genre: 'Software Engineering',
       price: 29.99,
-      published: '2008-08-01'
+      published: '2008'
     },
     {
       title: 'The Great Gatsby',
       author: 'F. Scott Fitzgerald',
       genre: 'Fiction',
       price: 15.99,
-      published: '1925-04-10'
+      published: '1925'
     },
     {
       title: 'The Girl with the Dragon Tattoo',
       author: 'Stieg Larsson',
       genre: 'Mystery',
       price: 18.50,
-      published: '2005-08-01'
+      published: '2005'
     },
     {
       title: 'Dune',
       author: 'Frank Herbert',
       genre: 'Science Fiction',
       price: 22.95,
-      published: '1965-08-01'
+      published: '1965'
     },
   ];
 
@@ -49,5 +49,19 @@ export class List {
 
   selectBook(book: Book): void {
     // handle selection logic
+    console.log('Selected book:', book);
+  }
+
+  onBookCreated(bookData: BookCreateData): void {
+    // Generate a simple ID for the new book
+    const newBook: Book = {
+      id: `book-${Date.now()}`,
+      ...bookData
+    };
+
+    // Add the new book to the beginning of the list
+    this.books = [newBook, ...this.books];
+
+    console.log('New book added:', newBook);
   }
 }
