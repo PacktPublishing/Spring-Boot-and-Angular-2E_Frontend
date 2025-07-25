@@ -1,0 +1,199 @@
+.book-create-dialog {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  .dialog-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    .dialog-title {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin: 0 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #333;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .dialog-subtitle {
+      font-size: 1rem;
+      margin: 0;
+      opacity: 0.7;
+      color: #666;
+    }
+  }
+}
+
+.book-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-section {
+  .section-title {
+    margin: 0 0 1.5rem 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .optional-label {
+      font-size: 0.875rem;
+      color: #666;
+      font-weight: 400;
+      margin-left: auto;
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .half-width {
+    flex: 1;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  // Stack fields vertically on mobile
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.section-divider {
+  margin: 2rem 0;
+  opacity: 0.3;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  .cancel-button {
+    min-width: 120px;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .submit-button {
+    min-width: 140px;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Stack buttons vertically on mobile
+  @media (max-width: 600px) {
+    flex-direction: column-reverse;
+  }
+}
+
+// Form field customizations
+.mat-mdc-form-field {
+  &.full-width {
+    width: 100%;
+  }
+
+  &.half-width {
+    flex: 1;
+  }
+
+  // Enhanced visual feedback for required fields
+  &.mat-form-field-invalid {
+    .mat-mdc-form-field-outline-thick {
+      color: #f44336;
+    }
+  }
+}
+
+// Price display enhancement
+.mat-mdc-form-field {
+  .mat-mdc-input-element[type="number"] {
+    text-align: right;
+  }
+}
+
+// Textarea styling
+textarea.mat-mdc-input-element {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+// Error message styling
+.mat-mdc-form-field-error {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+// Hint styling
+.mat-mdc-form-field-hint {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+// Icon styling within form fields
+.mat-mdc-form-field .mat-mdc-form-field-icon-suffix mat-icon {
+  opacity: 0.6;
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+// Loading state (for future enhancement)
+.book-form {
+  &.loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
+// Success state styling
+.form-success {
+  padding: 1rem;
+  background-color: #e8f5e8;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  color: #2e7d32;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-icon {
+    color: #4caf50;
+  }
+}
