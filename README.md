@@ -16,6 +16,7 @@ This project follows modern Angular architectural patterns:
 - **Smart/Dumb Component Pattern**: Distinction between container components (pages) and presentation components
 - **Reactive Forms**: Comprehensive form handling with validation and error management
 - **Angular Material**: Consistent UI/UX with Material Design components
+- **Modern Testing**: Unit testing with Vitest for improved performance and developer experience
 
 ## 📖 Chapter Structure
 
@@ -30,6 +31,7 @@ Establishes the foundation of the Angular application:
 - Angular Material integration
 - Book listing functionality with signal-based communication
 - TypeScript interfaces and type safety
+- Modern unit testing with Vitest
 
 ### Chapter 11 - Authentication & Reactive Forms
 
@@ -52,6 +54,7 @@ Builds upon Chapter 10 to add authentication capabilities:
 - **Angular Router**: Navigation and route protection
 - **RxJS**: Reactive programming and state management
 - **SCSS**: Advanced styling with CSS preprocessor
+- **Vitest**: Modern testing framework for faster unit test execution
 
 ## 🚀 Getting Started
 
@@ -87,7 +90,18 @@ npm run build
 
 ### Running Tests
 
+Testing varies by chapter:
+
 ```bash
+# Chapter 10 - Uses Vitest for modern, fast testing
+cd chapter-10
+npm run test          # Interactive mode with file watching
+npm run test:run      # Single run
+npm run test:ui       # Web UI for test results
+npm run test:coverage # Coverage report
+
+# Chapter 11 - Traditional Angular testing (if applicable)
+cd chapter-11
 npm test
 ```
 
@@ -170,7 +184,9 @@ Each chapter includes these npm scripts:
 - `npm start` - Start development server
 - `npm run build` - Build for production
 - `npm run watch` - Build and watch for changes
-- `npm test` - Run unit tests
+- `npm test` or `npm run test` - Run unit tests (Vitest in Chapter 10, standard Angular testing in others)
+- `npm run test:ui` - Run tests with web UI (Chapter 10 with Vitest)
+- `npm run test:coverage` - Generate test coverage report (Chapter 10)
 - `npm run serve:ssr:chapter-X` - Serve server-side rendered application
 
 ## Learning Path
