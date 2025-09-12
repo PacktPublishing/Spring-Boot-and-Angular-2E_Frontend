@@ -13,7 +13,6 @@ This chapter project showcases:
 - **Type Safety**: Defining and using a shared Book interface for strongly-typed component inputs
 - **UI Enhancement**: Integration with Angular Material for modern, accessible, and consistent user experience
 - **Modern Testing**: Unit testing with Vitest for faster test execution and better developer experience
-- **GenAI-Assisted Development**: Using GitHub Copilot's "Ask", "Edit", and "Agent" modes for accelerated development
 
 ## Project Features
 
@@ -143,16 +142,5 @@ src/app/
 - **Material Design**: Professional UI with Angular Material components
 - **Type Safety**: Leveraging TypeScript interfaces for better development experience
 - **Modern Testing**: Vitest integration for faster, more efficient unit testing
-- **GenAI Integration**: Using GitHub Copilot for accelerated development workflows
-
-## Next Steps
-
-This foundation prepares you for:
-
-- Advanced state management
-- HTTP services and API integration
-- Routing and navigation
-- Forms and validation
-- Advanced testing strategies (e2e, integration tests)
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
