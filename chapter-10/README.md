@@ -12,7 +12,7 @@ This chapter project showcases:
 - **Component Architecture**: Creating both dumb (presentation) and smart (container) components using signal-based `input()` and `output()` functions
 - **Type Safety**: Defining and using a shared Book interface for strongly-typed component inputs
 - **UI Enhancement**: Integration with Angular Material for modern, accessible, and consistent user experience
-- **GenAI-Assisted Development**: Using GitHub Copilot's "Ask", "Edit", and "Agent" modes for accelerated development
+- **Modern Testing**: Unit testing with Vitest for faster test execution and better developer experience
 
 ## Project Features
 
@@ -82,11 +82,28 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ## Running unit tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+This project uses [Vitest](https://vitest.dev/) for unit testing, providing faster test execution and better integration with modern tooling.
+
+To execute unit tests, use:
 
 ```bash
-ng test
+npm run test
 ```
+
+### Available Test Commands
+
+- **Interactive mode**: `npm run test` - Run tests with file watching
+- **Single run**: `npm run test:run` - Run tests once and exit
+- **UI mode**: `npm run test:ui` - Run tests with Vitest's web UI
+- **Coverage**: `npm run test:coverage` - Run tests with coverage report
+
+### Testing Setup
+
+The project uses:
+
+- **Vitest**: Fast unit test framework
+- **@analogjs/vitest-angular**: Angular testing utilities for Vitest
+- **jsdom**: DOM environment for testing Angular components
 
 ## Running end-to-end tests
 
@@ -124,16 +141,6 @@ src/app/
 - **Component Communication**: Using `input()` and `output()` for clean data flow
 - **Material Design**: Professional UI with Angular Material components
 - **Type Safety**: Leveraging TypeScript interfaces for better development experience
-- **GenAI Integration**: Using GitHub Copilot for accelerated development workflows
-
-## Next Steps
-
-This foundation prepares you for:
-
-- Advanced state management
-- HTTP services and API integration
-- Routing and navigation
-- Forms and validation
-- Testing strategies
+- **Modern Testing**: Vitest integration for faster, more efficient unit testing
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
