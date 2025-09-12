@@ -96,7 +96,7 @@ npm run start
 # For Chapter 13 - Reactive Forms & UI
 cd chapter-13
 npm install
-npm start
+npm run start
 ```
 
 The application will be available at `http://localhost:4200`
