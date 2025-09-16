@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # Packt Bookstore Angular Application
 
 This is an Angular 20 application for a bookstore platform with the following key characteristics:
