@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # Architecture Principles
 
 ## Component Structure
