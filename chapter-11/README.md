@@ -1,30 +1,17 @@
 # Chapter 11 - AI-Assisted Angular Development
 
-This project demonstrates how to leverage AI tools and GitHub Copilot to accelerate Angular development workflows. Building upon the foundation from Chapter 10, this chapter focuses on AI-assisted development techniques, mock data generation, and improving test coverage using modern tools.
+This project demonstrates how to leverage AI tools and GitHub Copilot to accelerate Angular development workflows. Building upon the foundation from Chapter 10, this chapter focuses on AI-assisted development techniques, mock data generation, and improving test coverage.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- **AI-Powered Development**: Using GitHub Copilot's "Ask", "Edit", and "Agent" modes for accelerated development
 - **Project Instructions**: Setting up and using Copilot project instructions for context-aware AI assistance
-- **Chat Modes**: Leveraging different Copilot chat modes for various development scenarios
+- **AI-Powered Development**: Using GitHub Copilot's "Ask", "Edit", and "Agent" modes for accelerated development
 - **Mock Data Generation**: AI-assisted creation of realistic book data for development and testing
 - **Inline Code Generation**: Using Copilot for rapid component and service development
-- **Test Coverage Enhancement**: AI-assisted unit test generation with Vitest
-- **Code Refactoring**: Using AI to improve code quality and maintainability
-- **Documentation Generation**: AI-assisted README and code documentation
+- **Comprehensive Test Coverage**: AI-assisted unit test generation with Vitest, including Angular Material components, signal-based testing, and accessibility validation
 - **Development Workflow Optimization**: Integrating AI tools into daily development practices
-
-## AI-Assisted Features
-
-- **Smart Mock Data**: AI-generated book collections with realistic titles, authors, and metadata
-- **Project Instructions**: Contextual AI assistance based on project-specific guidelines and patterns
-- **Chat Modes**: Multiple interaction modes for different development needs (inline, sidebar, agent)
-- **Automated Test Generation**: Copilot-assisted unit test creation for components and services
-- **Inline Code Completion**: Real-time AI suggestions for Angular patterns and best practices
-- **Code Explanation**: Using Copilot Chat to understand and explain complex code sections
-- **Refactoring Assistance**: AI-powered code improvements and optimizations
 
 ## AI Workflow Techniques
 
@@ -49,9 +36,14 @@ This chapter project showcases:
 
 ### 4. Test Coverage Improvement
 
-- AI-assisted test case identification
-- Automated test skeleton generation
-- Edge case discovery and testing
+- AI-assisted comprehensive test case identification and generation
+- Automated test skeleton creation with Vitest-specific patterns
+- Edge case discovery and robust testing strategies
+- Angular Material component testing with DOM fallback patterns
+- Signal-based input/output testing using modern Angular APIs
+- Event emission validation and spy function implementation
+- Empty state handling and accessibility testing patterns
+- Troubleshooting guides for common Vitest and Material testing challenges
 
 ### 5. Code Quality Enhancement
 
@@ -73,28 +65,28 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ### Installation
 
-1. Install dependencies:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-1. Install Angular Material (if not already installed):
+### Development server
+
+To start a local development server, run:
 
 ```bash
-ng add @angular/material
+npm run start
 ```
+
+Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
 ## AI-Assisted Development Workflow
 
 ### Using GitHub Copilot for Development
 
-1. **Project Instructions**: Configure project-specific AI context and coding standards
+1. **Project Instructions**: Configure project-specific AI context and coding standards  
 1. **Inline Code Completion**: Let Copilot suggest code as you type
-1. **Chat Modes**:
-   - Use inline chat for quick fixes and suggestions
-   - Use sidebar chat for detailed explanations and complex problem-solving
-   - Use agent mode for autonomous multi-step tasks
 1. **Code Generation**: Use prompts to generate components, services, and tests
 
 ### Generating Mock Data with AI
@@ -106,46 +98,29 @@ Use Copilot to generate realistic book data:
 // The AI will provide diverse, realistic book data for testing
 ```
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## AI-Powered Code Scaffolding
-
-Use AI assistance for generating new components:
-
-```bash
-# Generate component with Copilot assistance
-ng generate component component-name
-# Then use Copilot Chat to enhance the generated component
-```
-
-For AI-assisted scaffolding patterns:
-
-```bash
-ng generate --help
-# Use Copilot Chat to understand available options and best practices
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
 ## AI-Enhanced Unit Testing
 
-This project uses [Vitest](https://vitest.dev/) for unit testing, enhanced with AI-assisted test generation and coverage improvement.
+This project uses [Vitest](https://vitest.dev/) for unit testing, enhanced with AI-assisted test generation and comprehensive coverage improvement. The testing setup includes robust patterns for Angular Material components, signal-based testing, and Vitest-specific syntax.
+
+### Comprehensive Testing Features
+
+- **Vitest Integration**: Modern testing framework with `vi.spyOn()` syntax for robust spying
+- **Angular Material Testing**: Specialized patterns for Material components with DOM fallback strategies
+- **Signal-Based Testing**: Complete coverage of Angular's modern signal APIs for input/output testing
+- **Component Interaction Testing**: Comprehensive click interaction and event emission validation
+- **Edge Case Coverage**: Empty state handling, null checks, and error boundary testing
+- **Accessibility Testing**: Screen reader compatibility and semantic HTML validation
+- **Mock Data Patterns**: Realistic test data generation with multiple scenarios
+
+### Enhanced Test Patterns
+
+The project implements comprehensive testing standards covering:
+
+- **Standalone Component Setup**: Proper TestBed configuration with Material module imports
+- **Robust DOM Testing**: Fallback patterns when Material components don't fully render in tests
+- **Event Testing**: Complete validation of user interactions and component outputs
+- **Data Formatting**: Currency pipes, date formatting, and content validation
+- **Error Handling**: Graceful handling of missing elements and edge cases
 
 ### Running Tests with AI Assistance
 
@@ -159,10 +134,12 @@ npm run test
 
 Use GitHub Copilot to:
 
-1. **Generate Test Cases**: Ask Copilot to create comprehensive test suites
-1. **Improve Coverage**: Identify missing test scenarios using AI analysis
-1. **Mock Data Creation**: Generate realistic test data for various scenarios
-1. **Edge Case Discovery**: Use AI to identify potential edge cases
+1. **Generate Comprehensive Test Suites**: Create complete test coverage including rendering, interactions, and edge cases
+1. **Improve Testing Patterns**: Implement robust Vitest patterns with proper spy syntax and Material component handling
+1. **Mock Data Creation**: Generate realistic, diverse test data for various testing scenarios
+1. **Edge Case Discovery**: Identify and test empty states, null conditions, and error boundaries
+1. **Accessibility Testing**: Create tests for screen reader compatibility and semantic HTML validation
+1. **Component Interaction Testing**: Generate tests for click handlers, event emissions, and user workflows
 
 ### Available Test Commands
 
@@ -175,62 +152,20 @@ Use GitHub Copilot to:
 
 The project uses:
 
-- **Vitest**: Fast unit test framework with AI integration
-- **@analogjs/vitest-angular**: Angular testing utilities optimized for AI-assisted workflows
-- **jsdom**: DOM environment for testing Angular components with AI-generated test data
-- **GitHub Copilot**: For automated test generation and improvement suggestions
+- **Vitest**: Fast unit test framework with modern syntax (`vi.spyOn()`) and comprehensive Angular integration
+- **@analogjs/vitest-angular**: Angular testing utilities optimized for standalone components and signal-based APIs
+- **jsdom**: DOM environment for testing Angular components with Material UI fallback patterns
+- **GitHub Copilot**: For automated test generation, coverage improvement, and testing best practices
+- **Comprehensive Test Patterns**: Established patterns for Material component testing, event handling, and accessibility validation
 
-## AI-Assisted End-to-End Testing
+## Key Learning Points
 
-For AI-enhanced end-to-end (e2e) testing:
+- **Project Instructions & Chat Modes**: Configuring context-aware AI assistance and mastering inline, sidebar, and agent modes for different development tasks
+- **AI-Assisted Mock Data & Testing**: Generating realistic datasets and comprehensive test suites with Vitest patterns for Angular Material components and signal-based APIs
+- **Prompt Engineering & Code Quality**: Crafting effective prompts for code generation and leveraging AI for code review and pattern recognition
+- **Collaborative AI Development**: Combining human expertise with AI assistance for optimal productivity workflows
 
-```bash
-ng e2e
-```
-
-Use GitHub Copilot to:
-
-- Generate e2e test scenarios
-- Create realistic user interaction patterns
-- Identify critical user journeys for testing
-
-## Project Structure with AI Enhancement
-
-The application follows Angular best practices enhanced with AI-assisted development patterns:
-
-```text
-src/app/
-├── core/                    # Core services with AI-generated patterns
-│   └── services/           # AI-assisted service implementations
-├── features/               # Feature modules with AI-generated components
-│   └── books/             # Book-related components with AI mock data
-│       ├── components/    # AI-enhanced presentation components
-│       └── pages/        # Smart components with AI-generated logic
-└── shared/               # Shared utilities with AI assistance
-    ├── layout/          # AI-optimized layout components
-    └── models/         # AI-generated interfaces and types
-```
-
-## Key AI Development Techniques
-
-- **Project Instructions**: Setting up context-aware AI assistance with project-specific guidelines
-- **Chat Mode Mastery**: Leveraging different interaction modes for optimal AI assistance
-- **Code Generation**: Using Copilot for rapid component scaffolding
-- **Mock Data Creation**: AI-generated realistic datasets for development
-- **Test Automation**: AI-assisted unit and integration test generation
-- **Code Documentation**: Automated comment and README generation
-- **Refactoring Assistance**: AI-powered code improvement suggestions
-- **Pattern Recognition**: Learning from AI suggestions for better code patterns
-- **Debugging Help**: Using Copilot Chat for troubleshooting and optimization
-
-## AI-Enhanced Learning Points
-
-- **Prompt Engineering**: Crafting effective prompts for code generation
-- **AI Code Review**: Using AI to identify potential improvements
-- **Collaborative Development**: Combining human expertise with AI assistance
-- **Productivity Optimization**: Leveraging AI for faster development cycles
-- **Quality Assurance**: AI-assisted testing and validation strategies
-- **Documentation Automation**: Using AI for comprehensive project documentation
+For more information on AI-assisted Angular development, visit the [GitHub Copilot Documentation](https://docs.github.com/en/copilot) and [Angular AI Development Best Practices](https://angular.dev/tools/ai-assistance).
 
 ## Next Steps with AI
 
@@ -242,27 +177,3 @@ This AI-enhanced foundation prepares you for:
 - AI-assisted forms and validation logic
 - Advanced AI-enhanced testing strategies
 - Production deployment with AI-optimized builds
-
-## AI Tools and Extensions
-
-Recommended VS Code extensions for AI-assisted Angular development:
-
-- **GitHub Copilot**: Core AI code completion
-- **GitHub Copilot Chat**: Interactive AI assistance
-- **Angular Language Service**: Enhanced with AI suggestions
-- **Copilot Labs**: Experimental AI features for code explanation and generation
-
-For more information on AI-assisted Angular development, visit the [Angular AI Development Guide](https://angular.dev/tools/ai-assistance) and [GitHub Copilot Documentation](https://docs.github.com/en/copilot).
-
-## Key Learning Points
-
-- **Project Instructions**: Configuring context-aware AI assistance for Angular projects
-- **Chat Mode Utilization**: Mastering inline, sidebar, and agent modes for different development tasks
-- **AI-Assisted Mock Data**: Generating realistic datasets using AI prompts and suggestions
-- **Prompt Engineering**: Crafting effective prompts for code generation and problem-solving
-- **AI-Enhanced Testing**: Using Copilot for comprehensive test generation and coverage improvement
-- **Collaborative AI Development**: Combining human expertise with AI assistance for optimal results
-- **AI Code Review**: Leveraging AI for code quality improvement and pattern recognition
-- **Productivity Workflows**: Integrating AI tools seamlessly into daily development practices
-
-For more information on AI-assisted Angular development, visit the [GitHub Copilot Documentation](https://docs.github.com/en/copilot) and [Angular AI Development Best Practices](https://angular.dev/tools/ai-assistance).
