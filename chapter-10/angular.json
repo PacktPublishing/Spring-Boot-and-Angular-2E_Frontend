@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "chapter-10": {
+    "chapter-11": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -67,37 +67,16 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chapter-10:build:production"
+              "buildTarget": "chapter-11:build:production"
             },
             "development": {
-              "buildTarget": "chapter-10:build:development"
+              "buildTarget": "chapter-11:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
-        },
-        "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "src/styles.scss"
-            ]
-          }
         }
       }
     }

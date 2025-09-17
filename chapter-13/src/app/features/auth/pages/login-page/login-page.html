@@ -1,0 +1,17 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Welcome Back</h1>
+    <p>Sign in to continue your reading journey</p>
+  </div>
+
+  @if (registrationMessage) {
+    <div class="success-message">
+      {{ registrationMessage }}
+    </div>
+  }
+
+  <app-login
+    (loginSubmit)="handleLoginAttempt($event)"
+    (forgotPassword)="handleForgotPassword($event)">
+  </app-login>
+</div>
