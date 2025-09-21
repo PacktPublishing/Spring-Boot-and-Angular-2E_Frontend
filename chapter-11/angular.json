@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "chapter-10": {
+    "chapter-11": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -67,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chapter-10:build:production"
+              "buildTarget": "chapter-11:build:production"
             },
             "development": {
-              "buildTarget": "chapter-10:build:development"
+              "buildTarget": "chapter-11:build:development"
             }
           },
           "defaultConfiguration": "development"

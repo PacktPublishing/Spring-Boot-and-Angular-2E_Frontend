@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogRef } from '@angular/material/dialog';
 
 import { BookCreate } from './book-create';
 
@@ -8,7 +9,16 @@ describe('BookCreate', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BookCreate]
+      imports: [BookCreate],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {
+            close: () => {},
+            afterClosed: () => ({ subscribe: () => {} })
+          }
+        }
+      ]
     })
     .compileComponents();
 

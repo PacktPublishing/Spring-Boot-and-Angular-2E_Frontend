@@ -1,4 +1,4 @@
-# Chapter 11 - Angular Reactive Forms
+# Chapter 13 - Angular Reactive Forms
 
 This project demonstrates advanced form handling in Angular 20 using reactive forms to build comprehensive authentication components for the Packt Bookstore application. The chapter covers reactive forms, complex validation patterns, and advanced form patterns for real-world applications.
 

@@ -1,12 +1,12 @@
 {
-  "name": "chapter-10",
+  "name": "chapter-11",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "serve:ssr:chapter-10": "node dist/chapter-10/server/server.mjs",
+    "serve:ssr:chapter-11": "node dist/chapter-11/server/server.mjs",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
