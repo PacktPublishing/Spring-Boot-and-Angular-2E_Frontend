@@ -10,5 +10,5 @@ import { Footer } from "./shared/layout/footer/footer";
   styleUrl: './app.scss'
 })
 export class App {
-  protected title = 'chapter-10';
+  protected title = 'chapter-11';
 }
