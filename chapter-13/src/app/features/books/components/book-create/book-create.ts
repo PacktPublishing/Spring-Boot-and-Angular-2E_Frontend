@@ -10,7 +10,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
-import { BookCreateData } from '../../../../shared/models/book';
+import { Book } from '../../../../shared/models/book';
 
 // Custom validator functions
 function isbnValidator(): ValidatorFn {
@@ -64,7 +64,7 @@ export class BookCreate {
   private dialogRef = inject(MatDialogRef<BookCreate>);
 
   // Output event for parent component communication
-  bookCreate = output<BookCreateData>();
+  bookCreate = output<Book>();
 
   // Available book genres
   genres = [
@@ -94,7 +94,7 @@ export class BookCreate {
         validators: [Validators.required, Validators.minLength(2), Validators.maxLength(200)],
         nonNullable: true
       }),
-      author: this.fb.control('', {
+      authorName: this.fb.control('', {
         validators: [Validators.required, Validators.minLength(2), Validators.maxLength(100)],
         nonNullable: true
       }),
@@ -117,7 +117,7 @@ export class BookCreate {
         nonNullable: true
       }),
       isbn: this.fb.control('', {
-        validators: [isbnValidator()],
+        validators: [Validators.required, isbnValidator()],
         nonNullable: true
       }),
       pageCount: this.fb.control<number | null>(null, {
@@ -160,14 +160,14 @@ export class BookCreate {
       const formData = this.bookForm.value;
 
       // Reconstruct the data to match our interface
-      const bookData: BookCreateData = {
+      const bookData: Book = {
         title: formData.basicInfo!.title!,
-        author: formData.basicInfo!.author!,
+        authorName: formData.basicInfo!.authorName!,
         genre: formData.basicInfo!.genre!,
         price: formData.basicInfo!.price!,
         published: formData.basicInfo!.published!,
+        isbn: formData.additionalInfo!.isbn!,
         description: formData.additionalInfo!.description || undefined,
-        isbn: formData.additionalInfo!.isbn || undefined,
         pageCount: formData.additionalInfo!.pageCount || undefined,
         coverImageUrl: formData.additionalInfo!.coverImageUrl || undefined
       };
@@ -188,7 +188,7 @@ export class BookCreate {
     this.bookForm.patchValue({
       basicInfo: {
         title: '',
-        author: '',
+        authorName: '',
         genre: '',
         published: ''
       },
@@ -198,6 +198,8 @@ export class BookCreate {
         coverImageUrl: ''
       }
     });
+    // Mark fields as untouched to clear validation errors
+    this.bookForm.markAsUntouched();
   }
 
   // Utility methods
