@@ -1,5 +1,5 @@
 import { Component, input, output, inject } from '@angular/core';
-import { Book, BookCreateData } from '../../../../shared/models/book';
+import { Book } from '../../../../shared/models/book';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,7 @@ export class BookList {
 
   books = input<Book[]>([]);
   book = output<Book>();
-  bookCreated = output<BookCreateData>();
+  bookCreated = output<Book>();
 
   columns: string[] = ['title', 'author', 'genre', 'price', 'published', 'actions'];
 
@@ -44,7 +44,7 @@ export class BookList {
     });
 
     // Subscribe to the bookCreate output from the dialog component
-    dialogRef.componentInstance.bookCreate.subscribe((bookData: BookCreateData) => {
+    dialogRef.componentInstance.bookCreate.subscribe((bookData: Book) => {
       this.bookCreated.emit(bookData);
     });
 

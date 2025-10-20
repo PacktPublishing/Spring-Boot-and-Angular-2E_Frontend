@@ -6,11 +6,15 @@ applyTo: "**/*.spec.ts"
 ## Framework Setup
 - **Test Runner**: Vitest with `@analogjs/vite-plugin-angular`
 - **Test Files**: `*.spec.ts` co-located with components
-- **Commands**: `npm run test`, `npm run test:coverage`, `npm run test:ui`
+- **Commands**: `npm run test:run` to run tests once, `npm run test:watch` for watch mode.
 
 When debugging tests make sure to prefer `npm run test:run` over other commands to avoid watch mode so that you can better examine the test output.
 
 ## Essential Imports and Setup
+
+### Mocking
+
+Vitest uses vi for mocking, not Jasmine. Always make sure to use Vitest's mocking API.
 
 ### Required Imports for Vitest
 ```typescript

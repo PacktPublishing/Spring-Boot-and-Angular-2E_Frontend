@@ -33,12 +33,12 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Author</mat-label>
             <input matInput
-                   formControlName="author"
+                   formControlName="authorName"
                    placeholder="Enter author name"
                    maxlength="100">
             <mat-icon matSuffix>person</mat-icon>
-            <mat-hint align="end">{{ basicInfoGroup?.get('author')?.value?.length || 0 }}/100</mat-hint>
-            <mat-error>{{ getErrorMessage('author', 'basicInfo') }}</mat-error>
+            <mat-hint align="end">{{ basicInfoGroup?.get('authorName')?.value?.length || 0 }}/100</mat-hint>
+            <mat-error>{{ getErrorMessage('authorName', 'basicInfo') }}</mat-error>
           </mat-form-field>
         </div>
 
