@@ -99,11 +99,47 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ## Running unit tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+This chapter includes comprehensive unit tests for all form components using Vitest. To execute the test suite, use:
 
 ```bash
-ng test
+npm test
 ```
+
+To run tests in watch mode during development:
+
+```bash
+npm run test:watch
+```
+
+To run tests with coverage reporting:
+
+```bash
+npm run test:run
+```
+
+To run specific test files:
+
+```bash
+npm run test:run -- book-create.spec.ts
+```
+
+### Test Coverage
+
+The project includes comprehensive unit tests with 70+ test cases covering:
+
+- **Component Initialization**: Form structure, controls, and initial state
+- **Field Validation**: Required fields, format validation, and length constraints
+- **Custom Validators**: ISBN format, positive numbers, URL validation, password strength
+- **Form Submission**: Data handling, dialog integration, and event emission
+- **Error Messages**: User-friendly validation feedback for all fields
+- **Form Reset**: State management and cleanup
+- **Signal Reactivity**: Form state signals and reactive updates
+- **Modal Behavior**: Dialog lifecycle and data flow
+
+Key test files:
+
+- `signup.spec.ts` - Comprehensive signup form tests (password matching, age validation, dynamic arrays)
+- `book-create.spec.ts` - Book creation form tests (ISBN validation, price validation, optional fields)
 
 ## Running end-to-end tests
 
@@ -211,6 +247,7 @@ price: this.fb.control<number | null>(null, {
 - **Material Design Integration**: Professional form UI with Angular Material components
 - **Type Safety**: Strongly-typed form data with TypeScript interfaces
 - **Performance Optimization**: Efficient change detection with OnPush strategy and signals
+- **Comprehensive Testing**: Unit testing reactive forms with Vitest, including validation logic, form state, and user interactions
 
 ## Chapter Summary
 
@@ -223,18 +260,19 @@ This chapter provided comprehensive coverage of Angular reactive forms through p
 - **Signal-Based Integration**: Converted form state to reactive signals for optimal performance and user experience
 - **Professional UI**: Integrated Angular Material components for consistent, accessible form interfaces including dialog integration
 - **Business Domain Validation**: Implemented industry-specific validators for book management (ISBN, pricing, publication years)
-- **AI-Assisted Development**: Established clear patterns manually, then leveraged VS Code Copilot to efficiently scale across components
+- **Comprehensive Testing**: Created 70+ unit tests covering form initialization, validation, submission, error handling, and signal reactivity using Vitest
+- **AI-Assisted Development**: Established clear patterns manually, then leveraged VS Code Copilot to efficiently scale across components and generate comprehensive test suites
 
-The comprehensive signup form and book create form showcase enterprise-level form handling with real-time validation, business logic enforcement, and sophisticated user interaction patterns that provide immediate feedback while maintaining code quality and architectural consistency.
+The comprehensive signup form and book create form showcase enterprise-level form handling with real-time validation, business logic enforcement, and sophisticated user interaction patterns that provide immediate feedback while maintaining code quality and architectural consistency. The extensive test coverage ensures reliability and maintainability of complex form logic.
 
 ## Next Steps
 
-Building on this reactive forms foundation, you're prepared for:
+Building on this reactive forms and testing foundation, you're prepared for:
 
 - **State Management**: Advanced application state management with signals and stores
 - **HTTP Services**: API integration for form data submission and validation
 - **Advanced Routing**: Route guards and form state preservation
-- **Testing Strategies**: Unit testing reactive forms and custom validators
+- **Integration Testing**: End-to-end testing of complete form workflows
 - **Performance Optimization**: Form state management at scale
 
 In the next chapter, we will explore the concepts and implementation of state management in Angular applications, discussing signals and store patterns and how they can improve application architecture.
