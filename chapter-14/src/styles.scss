@@ -1,0 +1,96 @@
+@import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// Shared page styles
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-header {
+  text-align: center;
+  color: white;
+  max-width: 600px;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+
+  .page-header {
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Dialog styling
+.book-create-dialog {
+  .mat-mdc-dialog-container {
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0;
+    margin: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+// Global form enhancements
+.mat-mdc-form-field {
+  .mat-mdc-form-field-flex {
+    align-items: center;
+  }
+}
+
+// Enhanced button styles
+.mat-mdc-fab.mat-mdc-button-base {
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
+              0 6px 10px 0 rgba(0, 0, 0, 0.14),
+              0 1px 18px 0 rgba(0, 0, 0, 0.12);
+}
+
+// Success animation keyframes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
