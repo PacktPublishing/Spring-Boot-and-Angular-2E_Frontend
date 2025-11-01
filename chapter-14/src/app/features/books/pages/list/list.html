@@ -1,5 +1,97 @@
-<book-list
-  [books]="books"
-  (book)="selectBook($event)"
-  (bookCreated)="onBookCreated($event)">
-</book-list>
+<div class="book-list-page">
+  <!-- Header with create button -->
+  <div class="page-header">
+    <h1>Book Catalog</h1>
+    <button mat-raised-button color="primary" (click)="onCreateBook()">
+      <mat-icon>add</mat-icon>
+      Add New Book
+    </button>
+  </div>
+
+  <!-- Search and filters -->
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Search</mat-label>
+      <input
+        matInput
+        placeholder="Search by title or author..."
+        [value]="store.searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Genre</mat-label>
+      <mat-select
+        [value]="store.genreFilter() ?? ''"
+        (selectionChange)="onGenreFilterChange($event.value || null)"
+      >
+        <mat-option value="">All Genres</mat-option>
+        @for (genre of store.availableGenres(); track genre) {
+          <mat-option [value]="genre">{{ genre }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-button (click)="onSortOrderChange()">
+      <mat-icon>{{ store.sortOrder() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+      Sort {{ store.sortOrder() === 'asc' ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    @if (store.hasActiveFilters()) {
+      <button mat-button (click)="onSearchChange(''); onGenreFilterChange(null)">
+        <mat-icon>clear</mat-icon>
+        Clear Filters
+      </button>
+    }
+  </div>
+
+  <!-- Loading state -->
+  @if (store.loading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Loading books...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (store.error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ store.error() }}</p>
+        <button mat-raised-button color="primary" (click)="dispatch.opened()">
+          <mat-icon>refresh</mat-icon>
+          Retry
+        </button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Book list -->
+  @if (!store.loading() && store.hasBooks()) {
+    <book-list
+      [books]="store.sortedBooks()"
+      (bookSelected)="onSelectBook($event)"
+      (bookEdit)="onEditBook($event)"
+      (bookDelete)="onDeleteBook($event)"
+    />
+  } @else if (!store.loading() && !store.error()) {
+    <div class="empty-state">
+      <mat-icon>library_books</mat-icon>
+      @if (store.hasActiveFilters()) {
+        <p>No books match your filters</p>
+        <button mat-button (click)="onSearchChange(''); onGenreFilterChange(null)">
+          Clear Filters
+        </button>
+      } @else {
+        <p>No books available</p>
+        <button mat-raised-button color="primary" (click)="onCreateBook()">
+          <mat-icon>add</mat-icon>
+          Add Your First Book
+        </button>
+      }
+    </div>
+  }
+</div>

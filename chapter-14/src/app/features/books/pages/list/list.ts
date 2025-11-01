@@ -1,72 +1,75 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BookList } from '../../components/book-list/book-list';
+import { BookStore } from '../../store/book.store';
+import { injectDispatch } from '@ngrx/signals/events';
+import { bookPageEvents } from '../../store/book.events';
 import { Book } from '../../../../shared/models/book';
-import { BookList } from "../../components/book-list/book-list";
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'book-list-page',
+  selector: 'books-list-page',
   templateUrl: './list.html',
-  imports: [BookList],
+  styleUrls: ['./list.scss'],
+  imports: [
+    BookList,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+  ],
 })
-export class List {
-  books: Book[] = [
-    {
-      title: 'Clean Code',
-      authorName: 'Robert C. Martin',
-      genre: 'Software Engineering',
-      price: 29.99,
-      published: '2008',
-      isbn: '978-0132350884'
-    },
-    {
-      title: 'The Great Gatsby',
-      authorName: 'F. Scott Fitzgerald',
-      genre: 'Fiction',
-      price: 15.99,
-      published: '1925',
-      isbn: '978-0743273565'
-    },
-    {
-      title: 'The Girl with the Dragon Tattoo',
-      authorName: 'Stieg Larsson',
-      genre: 'Mystery',
-      price: 18.50,
-      published: '2005',
-      isbn: '978-0307454546'
-    },
-    {
-      title: 'Dune',
-      authorName: 'Frank Herbert',
-      genre: 'Science Fiction',
-      price: 22.95,
-      published: '1965',
-      isbn: '978-0441172719'
-    },
-  ];
+export class List implements OnInit {
+  protected readonly store = inject(BookStore);
+  private readonly router = inject(Router);
+  protected readonly dispatch = injectDispatch(bookPageEvents);
 
-  headers: { headerName: string; fieldName: keyof Book }[] = [
-    { headerName: 'Title', fieldName: 'title' },
-    { headerName: 'Author', fieldName: 'authorName' },
-    { headerName: 'Genre', fieldName: 'genre' },
-    { headerName: 'Price', fieldName: 'price' },
-    { headerName: 'Published', fieldName: 'published' },
-    { headerName: 'ISBN', fieldName: 'isbn' },
-  ];
-
-  selectBook(book: Book): void {
-    // handle selection logic
-    console.log('Selected book:', book);
+  ngOnInit() {
+    this.dispatch.opened();
   }
 
-  onBookCreated(bookData: Book): void {
-    // Generate a simple ID for the new book
-    const newBook: Book = {
-      id: `book-${Date.now()}`,
-      ...bookData
-    };
+  onSelectBook(book: Book) {
+    this.dispatch.bookSelected({ id: book.id ?? null });
+    this.router.navigate(['/books', book.id]);
+  }
 
-    // Add the new book to the beginning of the list
-    this.books = [newBook, ...this.books];
+  onEditBook(book: Book) {
+    if (!book.id) {
+      console.error('Cannot edit book without an ID');
+      return;
+    }
+    this.router.navigate(['/books', 'edit', book.id]);
+  }
 
-    console.log('New book added:', newBook);
+  onDeleteBook(id: string) {
+    if (confirm('Are you sure you want to delete this book?')) {
+      this.dispatch.deleteRequested({ id });
+    }
+  }
+
+  onCreateBook() {
+    this.router.navigate(['/books', 'create']);
+  }
+
+  onSearchChange(term: string) {
+    this.dispatch.searchTermChanged({ term });
+  }
+
+  onGenreFilterChange(genre: string | null) {
+    this.dispatch.genreFilterChanged({ genre });
+  }
+
+  onSortOrderChange() {
+    const newOrder = this.store.sortOrder() === 'asc' ? 'desc' : 'asc';
+    this.dispatch.sortOrderChanged({ order: newOrder });
   }
 }
