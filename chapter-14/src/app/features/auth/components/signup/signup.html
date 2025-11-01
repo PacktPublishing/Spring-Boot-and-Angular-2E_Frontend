@@ -1,0 +1,250 @@
+<mat-card class="signup-card">
+  <mat-card-header>
+    <mat-card-title>Join Packt Bookstore</mat-card-title>
+    <mat-card-subtitle>Create your account to start your reading journey</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+
+      <!-- Personal Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Personal Information</h3>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>First Name</mat-label>
+            <input
+              matInput
+              formControlName="firstName"
+              placeholder="Enter your first name"
+              autocomplete="given-name">
+            @if (signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched) {
+              <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Last Name</mat-label>
+            <input
+              matInput
+              formControlName="lastName"
+              placeholder="Enter your last name"
+              autocomplete="family-name">
+            @if (signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched) {
+              <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Email Address</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              autocomplete="email">
+            <mat-icon matSuffix>email</mat-icon>
+            @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+              <mat-error>{{ getErrorMessage('email') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Date of Birth</mat-label>
+            <input
+              matInput
+              [matDatepicker]="birthDatePicker"
+              formControlName="dateOfBirth"
+              [max]="maxDate"
+              [min]="minDate"
+              placeholder="Select your birth date">
+            <mat-datepicker-toggle matSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #birthDatePicker></mat-datepicker>
+            @if (signupForm.get('dateOfBirth')?.invalid && signupForm.get('dateOfBirth')?.touched) {
+              <mat-error>{{ getErrorMessage('dateOfBirth') }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Password Section -->
+      <div formGroupName="passwords" class="form-section">
+        <h3 class="section-title">Account Security</h3>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Create a strong password"
+            autocomplete="new-password">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (signupForm.get('passwords.password')?.invalid && signupForm.get('passwords.password')?.touched) {
+            <mat-error>{{ getErrorMessage('password', 'passwords') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- Password Strength Indicator -->
+        @if (signupForm.get('passwords.password')?.value) {
+          <div class="password-strength">
+            <div class="strength-bar">
+              <div
+                class="strength-fill"
+                [style.width.%]="passwordStrength()"
+                [attr.data-strength]="getPasswordStrengthColor()">
+              </div>
+            </div>
+            <span class="strength-label" [attr.data-strength]="getPasswordStrengthColor()">
+              {{ getPasswordStrengthLabel() }}
+            </span>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input
+            matInput
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideConfirmPassword = !hideConfirmPassword">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (signupForm.get('passwords.confirmPassword')?.invalid && signupForm.get('passwords.confirmPassword')?.touched) {
+            <mat-error>{{ getErrorMessage('confirmPassword', 'passwords') }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (passwordsGroup?.hasError('passwordMismatch') && passwordsGroup?.touched) {
+          <div class="group-error">{{ getGroupErrorMessage('passwords') }}</div>
+        }
+      </div>
+
+      <!-- Address Section -->
+      <div formGroupName="address" class="form-section">
+        <h3 class="section-title">Address Information</h3>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Street Address</mat-label>
+          <input
+            matInput
+            formControlName="street"
+            placeholder="Enter your street address"
+            autocomplete="street-address">
+          @if (signupForm.get('address.street')?.invalid && signupForm.get('address.street')?.touched) {
+            <mat-error>{{ getErrorMessage('street', 'address') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>City</mat-label>
+            <input
+              matInput
+              formControlName="city"
+              placeholder="Enter your city"
+              autocomplete="address-level2">
+            @if (signupForm.get('address.city')?.invalid && signupForm.get('address.city')?.touched) {
+              <mat-error>{{ getErrorMessage('city', 'address') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Country</mat-label>
+            <input
+              matInput
+              formControlName="country"
+              placeholder="Enter your country"
+              autocomplete="country-name">
+            @if (signupForm.get('address.country')?.invalid && signupForm.get('address.country')?.touched) {
+              <mat-error>{{ getErrorMessage('country', 'address') }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Favorite Genres Section -->
+      <div formArrayName="favoriteGenres" class="form-section">
+        <h3 class="section-title">Reading Preferences</h3>
+        <p class="section-description">Add your favorite book genres to get personalized recommendations</p>
+
+        @for (control of genresArray.controls; track $index; let i = $index) {
+          <div class="genre-input-group">
+            <mat-form-field appearance="outline" class="genre-input">
+              <mat-label>Genre {{ i + 1 }}</mat-label>
+              <input
+                matInput
+                [formControlName]="i"
+                placeholder="e.g., Fantasy, Mystery, Romance">
+              @if (genresArray.at(i).invalid && genresArray.at(i).touched) {
+                <mat-error>This field is required</mat-error>
+              }
+            </mat-form-field>
+            <button
+              mat-icon-button
+              type="button"
+              color="warn"
+              (click)="removeGenre(i)"
+              [disabled]="genresArray.length <= 1">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        } @empty {
+          <p class="empty-state">No genres added yet. Click "Add Genre" to start building your reading profile.</p>
+        }
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="addGenre()"
+          class="add-genre-btn">
+          <mat-icon>add</mat-icon>
+          Add Genre
+        </button>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="form-section">
+        <mat-checkbox formControlName="agreeToTerms" class="terms-checkbox">
+          I agree to the <a href="/terms" target="_blank">Terms of Service</a> and
+          <a href="/privacy" target="_blank">Privacy Policy</a>
+        </mat-checkbox>
+        @if (signupForm.get('agreeToTerms')?.invalid && signupForm.get('agreeToTerms')?.touched) {
+          <div class="checkbox-error">You must agree to the terms to continue</div>
+        }
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="full-width signup-button">
+          Create Account
+        </button>
+
+        <div class="form-links">
+          <span>Already have an account? </span>
+          <a mat-button routerLink="/auth/login">Sign in here</a>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

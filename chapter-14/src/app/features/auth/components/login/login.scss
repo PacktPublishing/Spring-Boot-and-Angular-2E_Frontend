@@ -1,0 +1,178 @@
+.login-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+
+  .mat-mdc-card-header {
+    margin: auto;
+    padding-bottom: 2rem;
+    text-align: center;
+
+    .mat-mdc-card-title {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .mat-mdc-card-subtitle {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .section-title {
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+
+  .remember-me {
+    .mat-mdc-checkbox-label {
+      font-size: 0.875rem;
+    }
+  }
+
+  .forgot-password-link {
+    font-size: 0.875rem;
+    padding: 0;
+    min-width: auto;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .login-button {
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    // Loading state styling
+    &[disabled] mat-icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .form-links {
+    text-align: center;
+    color: #666;
+    font-size: 0.875rem;
+
+    a {
+      color: var(--mdc-theme-primary, #1976d2);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .login-card {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
+  }
+
+  .form-options {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+
+    .forgot-password-link {
+      align-self: flex-end;
+    }
+  }
+}
+
+// Focus and validation styling enhancements
+.mat-mdc-form-field {
+  &.mat-form-field-invalid {
+    .mat-mdc-text-field-wrapper {
+      border-color: #f44336;
+    }
+  }
+}
+
+// Error message styling
+mat-error {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+// Custom styles for better UX
+.mat-mdc-raised-button {
+  transition: all 0.2s ease-in-out;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Password visibility toggle button
+.mat-mdc-icon-button {
+  &[aria-label*="password"] {
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
