@@ -58,6 +58,22 @@ Focuses on advanced reactive forms and UI component development:
 - Form state management and user feedback
 - Material Design form components integration
 
+### Chapter 14 - Angular State Management with Signals and Stores
+
+**Location**: `chapter-14/`
+
+Advances to centralized state management with NgRx signal store:
+
+- **NgRx Signal Store**: Centralized state management with signals for reactive, performant state updates
+- **Event-Driven Architecture**: Type-safe event dispatching for state mutations with store events
+- **Computed Signals**: Derived state for filtering, searching, and sorting book data
+- **Store Effects**: Side effects management (API calls, async operations) with signal store effects
+- **Form Integration**: Connecting reactive forms with store state for create and edit workflows
+- **Unified Form Component**: Single component handling both create and edit modes based on route parameters
+- **Book Service**: API integration layer for fetching and managing book data
+- **Advanced Form Patterns**: Building on Chapter 13's reactive forms with state management integration
+- **Comprehensive Testing**: Store testing, form component testing, and state mutation validation with Vitest
+
 ## Technology Stack
 
 - **Angular 20**: Latest version with standalone components and signals
@@ -74,8 +90,8 @@ Focuses on advanced reactive forms and UI component development:
 
 ### Prerequisites
 
-- Node.js (v18.0.0 or higher)
-- npm (v8.0.0 or higher)
+- Node.js (v24.2.0 or higher)
+- npm (v11.4.2 or higher)
 - Angular CLI v20.0.3
 
 ### Installation & Running
@@ -97,6 +113,11 @@ npm run start
 cd chapter-13
 npm install
 npm run start
+
+# For Chapter 14 - State management with NgRx signal store
+cd chapter-14
+npm install
+npm run start
 ```
 
 The application will be available at `http://localhost:4200`
@@ -109,19 +130,14 @@ npm run build
 
 ### Running Tests
 
-Testing varies by chapter:
+Across all chapters we are using vitest for modern testing:
 
 ```bash
-# Chapter 10 & 11 - Use Vitest for modern, fast testing
-cd chapter-10  # or chapter-11
+cd chapter-XX
 npm run test          # Interactive mode with file watching
 npm run test:run      # Single run
 npm run test:ui       # Web UI for test results
 npm run test:coverage # Coverage report
-
-# Chapter 13 - Traditional Angular testing
-cd chapter-13
-npm run test
 ```
 
 ## Project Structure
@@ -190,6 +206,8 @@ These instruction files act as a "style guide" for AI-assisted development, ensu
 - **Modern Angular Patterns**: Standalone components, signals, and reactive programming
 - **Form Management**: Complex forms with validation, error handling, and user feedback
 - **Reactive Form Patterns**: Advanced form UI components and user experience design
+- **State Management**: Centralized state management with NgRx signal store and event-driven architecture
+- **Computed Signals**: Derived state for filtering, searching, and sorting
 - **Material Design**: Consistent UI/UX with Angular Material components
 - **Type Safety**: Comprehensive TypeScript usage with interfaces and strict typing
 - **Responsive Design**: Mobile-first approach with flexible layouts
@@ -222,8 +240,9 @@ Each chapter includes these npm scripts:
 1. **Start with Chapter 10** to understand Angular fundamentals and project setup
 2. **Progress to Chapter 11** to master AI-assisted development workflows and GitHub Copilot integration
 3. **Continue to Chapter 13** to learn advanced reactive forms and UI component development
-4. **Explore the GitHub instructions** to understand AI-assisted development patterns
-5. **Experiment with modifications** to reinforce learning concepts
+4. **Advance to Chapter 14** to master centralized state management with NgRx signal store and event-driven architecture
+5. **Explore the GitHub instructions** to understand AI-assisted development patterns
+6. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
 
