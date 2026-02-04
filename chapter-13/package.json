@@ -34,7 +34,7 @@
     "@analogjs/vite-plugin-angular": "^1.21.0",
     "@analogjs/vitest-angular": "^2.0.0-alpha.24",
     "@angular/build": "^20.0.3",
-    "@angular/cli": "^20.0.3",
+    "@angular/cli": "^20.3.15",
     "@angular/compiler-cli": "^20.3.0",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
