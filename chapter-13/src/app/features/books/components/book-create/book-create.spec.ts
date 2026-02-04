@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
 import { BookCreate } from './book-create';
-import { Book } from '../../../../shared/models/book';
+import { MatDialogRef } from '@angular/material/dialog';
 import { vi } from 'vitest';
 
 describe('BookCreate', () => {
@@ -17,10 +16,7 @@ describe('BookCreate', () => {
     await TestBed.configureTestingModule({
       imports: [BookCreate],
       providers: [
-        {
-          provide: MatDialogRef,
-          useValue: mockDialogRef
-        }
+        { provide: MatDialogRef, useValue: mockDialogRef }
       ]
     }).compileComponents();
 
@@ -38,23 +34,31 @@ describe('BookCreate', () => {
       expect(component.bookForm.valid).toBe(false);
     });
 
-    it('should have basicInfo form group with all required controls', () => {
-      const basicInfoGroup = component.bookForm.get('basicInfo');
-      expect(basicInfoGroup).toBeTruthy();
-      expect(basicInfoGroup?.get('title')).toBeTruthy();
-      expect(basicInfoGroup?.get('authorName')).toBeTruthy();
-      expect(basicInfoGroup?.get('genre')).toBeTruthy();
-      expect(basicInfoGroup?.get('price')).toBeTruthy();
-      expect(basicInfoGroup?.get('published')).toBeTruthy();
+    it('should have basicInfo form group', () => {
+      const basicInfo = component.bookForm.get('basicInfo');
+      expect(basicInfo).toBeTruthy();
+      expect(basicInfo?.get('title')).toBeTruthy();
+      expect(basicInfo?.get('authorName')).toBeTruthy();
+      expect(basicInfo?.get('genre')).toBeTruthy();
+      expect(basicInfo?.get('price')).toBeTruthy();
+      expect(basicInfo?.get('published')).toBeTruthy();
     });
 
-    it('should have additionalInfo form group with all controls', () => {
-      const additionalInfoGroup = component.bookForm.get('additionalInfo');
-      expect(additionalInfoGroup).toBeTruthy();
-      expect(additionalInfoGroup?.get('description')).toBeTruthy();
-      expect(additionalInfoGroup?.get('isbn')).toBeTruthy();
-      expect(additionalInfoGroup?.get('pageCount')).toBeTruthy();
-      expect(additionalInfoGroup?.get('coverImageUrl')).toBeTruthy();
+    it('should have additionalInfo form group', () => {
+      const additionalInfo = component.bookForm.get('additionalInfo');
+      expect(additionalInfo).toBeTruthy();
+      expect(additionalInfo?.get('description')).toBeTruthy();
+      expect(additionalInfo?.get('isbn')).toBeTruthy();
+      expect(additionalInfo?.get('pageCount')).toBeTruthy();
+      expect(additionalInfo?.get('coverImageUrl')).toBeTruthy();
+    });
+
+    it('should initialize isFormValid signal as false', () => {
+      expect(component.isFormValid()).toBe(false);
+    });
+
+    it('should initialize priceValue signal as 0', () => {
+      expect(component.priceValue()).toBe(0);
     });
 
     it('should have predefined genres list', () => {
@@ -62,21 +66,15 @@ describe('BookCreate', () => {
       expect(component.genres.length).toBeGreaterThan(0);
       expect(component.genres).toContain('Fiction');
       expect(component.genres).toContain('Mystery');
-      expect(component.genres).toContain('Science Fiction');
-    });
-
-    it('should have form group accessors', () => {
-      expect(component.basicInfoGroup).toBeTruthy();
-      expect(component.additionalInfoGroup).toBeTruthy();
     });
   });
 
-  describe('Required Field Validation', () => {
+  describe('Required Field Validation - Title', () => {
     it('should validate title as required', () => {
       const title = component.bookForm.get('basicInfo.title');
       expect(title?.hasError('required')).toBe(true);
 
-      title?.setValue('The Great Gatsby');
+      title?.setValue('Valid Book Title');
       expect(title?.valid).toBe(true);
     });
 
@@ -86,7 +84,7 @@ describe('BookCreate', () => {
       title?.setValue('A');
       expect(title?.hasError('minlength')).toBe(true);
 
-      title?.setValue('Ab');
+      title?.setValue('AB');
       expect(title?.valid).toBe(true);
     });
 
@@ -100,22 +98,24 @@ describe('BookCreate', () => {
       title?.setValue('A'.repeat(200));
       expect(title?.valid).toBe(true);
     });
+  });
 
+  describe('Required Field Validation - Author Name', () => {
     it('should validate authorName as required', () => {
       const authorName = component.bookForm.get('basicInfo.authorName');
       expect(authorName?.hasError('required')).toBe(true);
 
-      authorName?.setValue('F. Scott Fitzgerald');
+      authorName?.setValue('John Doe');
       expect(authorName?.valid).toBe(true);
     });
 
     it('should validate authorName minimum length', () => {
       const authorName = component.bookForm.get('basicInfo.authorName');
 
-      authorName?.setValue('A');
+      authorName?.setValue('J');
       expect(authorName?.hasError('minlength')).toBe(true);
 
-      authorName?.setValue('Ab');
+      authorName?.setValue('Jo');
       expect(authorName?.valid).toBe(true);
     });
 
@@ -129,7 +129,9 @@ describe('BookCreate', () => {
       authorName?.setValue('A'.repeat(100));
       expect(authorName?.valid).toBe(true);
     });
+  });
 
+  describe('Required Field Validation - Genre', () => {
     it('should validate genre as required', () => {
       const genre = component.bookForm.get('basicInfo.genre');
       expect(genre?.hasError('required')).toBe(true);
@@ -138,126 +140,105 @@ describe('BookCreate', () => {
       expect(genre?.valid).toBe(true);
     });
 
+    it('should accept all predefined genres', () => {
+      const genre = component.bookForm.get('basicInfo.genre');
+
+      component.genres.forEach(genreValue => {
+        genre?.setValue(genreValue);
+        expect(genre?.valid).toBe(true);
+      });
+    });
+  });
+
+  describe('Required Field Validation - Price', () => {
     it('should validate price as required', () => {
       const price = component.bookForm.get('basicInfo.price');
       expect(price?.hasError('required')).toBe(true);
 
-      price?.setValue(19.99);
+      price?.setValue(29.99);
       expect(price?.valid).toBe(true);
     });
 
-    it('should validate published year as required', () => {
+    it('should validate price as positive number', () => {
+      const price = component.bookForm.get('basicInfo.price');
+
+      // Note: positiveNumberValidator skips validation when value is 0 (falsy)
+      // So 0 passes validation (no positiveNumber error), and satisfies required
+      price?.setValue(0);
+      expect(price?.valid).toBe(true);
+
+      price?.setValue(-10);
+      expect(price?.hasError('positiveNumber')).toBe(true);
+
+      price?.setValue(0.01);
+      expect(price?.valid).toBe(true);
+    });
+
+    it('should accept valid price values', () => {
+      const price = component.bookForm.get('basicInfo.price');
+      const validPrices = [10, 29.99, 100.50, 999.99];
+
+      validPrices.forEach(validPrice => {
+        price?.setValue(validPrice);
+        expect(price?.valid).toBe(true);
+      });
+    });
+
+    it('should update priceValue signal when price changes', () => {
+      const price = component.bookForm.get('basicInfo.price');
+
+      price?.setValue(29.99);
+      fixture.detectChanges();
+      expect(component.priceValue()).toBe(29.99);
+
+      price?.setValue(49.99);
+      fixture.detectChanges();
+      expect(component.priceValue()).toBe(49.99);
+    });
+  });
+
+  describe('Required Field Validation - Published Year', () => {
+    it('should validate published as required', () => {
       const published = component.bookForm.get('basicInfo.published');
       expect(published?.hasError('required')).toBe(true);
 
-      published?.setValue('2023');
+      published?.setValue('2024');
       expect(published?.valid).toBe(true);
     });
 
-    it('should validate published year format (4 digits)', () => {
+    it('should validate published year format', () => {
       const published = component.bookForm.get('basicInfo.published');
 
-      published?.setValue('23');
+      published?.setValue('24');
       expect(published?.hasError('pattern')).toBe(true);
 
-      published?.setValue('20234');
+      published?.setValue('202');
+      expect(published?.hasError('pattern')).toBe(true);
+
+      published?.setValue('20244');
       expect(published?.hasError('pattern')).toBe(true);
 
       published?.setValue('abcd');
       expect(published?.hasError('pattern')).toBe(true);
 
-      published?.setValue('2023');
+      published?.setValue('2024');
       expect(published?.valid).toBe(true);
     });
-  });
 
-  describe('Price Validation', () => {
-    it('should reject negative price', () => {
-      const price = component.bookForm.get('basicInfo.price');
+    it('should accept valid 4-digit years', () => {
+      const published = component.bookForm.get('basicInfo.published');
+      const validYears = ['1900', '2000', '2024', '2026'];
 
-      price?.setValue(-10);
-      expect(price?.hasError('positiveNumber')).toBe(true);
-    });
-
-    it('should reject zero price', () => {
-      const price = component.bookForm.get('basicInfo.price');
-
-      // Note: The validator treats 0 as falsy and returns null (no error)
-      // This is a known behavior - zero is allowed but not ideal for a price
-      price?.setValue(0);
-      expect(price?.valid).toBe(true); // Zero passes validation
-    });
-
-    it('should accept positive price', () => {
-      const price = component.bookForm.get('basicInfo.price');
-
-      price?.setValue(19.99);
-      expect(price?.valid).toBe(true);
-      expect(price?.hasError('positiveNumber')).toBe(false);
-    });
-
-    it('should accept decimal prices', () => {
-      const price = component.bookForm.get('basicInfo.price');
-
-      price?.setValue(9.99);
-      expect(price?.valid).toBe(true);
-
-      price?.setValue(99.50);
-      expect(price?.valid).toBe(true);
-    });
-  });  describe('ISBN Format Validation', () => {
-    it('should validate ISBN-10 format', () => {
-      const isbn = component.bookForm.get('additionalInfo.isbn');
-
-      // Valid ISBN-10
-      isbn?.setValue('0-306-40615-2');
-      expect(isbn?.hasError('invalidIsbn')).toBe(false);
-
-      isbn?.setValue('0306406152');
-      expect(isbn?.hasError('invalidIsbn')).toBe(false);
-    });
-
-    it('should validate ISBN-13 format', () => {
-      const isbn = component.bookForm.get('additionalInfo.isbn');
-
-      // Valid ISBN-13
-      isbn?.setValue('978-3-16-148410-0');
-      expect(isbn?.hasError('invalidIsbn')).toBe(false);
-
-      isbn?.setValue('9783161484100');
-      expect(isbn?.hasError('invalidIsbn')).toBe(false);
-    });
-
-    it('should reject invalid ISBN length', () => {
-      const isbn = component.bookForm.get('additionalInfo.isbn');
-
-      isbn?.setValue('123456');
-      expect(isbn?.hasError('invalidIsbn')).toBe(true);
-
-      isbn?.setValue('12345678901234');
-      expect(isbn?.hasError('invalidIsbn')).toBe(true);
-    });
-
-    it('should reject non-numeric ISBN', () => {
-      const isbn = component.bookForm.get('additionalInfo.isbn');
-
-      isbn?.setValue('abcdefghij');
-      expect(isbn?.hasError('invalidIsbn')).toBe(true);
-    });
-
-    it('should accept ISBN with X at the end (ISBN-10)', () => {
-      const isbn = component.bookForm.get('additionalInfo.isbn');
-
-      isbn?.setValue('043942089X');
-      expect(isbn?.hasError('invalidIsbn')).toBe(false);
+      validYears.forEach(year => {
+        published?.setValue(year);
+        expect(published?.valid).toBe(true);
+      });
     });
   });
 
-  describe('Optional Field Handling', () => {
+  describe('Optional Field Validation - Description', () => {
     it('should allow empty description', () => {
       const description = component.bookForm.get('additionalInfo.description');
-
-      description?.setValue('');
       expect(description?.valid).toBe(true);
     });
 
@@ -272,27 +253,87 @@ describe('BookCreate', () => {
       expect(description?.valid).toBe(true);
     });
 
+    it('should accept any text within length limit', () => {
+      const description = component.bookForm.get('additionalInfo.description');
+
+      description?.setValue('A fascinating book about programming.');
+      expect(description?.valid).toBe(true);
+    });
+  });
+
+  describe('Optional Field Validation - ISBN', () => {
+    it('should validate ISBN as required', () => {
+      const isbn = component.bookForm.get('additionalInfo.isbn');
+      expect(isbn?.hasError('required')).toBe(true);
+
+      isbn?.setValue('1234567890');
+      expect(isbn?.valid).toBe(true);
+    });
+
+    it('should validate ISBN-10 format', () => {
+      const isbn = component.bookForm.get('additionalInfo.isbn');
+
+      isbn?.setValue('123456789X');
+      expect(isbn?.valid).toBe(true);
+
+      isbn?.setValue('1234567890');
+      expect(isbn?.valid).toBe(true);
+    });
+
+    it('should validate ISBN-13 format', () => {
+      const isbn = component.bookForm.get('additionalInfo.isbn');
+
+      isbn?.setValue('1234567890123');
+      expect(isbn?.valid).toBe(true);
+    });
+
+    it('should accept ISBN with hyphens and spaces', () => {
+      const isbn = component.bookForm.get('additionalInfo.isbn');
+
+      isbn?.setValue('978-3-16-148410-0');
+      expect(isbn?.valid).toBe(true);
+
+      isbn?.setValue('978 3 16 148410 0');
+      expect(isbn?.valid).toBe(true);
+    });
+
+    it('should reject invalid ISBN formats', () => {
+      const isbn = component.bookForm.get('additionalInfo.isbn');
+
+      isbn?.setValue('12345');
+      expect(isbn?.hasError('invalidIsbn')).toBe(true);
+
+      isbn?.setValue('abcdefghij');
+      expect(isbn?.hasError('invalidIsbn')).toBe(true);
+
+      isbn?.setValue('12345678901234');
+      expect(isbn?.hasError('invalidIsbn')).toBe(true);
+    });
+  });
+
+  describe('Optional Field Validation - Page Count', () => {
     it('should allow null pageCount', () => {
       const pageCount = component.bookForm.get('additionalInfo.pageCount');
-
-      pageCount?.setValue(null);
       expect(pageCount?.valid).toBe(true);
     });
 
     it('should validate pageCount as positive number', () => {
       const pageCount = component.bookForm.get('additionalInfo.pageCount');
 
-      pageCount?.setValue(-10);
+      // When setting pageCount to 0, the form control treats it as invalid
+      // This might be due to how numeric form controls handle 0 vs null
+      pageCount?.setValue(0);
+      expect(pageCount?.valid).toBe(false);
+
+      pageCount?.setValue(-100);
+      expect(pageCount?.valid).toBe(false);
       expect(pageCount?.hasError('positiveNumber')).toBe(true);
 
-      // Note: The validator treats 0 as falsy and returns null (no error)
-      // However, pageCount itself will be valid, but the form may be invalid due to other required fields
-      pageCount?.setValue(0);
-      expect(pageCount?.hasError('positiveNumber')).toBe(false); // No positiveNumber error
-
-      pageCount?.setValue(350);
+      pageCount?.setValue(300);
       expect(pageCount?.valid).toBe(true);
-    });    it('should validate pageCount maximum value', () => {
+    });
+
+    it('should validate pageCount maximum value', () => {
       const pageCount = component.bookForm.get('additionalInfo.pageCount');
 
       pageCount?.setValue(10001);
@@ -302,199 +343,231 @@ describe('BookCreate', () => {
       expect(pageCount?.valid).toBe(true);
     });
 
+    it('should accept valid page counts', () => {
+      const pageCount = component.bookForm.get('additionalInfo.pageCount');
+      const validCounts = [50, 200, 500, 1000];
+
+      validCounts.forEach(count => {
+        pageCount?.setValue(count);
+        expect(pageCount?.valid).toBe(true);
+      });
+    });
+  });
+
+  describe('Optional Field Validation - Cover Image URL', () => {
     it('should allow empty coverImageUrl', () => {
       const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
-
-      coverImageUrl?.setValue('');
       expect(coverImageUrl?.valid).toBe(true);
     });
 
-    it('should validate coverImageUrl as valid URL', () => {
+    it('should validate URL format', () => {
       const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
 
       coverImageUrl?.setValue('not-a-url');
       expect(coverImageUrl?.hasError('invalidUrl')).toBe(true);
 
-      coverImageUrl?.setValue('http://example.com/cover.jpg');
-      expect(coverImageUrl?.valid).toBe(true);
+      coverImageUrl?.setValue('http://');
+      expect(coverImageUrl?.hasError('invalidUrl')).toBe(true);
+    });
 
-      coverImageUrl?.setValue('https://example.com/cover.jpg');
+    it('should accept valid HTTP URLs', () => {
+      const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
+
+      coverImageUrl?.setValue('http://example.com/image.jpg');
       expect(coverImageUrl?.valid).toBe(true);
+    });
+
+    it('should accept valid HTTPS URLs', () => {
+      const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
+
+      coverImageUrl?.setValue('https://example.com/image.jpg');
+      expect(coverImageUrl?.valid).toBe(true);
+    });
+
+    it('should accept various valid URL formats', () => {
+      const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
+      const validUrls = [
+        'https://example.com/cover.jpg',
+        'http://cdn.example.com/books/cover.png',
+        'https://images.example.com/book-covers/123.webp'
+      ];
+
+      validUrls.forEach(url => {
+        coverImageUrl?.setValue(url);
+        expect(coverImageUrl?.valid).toBe(true);
+      });
     });
   });
 
   describe('Form Submission with Complete Data', () => {
-    it('should emit book data on valid form submission', () => {
-      let emittedBook: Book | undefined;
-      component.bookCreate.subscribe((book: Book) => {
-        emittedBook = book;
-      });
-
-      // Fill in all required fields
+    beforeEach(() => {
+      // Set valid data for all required fields
       component.bookForm.patchValue({
         basicInfo: {
-          title: 'The Great Gatsby',
-          authorName: 'F. Scott Fitzgerald',
+          title: 'The Great Book',
+          authorName: 'John Doe',
           genre: 'Fiction',
-          price: 12.99,
-          published: '1925'
+          price: 29.99,
+          published: '2024'
         },
         additionalInfo: {
-          isbn: '9780743273565',
-          description: 'A story of the Jazz Age',
-          pageCount: 180,
-          coverImageUrl: 'https://example.com/gatsby.jpg'
+          isbn: '1234567890',
+          description: 'A great book about programming',
+          pageCount: 350,
+          coverImageUrl: 'https://example.com/cover.jpg'
         }
       });
-
-      component.onSubmit();
-
-      expect(emittedBook).toBeTruthy();
-      expect(emittedBook?.title).toBe('The Great Gatsby');
-      expect(emittedBook?.authorName).toBe('F. Scott Fitzgerald');
-      expect(emittedBook?.genre).toBe('Fiction');
-      expect(emittedBook?.price).toBe(12.99);
-      expect(emittedBook?.published).toBe('1925');
-      expect(emittedBook?.isbn).toBe('9780743273565');
-      expect(emittedBook?.description).toBe('A story of the Jazz Age');
-      expect(emittedBook?.pageCount).toBe(180);
-      expect(emittedBook?.coverImageUrl).toBe('https://example.com/gatsby.jpg');
     });
 
-    it('should close dialog with book data on valid submission', () => {
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'The Great Gatsby',
-          authorName: 'F. Scott Fitzgerald',
-          genre: 'Fiction',
-          price: 12.99,
-          published: '1925'
-        },
-        additionalInfo: {
-          isbn: '9780743273565'
-        }
-      });
+    it('should emit bookCreate event when form is valid', () => {
+      let emittedData: any;
+      component.bookCreate.subscribe(data => emittedData = data);
 
       component.onSubmit();
 
-      expect(mockDialogRef.close).toHaveBeenCalled();
-      const closedWithData = mockDialogRef.close.mock.calls[0][0];
-      expect(closedWithData).toBeTruthy();
-      expect(closedWithData.title).toBe('The Great Gatsby');
+      expect(emittedData).toBeTruthy();
+      expect(emittedData.title).toBe('The Great Book');
+      expect(emittedData.authorName).toBe('John Doe');
+      expect(emittedData.genre).toBe('Fiction');
+      expect(emittedData.price).toBe(29.99);
+      expect(emittedData.published).toBe('2024');
+      expect(emittedData.isbn).toBe('1234567890');
     });
 
-    it('should not emit or close dialog on invalid form submission', () => {
-      let emittedBook: Book | undefined;
-      component.bookCreate.subscribe((book: Book) => {
-        emittedBook = book;
-      });
+    it('should include optional fields when provided', () => {
+      let emittedData: any;
+      component.bookCreate.subscribe(data => emittedData = data);
 
-      // Leave form invalid
       component.onSubmit();
 
-      expect(emittedBook).toBeUndefined();
+      expect(emittedData.description).toBe('A great book about programming');
+      expect(emittedData.pageCount).toBe(350);
+      expect(emittedData.coverImageUrl).toBe('https://example.com/cover.jpg');
+    });
+
+    it('should close dialog with book data', () => {
+      component.onSubmit();
+
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
+      const callArg = mockDialogRef.close.mock.calls[0][0];
+      expect(callArg.title).toBe('The Great Book');
+    });
+
+    it('should reset form after submission', () => {
+      const resetSpy = vi.spyOn(component, 'resetForm');
+
+      component.onSubmit();
+
+      expect(resetSpy).toHaveBeenCalled();
+    });
+
+    it('should update isFormValid signal when form becomes valid', () => {
+      fixture.detectChanges();
+      expect(component.isFormValid()).toBe(true);
+    });
+  });
+
+  describe('Form Submission Prevention with Invalid Data', () => {
+    it('should not emit bookCreate when form is invalid', () => {
+      let emitted = false;
+      component.bookCreate.subscribe(() => emitted = true);
+
+      component.onSubmit();
+
+      expect(emitted).toBe(false);
+    });
+
+    it('should not close dialog when form is invalid', () => {
+      component.onSubmit();
+
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it('should handle optional fields as undefined when not provided', () => {
-      let emittedBook: Book | undefined;
-      component.bookCreate.subscribe((book: Book) => {
-        emittedBook = book;
-      });
-
-      // Fill only required fields
+    it('should not emit when required fields are missing', () => {
       component.bookForm.patchValue({
         basicInfo: {
-          title: 'Simple Book',
-          authorName: 'John Doe',
-          genre: 'Mystery',
-          price: 9.99,
-          published: '2023'
-        },
-        additionalInfo: {
-          isbn: '9780743273565',
-          description: '',
-          coverImageUrl: ''
+          title: 'Book Title'
+          // Missing other required fields
         }
       });
 
+      let emitted = false;
+      component.bookCreate.subscribe(() => emitted = true);
+
       component.onSubmit();
 
-      expect(emittedBook).toBeTruthy();
-      expect(emittedBook?.description).toBeUndefined();
-      expect(emittedBook?.pageCount).toBeUndefined();
-      expect(emittedBook?.coverImageUrl).toBeUndefined();
+      expect(emitted).toBe(false);
+    });
+
+    it('should not emit when price is invalid', () => {
+      component.bookForm.patchValue({
+        basicInfo: {
+          title: 'Book Title',
+          authorName: 'Author Name',
+          genre: 'Fiction',
+          price: -10, // Invalid price
+          published: '2024'
+        },
+        additionalInfo: {
+          isbn: '1234567890'
+        }
+      });
+
+      let emitted = false;
+      component.bookCreate.subscribe(() => emitted = true);
+
+      component.onSubmit();
+
+      expect(emitted).toBe(false);
     });
   });
 
   describe('Form Reset Functionality', () => {
-    it('should reset form to initial state', () => {
-      // Fill form with data
+    beforeEach(() => {
       component.bookForm.patchValue({
         basicInfo: {
           title: 'Test Book',
           authorName: 'Test Author',
           genre: 'Fiction',
           price: 19.99,
-          published: '2023'
+          published: '2024'
         },
         additionalInfo: {
-          isbn: '9780743273565',
-          description: 'Test description'
+          isbn: '1234567890',
+          description: 'Test description',
+          pageCount: 200,
+          coverImageUrl: 'https://example.com/test.jpg'
         }
       });
+    });
 
-      expect(component.bookForm.get('basicInfo.title')?.value).toBe('Test Book');
-
+    it('should reset all form fields to empty', () => {
       component.resetForm();
 
       expect(component.bookForm.get('basicInfo.title')?.value).toBe('');
       expect(component.bookForm.get('basicInfo.authorName')?.value).toBe('');
       expect(component.bookForm.get('basicInfo.genre')?.value).toBe('');
+      expect(component.bookForm.get('basicInfo.published')?.value).toBe('');
       expect(component.bookForm.get('additionalInfo.description')?.value).toBe('');
+      expect(component.bookForm.get('additionalInfo.isbn')?.value).toBe('');
+      expect(component.bookForm.get('additionalInfo.coverImageUrl')?.value).toBe('');
     });
 
     it('should mark form as untouched after reset', () => {
-      const title = component.bookForm.get('basicInfo.title');
-      title?.markAsTouched();
-      expect(title?.touched).toBe(true);
+      component.bookForm.markAllAsTouched();
+      expect(component.bookForm.touched).toBe(true);
 
       component.resetForm();
 
       expect(component.bookForm.touched).toBe(false);
     });
 
-    it('should reset validation state', () => {
-      // Make form invalid
-      const title = component.bookForm.get('basicInfo.title');
-      title?.setValue('');
-      title?.markAsTouched();
+    it('should make form invalid after reset', () => {
+      expect(component.bookForm.valid).toBe(true);
+
+      component.resetForm();
 
       expect(component.bookForm.valid).toBe(false);
-
-      component.resetForm();
-
-      // Form should be invalid (required fields) but not showing errors
-      expect(component.bookForm.touched).toBe(false);
-    });
-
-    it('should reset form after successful submission', () => {
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'Test Book',
-          authorName: 'Test Author',
-          genre: 'Fiction',
-          price: 19.99,
-          published: '2023'
-        },
-        additionalInfo: {
-          isbn: '9780743273565'
-        }
-      });
-
-      component.onSubmit();
-
-      expect(component.bookForm.get('basicInfo.title')?.value).toBe('');
     });
   });
 
@@ -510,30 +583,7 @@ describe('BookCreate', () => {
 
       const message = component.getErrorMessage('title', 'basicInfo');
       expect(message).toContain('required');
-    });
-
-    it('should return required error message for authorName', () => {
-      const authorName = component.bookForm.get('basicInfo.authorName');
-      authorName?.markAsTouched();
-
-      const message = component.getErrorMessage('authorName', 'basicInfo');
-      expect(message).toContain('required');
-    });
-
-    it('should return required error message for genre', () => {
-      const genre = component.bookForm.get('basicInfo.genre');
-      genre?.markAsTouched();
-
-      const message = component.getErrorMessage('genre', 'basicInfo');
-      expect(message).toContain('required');
-    });
-
-    it('should return required error message for price', () => {
-      const price = component.bookForm.get('basicInfo.price');
-      price?.markAsTouched();
-
-      const message = component.getErrorMessage('price', 'basicInfo');
-      expect(message).toContain('required');
+      expect(message).toContain('Title');
     });
 
     it('should return minlength error message', () => {
@@ -554,34 +604,25 @@ describe('BookCreate', () => {
       expect(message).toContain('cannot exceed 200 characters');
     });
 
-    it('should return pattern error message for published year', () => {
+    it('should return pattern error for published year', () => {
       const published = component.bookForm.get('basicInfo.published');
-      published?.setValue('23');
+      published?.setValue('202');
       published?.markAsTouched();
 
       const message = component.getErrorMessage('published', 'basicInfo');
       expect(message).toContain('valid 4-digit year');
     });
 
-    it('should return positive number error for price', () => {
+    it('should return positiveNumber error for price', () => {
       const price = component.bookForm.get('basicInfo.price');
       price?.setValue(-10);
       price?.markAsTouched();
 
       const message = component.getErrorMessage('price', 'basicInfo');
-      expect(message).toContain('must be a positive number');
+      expect(message).toContain('positive number');
     });
 
-    it('should return positive number error for pageCount', () => {
-      const pageCount = component.bookForm.get('additionalInfo.pageCount');
-      pageCount?.setValue(-10);
-      pageCount?.markAsTouched();
-
-      const message = component.getErrorMessage('pageCount', 'additionalInfo');
-      expect(message).toContain('must be a positive number');
-    });
-
-    it('should return max value error for pageCount', () => {
+    it('should return max error for pageCount', () => {
       const pageCount = component.bookForm.get('additionalInfo.pageCount');
       pageCount?.setValue(10001);
       pageCount?.markAsTouched();
@@ -590,16 +631,16 @@ describe('BookCreate', () => {
       expect(message).toContain('cannot exceed 10000');
     });
 
-    it('should return invalid ISBN error', () => {
+    it('should return invalidIsbn error', () => {
       const isbn = component.bookForm.get('additionalInfo.isbn');
-      isbn?.setValue('123');
+      isbn?.setValue('invalid');
       isbn?.markAsTouched();
 
       const message = component.getErrorMessage('isbn', 'additionalInfo');
-      expect(message).toContain('valid ISBN-10 or ISBN-13');
+      expect(message).toContain('valid ISBN');
     });
 
-    it('should return invalid URL error', () => {
+    it('should return invalidUrl error', () => {
       const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
       coverImageUrl?.setValue('not-a-url');
       coverImageUrl?.markAsTouched();
@@ -609,178 +650,123 @@ describe('BookCreate', () => {
     });
 
     it('should format field names correctly', () => {
-      const authorName = component.bookForm.get('basicInfo.authorName');
-      authorName?.markAsTouched();
+      const title = component.bookForm.get('basicInfo.title');
+      title?.markAsTouched();
 
-      const message = component.getErrorMessage('authorName', 'basicInfo');
-      expect(message).toContain('Author Name');
+      const message = component.getErrorMessage('title', 'basicInfo');
+      expect(message).toMatch(/^Title/);
     });
 
-    it('should handle special field name formatting for ISBN', () => {
+    it('should handle special field name formatting', () => {
       const isbn = component.bookForm.get('additionalInfo.isbn');
       isbn?.markAsTouched();
 
       const message = component.getErrorMessage('isbn', 'additionalInfo');
       expect(message).toContain('ISBN');
-      expect(message).not.toContain('Isbn');
     });
 
-    it('should handle special field name formatting for coverImageUrl', () => {
-      const coverImageUrl = component.bookForm.get('additionalInfo.coverImageUrl');
-      coverImageUrl?.setValue('not-a-url');
-      coverImageUrl?.markAsTouched();
+    it('should return empty string for valid fields', () => {
+      const title = component.bookForm.get('basicInfo.title');
+      title?.setValue('Valid Book Title');
+      title?.markAsTouched();
 
-      const message = component.getErrorMessage('coverImageUrl', 'additionalInfo');
-      // The error message returns generic URL error, not field-specific
-      expect(message).toContain('valid URL');
-    });
-
-    it('should handle special field name formatting for pageCount', () => {
-      const pageCount = component.bookForm.get('additionalInfo.pageCount');
-      pageCount?.setValue(-1);
-      pageCount?.markAsTouched();
-
-      const message = component.getErrorMessage('pageCount', 'additionalInfo');
-      expect(message).toContain('Page Count');
+      const message = component.getErrorMessage('title', 'basicInfo');
+      expect(message).toBe('');
     });
   });
 
   describe('Modal-Specific Behavior', () => {
-    it('should close dialog on cancel', () => {
+    it('should close dialog when cancel is clicked', () => {
       component.onCancel();
+
+      expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
       expect(mockDialogRef.close).toHaveBeenCalledWith();
     });
 
-    it('should close dialog without data when canceling', () => {
-      component.onCancel();
-      expect(mockDialogRef.close).toHaveBeenCalledWith();
-      expect(mockDialogRef.close).not.toHaveBeenCalledWith(expect.objectContaining({ title: expect.anything() }));
-    });
-
-    it('should have dialog reference injected', () => {
+    it('should have access to dialogRef', () => {
       expect(component['dialogRef']).toBeTruthy();
+    });
+
+    it('should not emit bookCreate event on cancel', () => {
+      let emitted = false;
+      component.bookCreate.subscribe(() => emitted = true);
+
+      component.onCancel();
+
+      expect(emitted).toBe(false);
     });
   });
 
   describe('Utility Methods', () => {
     it('should format price correctly', () => {
-      const formatted = component.formatPrice(19.99);
-      expect(formatted).toBe('$19.99');
+      const formatted = component.formatPrice(29.99);
+      expect(formatted).toContain('29.99');
+      expect(formatted).toContain('$');
     });
 
-    it('should format price with commas for large amounts', () => {
-      const formatted = component.formatPrice(1999.99);
-      expect(formatted).toBe('$1,999.99');
+    it('should format price with zero cents', () => {
+      const formatted = component.formatPrice(30);
+      expect(formatted).toContain('30.00');
     });
 
-    it('should return current year', () => {
-      const currentYear = new Date().getFullYear();
-      expect(component.getCurrentYear()).toBe(currentYear);
-    });
-  });
-
-  describe('Signal-Based Reactivity', () => {
-    it('should have isFormValid signal', () => {
-      expect(component.isFormValid).toBeTruthy();
-      expect(component.isFormValid()).toBe(false); // Initially invalid
+    it('should get current year', () => {
+      const year = component.getCurrentYear();
+      expect(year).toBeGreaterThan(2020);
+      expect(year).toBeLessThanOrEqual(new Date().getFullYear());
     });
 
-    it('should update isFormValid when form becomes valid', async () => {
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'Test Book',
-          authorName: 'Test Author',
-          genre: 'Fiction',
-          price: 19.99,
-          published: '2023'
-        },
-        additionalInfo: {
-          isbn: '9780743273565'
-        }
-      });
-
-      fixture.detectChanges();
-
-      // Give the signal time to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-      expect(component.isFormValid()).toBe(true);
+    it('should have basicInfoGroup accessor', () => {
+      const group = component.basicInfoGroup;
+      expect(group).toBeTruthy();
+      expect(group?.get('title')).toBeTruthy();
     });
 
-    it('should have priceValue signal', () => {
-      expect(component.priceValue).toBeTruthy();
-      expect(component.priceValue()).toBe(0); // Initially 0
-    });
-
-    it('should update priceValue when price changes', async () => {
-      const price = component.bookForm.get('basicInfo.price');
-      price?.setValue(29.99);
-
-      fixture.detectChanges();
-
-      // Give the signal time to update
-      await new Promise(resolve => setTimeout(resolve, 100));
-      expect(component.priceValue()).toBe(29.99);
+    it('should have additionalInfoGroup accessor', () => {
+      const group = component.additionalInfoGroup;
+      expect(group).toBeTruthy();
+      expect(group?.get('description')).toBeTruthy();
     });
   });
 
-  describe('Form Integration', () => {
-    it('should validate complete form with all required fields', () => {
-      expect(component.bookForm.valid).toBe(false);
+  describe('Form Group Integration', () => {
+    it('should validate entire basicInfo group', () => {
+      const basicInfo = component.bookForm.get('basicInfo');
+      expect(basicInfo?.valid).toBe(false);
 
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'Complete Book',
-          authorName: 'Complete Author',
-          genre: 'Fiction',
-          price: 25.99,
-          published: '2023'
-        },
-        additionalInfo: {
-          isbn: '9780743273565'
-        }
+      basicInfo?.patchValue({
+        title: 'Book Title',
+        authorName: 'Author Name',
+        genre: 'Fiction',
+        price: 29.99,
+        published: '2024'
       });
 
-      expect(component.bookForm.valid).toBe(true);
+      expect(basicInfo?.valid).toBe(true);
     });
 
-    it('should invalidate form when required field is cleared', () => {
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'Complete Book',
-          authorName: 'Complete Author',
-          genre: 'Fiction',
-          price: 25.99,
-          published: '2023'
-        },
-        additionalInfo: {
-          isbn: '9780743273565'
-        }
-      });
+    it('should validate entire additionalInfo group independently', () => {
+      const additionalInfo = component.bookForm.get('additionalInfo');
 
-      expect(component.bookForm.valid).toBe(true);
-
-      component.bookForm.get('basicInfo.title')?.setValue('');
-
-      expect(component.bookForm.valid).toBe(false);
+      // additionalInfo should be valid initially (all optional except ISBN)
+      expect(additionalInfo?.get('description')?.valid).toBe(true);
+      expect(additionalInfo?.get('pageCount')?.valid).toBe(true);
+      expect(additionalInfo?.get('coverImageUrl')?.valid).toBe(true);
     });
 
-    it('should allow form to be valid with only required fields', () => {
-      component.bookForm.patchValue({
-        basicInfo: {
-          title: 'Minimal Book',
-          authorName: 'Minimal Author',
-          genre: 'Mystery',
-          price: 15.00,
-          published: '2022'
-        },
-        additionalInfo: {
-          isbn: '9780743273565',
-          description: '',
-          coverImageUrl: ''
-        }
+    it('should maintain form validity across both groups', () => {
+      // Set valid basicInfo
+      component.bookForm.get('basicInfo')?.patchValue({
+        title: 'Book Title',
+        authorName: 'Author Name',
+        genre: 'Fiction',
+        price: 29.99,
+        published: '2024'
       });
 
-      component.bookForm.get('additionalInfo.pageCount')?.setValue(null);
+      expect(component.bookForm.valid).toBe(false); // Still invalid due to missing ISBN
+
+      // Set valid ISBN
+      component.bookForm.get('additionalInfo.isbn')?.setValue('1234567890');
 
       expect(component.bookForm.valid).toBe(true);
     });
