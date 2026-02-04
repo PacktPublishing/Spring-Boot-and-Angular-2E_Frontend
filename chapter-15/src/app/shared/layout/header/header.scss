@@ -1,0 +1,29 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.white-icon {
+    color: white;
+}
+
+.title-link {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  span {
+    cursor: pointer;
+  }
+}
+
+.login-button {
+  color: white;
+  margin-left: 8px;
+
+  mat-icon {
+    margin-right: 4px;
+  }
+}

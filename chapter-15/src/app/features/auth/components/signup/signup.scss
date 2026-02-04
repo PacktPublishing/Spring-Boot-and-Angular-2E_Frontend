@@ -1,0 +1,228 @@
+.signup-card {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+
+  .mat-mdc-card-header {
+    margin: auto;
+    padding-bottom: 2rem;
+    text-align: center;
+
+    .mat-mdc-card-title {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .mat-mdc-card-subtitle {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  .section-title {
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+  }
+
+  .section-description {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+
+  .half-width {
+    flex: 1;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Password strength indicator
+.password-strength {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .strength-bar {
+    flex: 1;
+    height: 4px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+
+    .strength-fill {
+      height: 100%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      border-radius: 2px;
+
+      &[data-strength="warn"] {
+        background-color: #f44336;
+      }
+      &[data-strength="accent"] {
+        background-color: #ff9800;
+      }
+      &[data-strength="primary"] {
+        background-color: #4caf50;
+      }
+    }
+  }
+
+  .strength-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    min-width: 50px;
+
+    &[data-strength="warn"] {
+      color: #f44336;
+    }
+    &[data-strength="accent"] {
+      color: #ff9800;
+    }
+    &[data-strength="primary"] {
+      color: #4caf50;
+    }
+  }
+}
+
+// Genre management
+.genre-input-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  .genre-input {
+    flex: 1;
+  }
+}
+
+.add-genre-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin: 1rem 0;
+  padding: 2rem;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+}
+
+// Terms and error styling
+.terms-checkbox {
+  margin-bottom: 1rem;
+
+  a {
+    color: var(--mdc-theme-primary, #1976d2);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.checkbox-error {
+  color: #f44336;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.group-error {
+  color: #f44336;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+// Form actions
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .signup-button {
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .form-links {
+    text-align: center;
+    color: #666;
+    font-size: 0.875rem;
+
+    a {
+      color: var(--mdc-theme-primary, #1976d2);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .signup-card {
+    margin: 1rem;
+    max-width: none;
+    padding: 1.5rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .genre-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+   .form-section .section-title {
+   font-size: 1rem;
+ }
+}
+
+// Enhanced focus states
+.mat-mdc-form-field.mat-focused {
+ .mat-mdc-form-field-outline {
+   opacity: 1;
+ }
+}
+
+// Error state styling enhancement
+.mat-mdc-form-field.mat-form-field-invalid {
+ .mat-mdc-form-field-outline {
+   color: var(--mdc-theme-error, #f44336);
+ }
+}

@@ -1,0 +1,50 @@
+.book-form-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 8rem;
+
+  mat-card {
+    mat-card-header {
+      margin-bottom: 1.5rem;
+
+      mat-card-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+    }
+
+    mat-card-content {
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .full-width {
+          width: 100%;
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          padding-top: 1.5rem;
+          border-top: 1px solid rgba(0, 0, 0, 0.12);
+        }
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding: 1rem;
+    padding-bottom: 10rem;
+
+    .form-actions {
+      flex-direction: column-reverse;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
