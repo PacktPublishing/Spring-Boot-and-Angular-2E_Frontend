@@ -1,7 +1,7 @@
 ---
 applyTo: "**/*.spec.ts"
 ---
-# Unit Testing Instructions - Angular 20 with Vitest
+# Unit Testing Instructions - Angular 21 with Vitest
 
 ## Framework Setup
 - **Test Runner**: Vitest with `@analogjs/vite-plugin-angular`
@@ -147,7 +147,8 @@ const mockBooks: Book[] = [
 
 ### Service Testing
 ```typescript
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Service', () => {
   let service: Service;
@@ -155,8 +156,11 @@ describe('Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [Service]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        Service
+      ]
     });
     service = TestBed.inject(Service);
     httpMock = TestBed.inject(HttpTestingController);
