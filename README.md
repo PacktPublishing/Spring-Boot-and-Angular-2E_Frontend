@@ -4,7 +4,7 @@ This repository contains the Angular frontend code for the "Spring Boot and Angu
 
 ## Project Overview
 
-The Packt Bookstore is a modern web application showcasing Angular 20's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, and user interactions.
+The Packt Bookstore is a modern web application showcasing Angular 21's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, and user interactions.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ This project follows modern Angular architectural patterns:
 
 Establishes the foundation of the Angular application:
 
-- Modern Angular 20 setup with standalone components
+- Modern Angular v21 setup with standalone components
 - Basic project structure and folder organization
 - Angular Material integration
 - Book listing functionality with signal-based communication
@@ -76,7 +76,7 @@ Advances to centralized state management with NgRx signal store:
 
 ## Technology Stack
 
-- **Angular 20**: Latest version with standalone components and signals
+- **Angular 21**: Latest version with standalone components and signals
 - **TypeScript**: Strict type checking and modern ES features
 - **Angular Material**: Material Design components and theming
 - **Reactive Forms**: Form building and validation
@@ -221,9 +221,7 @@ Each chapter includes these npm scripts:
 - `npm start` - Start development server
 - `npm run build` - Build for production
 - `npm run watch` - Build and watch for changes
-- `npm test` or `npm run test` - Run unit tests (Vitest in Chapter 10, standard Angular testing in others)
-- `npm run test:ui` - Run tests with web UI (Chapter 10 with Vitest)
-- `npm run test:coverage` - Generate test coverage report (Chapter 10)
+- `npm test` or `npm run test` - Run unit tests with Vitest
 - `npm run serve:ssr:chapter-X` - Serve server-side rendered application
 
 ## Learning Path
