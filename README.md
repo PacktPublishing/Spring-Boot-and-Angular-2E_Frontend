@@ -92,7 +92,7 @@ Advances to centralized state management with NgRx signal store:
 
 - Node.js (v24.2.0 or higher)
 - npm (v11.4.2 or higher)
-- Angular CLI v20.0.3
+- Angular CLI v21.1.4
 
 ### Installation & Running
 
@@ -164,15 +164,6 @@ src/
 ## AI-Assisted Development
 
 Chapter 12 focuses extensively on AI-assisted development workflows, including comprehensive GitHub Copilot integration to ensure consistent code generation and maintain architectural patterns:
-
-### `.github/copilot-instructions.md`
-
-The main instruction file that provides GitHub Copilot with context about:
-
-- Project structure and architectural decisions
-- Technology stack and frameworks used
-- Code style preferences and patterns
-- Component organization principles
 
 ### AI Development Techniques Covered in Chapter 12
 

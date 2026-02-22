@@ -51,14 +51,14 @@ This chapter project showcases:
 - Pattern recognition and best practice enforcement
 - Automated documentation generation
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21 and enhanced using AI-assisted development workflows.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4 and enhanced using AI-assisted development workflows.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js (v24.2.0 or higher)
-- Angular CLI v21
+- Angular CLI v21.1.4
 - VS Code with Angular Language Service extension
 - GitHub Copilot extension (recommended for AI assistance)
 - Copilot Chat extension (for interactive AI assistance)
@@ -144,16 +144,14 @@ Use GitHub Copilot to:
 ### Available Test Commands
 
 - **Interactive mode**: `npm run test` - Run tests with file watching and AI-assisted debugging
-- **Single run**: `npm run test:run` - Run tests once with coverage analysis
+- **Single run**: `npm run test:run` - Run tests once
 - **UI mode**: `npm run test:ui` - Run tests with Vitest's web UI for visual debugging
-- **Coverage**: `npm run test:coverage` - Run tests with AI-enhanced coverage reporting
 
 ### AI-Enhanced Testing Setup
 
 The project uses:
 
-- **Vitest**: Fast unit test framework with modern syntax (`vi.spyOn()`) and comprehensive Angular integration
-- **@analogjs/vitest-angular**: Angular testing utilities optimized for standalone components and signal-based APIs
+- **Vitest**: Fast unit test framework (via Angular CLI's built-in `@angular/build:unit-test` runner) with modern syntax (`vi.spyOn()`) and comprehensive Angular integration
 - **jsdom**: DOM environment for testing Angular components with Material UI fallback patterns
 - **GitHub Copilot**: For automated test generation, coverage improvement, and testing best practices
 - **Comprehensive Test Patterns**: Established patterns for Material component testing, event handling, and accessibility validation
