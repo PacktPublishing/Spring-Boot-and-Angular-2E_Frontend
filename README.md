@@ -20,9 +20,9 @@ This project follows modern Angular architectural patterns:
 
 ## Chapter Structure
 
-### Chapter 10 - Angular Frontend Foundation
+### Chapter 11 - Angular Frontend Foundation
 
-**Location**: `chapter-10/`
+**Location**: `chapter-11/`
 
 Establishes the foundation of the Angular application:
 
@@ -33,11 +33,11 @@ Establishes the foundation of the Angular application:
 - TypeScript interfaces and type safety
 - Modern unit testing with Vitest
 
-### Chapter 11 - AI-Assisted Angular Development
+### Chapter 12 - AI-Assisted Angular Development
 
-**Location**: `chapter-11/`
+**Location**: `chapter-12/`
 
-Builds upon Chapter 10 to demonstrate AI-powered development workflows:
+Builds upon Chapter 11 to demonstrate AI-powered development workflows:
 
 - GitHub Copilot integration and project instructions
 - AI-assisted mock data generation for book collections
@@ -46,9 +46,9 @@ Builds upon Chapter 10 to demonstrate AI-powered development workflows:
 - Prompt engineering for effective AI collaboration
 - AI-powered code refactoring and optimization techniques
 
-### Chapter 13 - Reactive Forms & UI Components
+### Chapter 14 - Reactive Forms & UI Components
 
-**Location**: `chapter-13/`
+**Location**: `chapter-14/`
 
 Focuses on advanced reactive forms and UI component development:
 
@@ -58,9 +58,9 @@ Focuses on advanced reactive forms and UI component development:
 - Form state management and user feedback
 - Material Design form components integration
 
-### Chapter 14 - Angular State Management with Signals and Stores
+### Chapter 15 - Angular State Management with Signals and Stores
 
-**Location**: `chapter-14/`
+**Location**: `chapter-15/`
 
 Advances to centralized state management with NgRx signal store:
 
@@ -92,30 +92,30 @@ Advances to centralized state management with NgRx signal store:
 
 - Node.js (v24.2.0 or higher)
 - npm (v11.4.2 or higher)
-- Angular CLI v20.0.3
+- Angular CLI v21.1.4
 
 ### Installation & Running
 
 Each chapter is a complete Angular application. Navigate to the specific chapter directory:
 
 ```bash
-# For Chapter 10 - Angular Foundation
-cd chapter-10
-npm install
-npm run start
-
-# For Chapter 11 - AI-Assisted Development
+# For Chapter 11 - Angular Foundation
 cd chapter-11
 npm install
 npm run start
 
-# For Chapter 13 - Reactive Forms & UI
-cd chapter-13
+# For Chapter 12 - AI-Assisted Development
+cd chapter-12
 npm install
 npm run start
 
-# For Chapter 14 - State management with NgRx signal store
+# For Chapter 14 - Reactive Forms & UI
 cd chapter-14
+npm install
+npm run start
+
+# For Chapter 15 - State management with NgRx signal store
+cd chapter-15
 npm install
 npm run start
 ```
@@ -163,18 +163,9 @@ src/
 
 ## AI-Assisted Development
 
-Chapter 11 focuses extensively on AI-assisted development workflows, including comprehensive GitHub Copilot integration to ensure consistent code generation and maintain architectural patterns:
+Chapter 12 focuses extensively on AI-assisted development workflows, including comprehensive GitHub Copilot integration to ensure consistent code generation and maintain architectural patterns:
 
-### `.github/copilot-instructions.md`
-
-The main instruction file that provides GitHub Copilot with context about:
-
-- Project structure and architectural decisions
-- Technology stack and frameworks used
-- Code style preferences and patterns
-- Component organization principles
-
-### AI Development Techniques Covered in Chapter 11
+### AI Development Techniques Covered in Chapter 12
 
 - **Project Instructions**: Setting up context-aware AI assistance for Angular projects
 - **Chat Modes**: Mastering inline, sidebar, and agent modes for different development tasks
@@ -237,10 +228,10 @@ Each chapter includes these npm scripts:
 
 ## Learning Path
 
-1. **Start with Chapter 10** to understand Angular fundamentals and project setup
-2. **Progress to Chapter 11** to master AI-assisted development workflows and GitHub Copilot integration
-3. **Continue to Chapter 13** to learn advanced reactive forms and UI component development
-4. **Advance to Chapter 14** to master centralized state management with NgRx signal store and event-driven architecture
+1. **Start with Chapter 11** to understand Angular fundamentals and project setup
+2. **Progress to Chapter 12** to master AI-assisted development workflows and GitHub Copilot integration
+3. **Continue to Chapter 14** to learn advanced reactive forms and UI component development
+4. **Advance to Chapter 15** to master centralized state management with NgRx signal store and event-driven architecture
 5. **Explore the GitHub instructions** to understand AI-assisted development patterns
 6. **Experiment with modifications** to reinforce learning concepts
 

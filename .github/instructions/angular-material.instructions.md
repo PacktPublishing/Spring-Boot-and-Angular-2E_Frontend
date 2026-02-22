@@ -4,7 +4,7 @@
 Always use these Material components for forms:
 - `mat-form-field` with `appearance="outline"` for consistency
 - `mat-input` for text inputs
-- `mat-button` and `mat-raise-button` for actions
+- `mat-button` and `mat-raised-button` for actions
 - `mat-icon` for visual enhancement
 - `mat-card` for form containers
 
