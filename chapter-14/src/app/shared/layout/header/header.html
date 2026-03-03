@@ -3,8 +3,12 @@
     <button matIconButton class="menu-icon" aria-label="Icon-button with menu icon">
       <mat-icon class="white-icon">menu</mat-icon>
     </button>
-    <span>Packt Bookstore</span>
+    <a routerLink="/books">Packt Bookstore</a>
     <span class="spacer"></span>
+    <a mat-icon-button routerLink="/auth/signin" aria-label="Sign in to your account">
+      <mat-icon>account_circle</mat-icon>
+    </a>
+
     <button
       matIconButton
       class="favorite-icon"
