@@ -1,0 +1,164 @@
+<mat-card class="signup-card">
+  <mat-card-header>
+    <mat-card-title>Join Packt Bookstore</mat-card-title>
+    <mat-card-subtitle>Create your account to start your reading journey</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      <!-- Personal Information -->
+      <h3 class="section-title">Personal Information</h3>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>First Name</mat-label>
+          <input
+            matInput
+            formControlName="firstName"
+            placeholder="Enter your first name"
+            autocomplete="given-name"
+          />
+          @if (signupForm.get('firstName')?.invalid && signupForm.get('firstName')?.touched) {
+            <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Last Name</mat-label>
+          <input
+            matInput
+            formControlName="lastName"
+            placeholder="Enter your last name"
+            autocomplete="family-name"
+          />
+          @if (signupForm.get('lastName')?.invalid && signupForm.get('lastName')?.touched) {
+            <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email Address</mat-label>
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+        <mat-icon matSuffix>email</mat-icon>
+        @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+          <mat-error>{{ getErrorMessage('email') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Password Section -->
+      <h3 class="section-title">Security</h3>
+      <div formGroupName="passwords">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+            [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (
+            signupForm.get('passwords.password')?.invalid &&
+            signupForm.get('passwords.password')?.touched
+          ) {
+            <mat-error>{{ getErrorMessage('password', 'passwords') }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input
+            matInput
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hideConfirmPassword = !hideConfirmPassword"
+            [attr.aria-label]="hideConfirmPassword ? 'Show password' : 'Hide password'"
+          >
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (
+            signupForm.get('passwords.confirmPassword')?.invalid &&
+            signupForm.get('passwords.confirmPassword')?.touched
+          ) {
+            <mat-error>{{ getErrorMessage('confirmPassword', 'passwords') }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (
+          passwordsGroup.hasError('passwordMismatch') &&
+          passwordsGroup.get('confirmPassword')?.dirty
+        ) {
+          <mat-error class="group-error">{{ getGroupErrorMessage('passwords') }}</mat-error>
+        }
+      </div>
+
+      <!-- Address (optional) -->
+      <h3 class="section-title">Address <span class="optional-label">(Optional)</span></h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Street Address</mat-label>
+        <input matInput formControlName="address" autocomplete="street-address" />
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>City</mat-label>
+          <input matInput formControlName="city" autocomplete="address-level2" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>State</mat-label>
+          <input matInput formControlName="state" autocomplete="address-level1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="third-width">
+          <mat-label>Zip Code</mat-label>
+          <input matInput formControlName="zipCode" autocomplete="postal-code" />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" autocomplete="country-name" />
+      </mat-form-field>
+
+      <!-- Terms and Submit -->
+      <mat-checkbox formControlName="agreeToTerms" class="terms-checkbox">
+        I agree to the Terms of Service and Privacy Policy
+      </mat-checkbox>
+
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!isFormValid()"
+          class="full-width signup-button"
+        >
+          Create Account
+        </button>
+        <div class="form-links">
+          <span>Already have an account? </span>
+          <a mat-button routerLink="/auth/signin">Sign in here</a>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

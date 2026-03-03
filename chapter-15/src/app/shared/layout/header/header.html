@@ -1,0 +1,21 @@
+<header>
+  <mat-toolbar color="primary">
+    <button matIconButton class="menu-icon" aria-label="Icon-button with menu icon">
+      <mat-icon class="white-icon">menu</mat-icon>
+    </button>
+    <a routerLink="/books">Packt Bookstore</a>
+    <span class="spacer"></span>
+    <a mat-icon-button routerLink="/auth/signin" aria-label="Sign in to your account">
+      <mat-icon>account_circle</mat-icon>
+    </a>
+
+    <button
+      matIconButton
+      class="favorite-icon"
+      aria-label="Icon-button with heart icon"
+      color="accent"
+    >
+      <mat-icon>favorite</mat-icon>
+    </button>
+  </mat-toolbar>
+</header>
