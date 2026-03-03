@@ -1,1 +1,33 @@
-<p>author-form works!</p>
+<mat-card class="author-form-card">
+  <mat-card-header>
+    <mat-card-title>
+      {{ isEditMode ? 'Edit Author' : 'Add New Author' }}
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="authorForm" (ngSubmit)="onSubmit()" class="author-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Author Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter author's full name" />
+        @if (authorForm.get('name')?.invalid && authorForm.get('name')?.touched) {
+          <mat-error>{{ getErrorMessage('name') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nationality</mat-label>
+        <input matInput formControlName="nationality" placeholder="Enter author's nationality" />
+        @if (authorForm.get('nationality')?.invalid && authorForm.get('nationality')?.touched) {
+          <mat-error>{{ getErrorMessage('nationality') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!isFormValid()">
+          {{ isEditMode ? 'Update Author' : 'Create Author' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

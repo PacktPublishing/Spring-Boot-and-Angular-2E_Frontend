@@ -1,14 +1,20 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BookList } from '../../components/book-list/book-list';
 import { Book } from '../../../../shared/models/book';
+import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { BookForm } from '../../components/book-form/book-form';
 
 @Component({
   selector: 'book-list-page',
-  imports: [BookList],
+  imports: [BookList, MatButtonModule, MatIconModule],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })
 export class List {
+  private dialog = inject(MatDialog);
+
   books: Book[] = [
     {
       title: 'Clean Code',
@@ -51,6 +57,33 @@ export class List {
     { headerName: 'Price', fieldName: 'price' },
     { headerName: 'Published', fieldName: 'published' },
   ];
+
+  openCreateDialog() {
+    const dialogRef = this.dialog.open(BookForm, {
+      width: '600px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Book created:', result);
+        // this will call BookStore.addBook()
+      }
+    });
+  }
+
+  openEditDialog(book: Book) {
+    const dialogRef = this.dialog.open(BookForm, {
+      width: '600px',
+      data: book,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        console.log('Book updated:', result);
+        // this will call BookStore.updateBook()
+      }
+    });
+  }
 
   selectBook(book: Book): void {
     // handle selection logic
