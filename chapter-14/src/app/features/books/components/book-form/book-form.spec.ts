@@ -5,8 +5,8 @@ import { vi } from 'vitest';
 import { BookForm } from './book-form';
 import { Book } from '../../../../shared/models/book';
 
-const VALID_BOOK_DATA: Book & { id: string } = {
-  id: 'book-123',
+const VALID_BOOK_DATA: Book & { id: number } = {
+  id: 123,
   title: 'Clean Code',
   isbn: '9780132350884',
   authorName: 'Robert C. Martin',
@@ -337,7 +337,7 @@ describe('BookForm', () => {
             authorName: 'Jane Doe',
             price: 9.99,
             genre: 'Fiction',
-          })
+          }),
         );
       });
 
@@ -353,7 +353,10 @@ describe('BookForm', () => {
 
         component.onSubmit();
 
-        const payload = (dialogRefSpy.close.mock.calls[0] as unknown[])[0] as Record<string, unknown>;
+        const payload = (dialogRefSpy.close.mock.calls[0] as unknown[])[0] as Record<
+          string,
+          unknown
+        >;
         expect('id' in payload).toBe(false);
       });
 
@@ -371,7 +374,7 @@ describe('BookForm', () => {
         component.onSubmit();
 
         expect(dialogRefSpy.close).toHaveBeenCalledWith(
-          expect.objectContaining({ description: 'A great book.' })
+          expect.objectContaining({ description: 'A great book.' }),
         );
       });
 
@@ -456,14 +459,17 @@ describe('BookForm', () => {
             id: VALID_BOOK_DATA.id,
             title: VALID_BOOK_DATA.title,
             authorName: VALID_BOOK_DATA.authorName,
-          })
+          }),
         );
       });
 
       it('should include the original id in the edit payload', () => {
         component.onSubmit();
 
-        const payload = (dialogRefSpy.close.mock.calls[0] as unknown[])[0] as Record<string, unknown>;
+        const payload = (dialogRefSpy.close.mock.calls[0] as unknown[])[0] as Record<
+          string,
+          unknown
+        >;
         expect(payload['id']).toBe(VALID_BOOK_DATA.id);
       });
 
@@ -472,7 +478,7 @@ describe('BookForm', () => {
         component.onSubmit();
 
         expect(dialogRefSpy.close).toHaveBeenCalledWith(
-          expect.objectContaining({ id: VALID_BOOK_DATA.id, title: 'Updated Title' })
+          expect.objectContaining({ id: VALID_BOOK_DATA.id, title: 'Updated Title' }),
         );
       });
     });

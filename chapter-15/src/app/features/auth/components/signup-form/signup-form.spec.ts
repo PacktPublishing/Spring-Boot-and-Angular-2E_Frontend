@@ -107,8 +107,7 @@ describe('SignupForm', () => {
       passwordsGroup?.get('password')?.setValue('Strong@Pass1');
       passwordsGroup?.get('confirmPassword')?.setValue('Different@Pass1');
       passwordsGroup?.markAsTouched();
-      expect(component.getGroupErrorMessage('passwords'))
-        .toContain('do not match');
+      expect(component.getGroupErrorMessage('passwords')).toContain('do not match');
     });
   });
 
@@ -122,7 +121,7 @@ describe('SignupForm', () => {
         email: 'john@example.com',
         passwords: {
           password: 'Strong@Pass1',
-          confirmPassword: 'Strong@Pass1'
+          confirmPassword: 'Strong@Pass1',
         },
         agreeToTerms: true,
       });
@@ -135,7 +134,7 @@ describe('SignupForm', () => {
           lastName: 'Doe',
           email: 'john@example.com',
           password: 'Strong@Pass1',
-        })
+        }),
       );
     });
 
