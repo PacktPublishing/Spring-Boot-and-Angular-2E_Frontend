@@ -3,5 +3,13 @@
     <h1>Sign In</h1>
     <p>Access your Packt Bookstore account</p>
   </div>
+  @if (store.error()) {
+    <div class="error-message">{{ store.error() }}</div>
+  }
+
   <signin-form (signinComplete)="handleSigninComplete($event)" />
+
+  @if (store.loading()) {
+    <mat-spinner diameter="24" />
+  }
 </div>

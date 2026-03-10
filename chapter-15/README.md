@@ -1,67 +1,61 @@
 # Chapter 15 - Angular State Management with Signals and Stores
 
-This project demonstrates state management in Angular 20 using signals and NgRx signal store to manage application state for the Packt Bookstore. Building on the reactive forms foundation from Chapter 13, this chapter adds state management for book data, complex form workflows for both creating and editing books, and centralized application state management.
+This chapter demonstrates state management in Angular 21 using signals and NgRx Signal Store to manage authentication state for the Packt Bookstore. Building on the reactive forms foundation from Chapter 14, this chapter adds centralized auth state management with event-driven architecture, dialog-based book and author forms, and advanced form patterns with custom validators.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- **NgRx Signal Store**: Centralized state management with signals for reactive, performant state updates
-- **State Architecture**: Organizing application state with clear separation of concerns
-- **Store Events**: Event-driven architecture for state mutations with type-safe events
-- **Computed Signals**: Derived state for filtering, searching, and sorting
-- **Store Reducers**: Handling state changes based on events
-- **Store Effects**: Side effects management (API calls, async operations) with signal store effects
-- **Form Integration**: Connecting reactive forms with store state for create and edit workflows
-- **Unified Form Component**: Single component handling both create and edit modes based on route parameters
-- **Book Service**: API integration layer for fetching and managing book data
-- **Signal-Based Reactivity**: Advanced reactive patterns with Angular signals throughout the store
-- **State Persistence**: Managing and retrieving book data from the store
-- **Advanced Form Patterns**: Building on Chapter 13's reactive forms with state management integration
+- **NgRx Signal Store**: Centralized authentication state management with signals for reactive, performant state updates
+- **State Architecture**: Organizing application state with clear separation of concerns (state, events, reducers, effects)
+- **Store Events**: Event-driven architecture (`eventGroup`) for type-safe state mutations
+- **Computed Signals**: Derived state such as `isAuthenticated` and `userDisplayName`
+- **Store Reducers**: Handling state changes for signin, signup, and logout flows
+- **Store Effects**: Side effects management (API calls, navigation) with `withEventHandlers`
+- **Form-Store Integration**: Connecting reactive forms with auth store for signin and signup workflows
+- **Dialog-Based Forms**: Book and author forms rendered inside Angular Material dialogs
+- **Custom Validators**: Reusable validators (`noNumbersValidator`, `passwordMatchValidator`)
+- **Mock Auth Service**: Simulated authentication service for development and testing
+- **Signal-Based Reactivity**: `toSignal` for form validity tracking and reactive UI updates
+- **Angular Material UI**: Comprehensive use of Material components (cards, toolbars, dialogs, tables, spinners)
 
 ## Project Features
 
-- **NgRx Signal Store**: Centralized state management for all book-related data
-  - Type-safe state with signals
-  - Event-driven architecture for state mutations
-  - Computed signals for derived state (filtered books, selected book, etc.)
-- **Unified Book Form Component**: Multi-purpose form for creating and editing books
-  - Create mode: Add new books to the store
-  - Edit mode: Modify existing books with data pre-loaded from store
-  - Route parameter detection for mode determination
-  - Automatic form population in edit mode
-  - Date handling between form and store
-- **Book Service**: HTTP integration layer for API communication
-  - Fetch books from backend
-  - Create new books
-  - Update existing books
-  - Delete books
-- **State Management Architecture**:
-  - **BookState**: Central state model with books, filters, and UI state
-  - **Book Events**: Type-safe event dispatching for all state mutations
-  - **Store Methods**: Public API for business logic operations
-  - **Computed State**: Derived signals for books list, filtered results, and selections
-- **Advanced Form Features**:
-  - Nested form groups for organized data structure
-  - Required field validation with error messaging
-  - ISBN validation (10 or 13 digit format)
-  - Price validation with minimum value constraints
-  - Published date handling with Material date picker
-  - Form reset and state synchronization
+- **NgRx Signal Store (Auth)**:
+  - Type-safe `AuthState` with user, tokens, loading, and error signals
+  - Event groups for page actions (`signinSubmitted`, `signupSubmitted`, `logoutClicked`) and API responses (`signinSuccess`, `signinFailure`, `signupSuccess`, `signupFailure`)
+  - Computed signals: `isAuthenticated`, `currentUser`, `userDisplayName`
+  - Effects for async signin/signup API calls and post-success navigation
+- **Authentication Pages**:
+  - Signin page with Material card layout, error display, and loading spinner
+  - Signup page with Material card layout, error display, and loading spinner
+  - Smart/dumb component pattern: pages dispatch store events, forms handle presentation
+- **Dialog-Based Book Form**: Create and edit books via Material dialog
+  - Mode determined by `MAT_DIALOG_DATA` injection
+  - ISBN regex validation, URL pattern validation, date picker
+  - Genre selection from predefined list
+- **Dialog-Based Author Form**: Create and edit authors via Material dialog
+  - Name and nationality fields with validation
+- **Book List Page**: Displays books in a Material table with edit/delete actions
+  - Opens BookForm dialog for create and edit operations
+  - Uses mock data array (no book store yet)
+- **Custom Validators**:
+  - `noNumbersValidator()` — prevents digits in name fields
+  - `passwordMatchValidator()` — cross-field validation for password confirmation
 - **Comprehensive Testing**:
-  - Store testing with mocked events and state
-  - Form component testing in both create and edit modes
-  - State mutation testing with events
-  - Computed signal testing
+  - Auth store testing (state mutations, computed signals, effects)
+  - Signin/signup form and page component tests
+  - Book form, book list, and author form component tests
+  - Layout component tests (header, footer)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.3.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js (v24.2.0 or higher)
-- Angular CLI v20.0.3
+- Angular CLI v21.1.4
 - VS Code with Angular Language Service extension (recommended)
 
 ### Installation
@@ -135,32 +129,33 @@ npm run test:run
 To run specific test files:
 
 ```bash
+npm run test:run -- auth.store.spec.ts
 npm run test:run -- book-form.spec.ts
-npm run test:run -- book.store.spec.ts
+npm run test:run -- signin-form.spec.ts
 ```
 
 ### Test Coverage
 
-The project includes comprehensive unit tests with 70+ test cases covering:
+The project includes comprehensive unit tests covering:
 
-- **Store State Management**: Initial state, state mutations, computed signals
-- **Store Events**: Event dispatching and handling for CRUD operations
-- **Store Reducers**: State changes based on events (load, add, update, delete)
-- **Store Effects**: Async operations and side effects management
-- **Form Component Initialization**: Form structure, controls, and initial state in both modes
-- **Create Mode**: Form submission, data validation, store integration for new books
-- **Edit Mode**: Loading book data, form population, update operations, navigation
-- **Field Validation**: Required fields, format validation, length constraints
-- **Form Submission**: Data handling, store updates, and navigation
-- **Error Messages**: User-friendly validation feedback for all fields
-- **Date Handling**: Converting between form Date objects and store string format
-- **Signal Reactivity**: Form state signals and reactive updates
-- **Computed State**: Filtering, searching, and derived state in the store
+- **Auth Store**: Initial state, reducers for signin/signup/logout, computed signals (`isAuthenticated`, `userDisplayName`), effects for API calls and navigation
+- **Signin Form**: Form structure, validation (email, password), error messages, form submission
+- **Signup Form**: Multi-section form, custom validators (`noNumbers`, `passwordMatch`), field validation, signal-based validity
+- **Signin/Signup Pages**: Store integration, event dispatching, error/loading display
+- **Book Form**: Dialog-based create/edit modes, ISBN pattern validation, URL validation, genre selection, date picker
+- **Book List**: Input binding, table rendering, edit/delete action emission
+- **Author Form**: Dialog-based create/edit, name/nationality validation
+- **Layout Components**: Header (auth state display, logout), footer (static rendering)
 
 Key test files:
 
-- `book.store.spec.ts` - Store testing (state mutations, computed signals, effects)
-- `book-form.spec.ts` - Form component testing (both create and edit modes, 56 tests)
+- `auth.store.spec.ts` — Auth store testing (state mutations, computed signals, effects)
+- `signin-form.spec.ts` — Signin form validation and submission
+- `signup-form.spec.ts` — Signup form with custom validators
+- `signin.spec.ts` / `signup.spec.ts` — Page component integration with store
+- `book-form.spec.ts` — Dialog-based book form in create and edit modes
+- `book-list.spec.ts` — Book list table rendering and actions
+- `author-form.spec.ts` — Author form validation
 
 ## Running end-to-end tests
 
@@ -176,233 +171,266 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 ## Project Structure
 
-The application follows Angular best practices with a clear separation of concerns, focusing on state management and book management:
+The application follows Angular best practices with a clear separation of concerns, focusing on auth state management and book catalog display:
 
 ```text
 src/app/
-├── core/                    # Core services (authentication, etc.)
+├── core/                         # Core services
 │   └── services/
-├── features/               # Feature modules
-│   ├── auth/              # Authentication feature
-│   │   ├── components/    # Reusable auth components
-│   │   │   ├── login/     # Login form component
-│   │   │   └── signup/    # Complex signup form component
-│   │   └── pages/         # Auth page containers
-│   │       ├── login-page/
-│   │       └── signup-page/
-│   └── books/             # Book management feature
-│       ├── components/    # Book-related components
-│       │   ├── book-form/ # Unified form for create/edit books
-│       │   └── book-list/ # Book listing component
-│       ├── pages/        # Book page containers
-│       │   └── list/
-│       ├── services/     # Book API service
-│       │   └── book.service.ts
-│       └── store/        # State management
-│           ├── book.store.ts      # Signal store
-│           ├── book.state.ts      # State interface
-│           ├── book.events.ts     # Event definitions
-│           └── book.store.spec.ts # Store tests
-└── shared/               # Shared utilities and components
-    ├── layout/          # Layout components (header, footer)
-    └── models/         # Shared interfaces and types (auth, book)
+│       └── authentication.ts     # Core authentication service
+├── features/                     # Feature modules
+│   ├── auth/                     # Authentication feature
+│   │   ├── auth.routes.ts        # Auth routing (lazy-loaded)
+│   │   ├── services/
+│   │   │   └── auth.service.ts   # Mock auth service (signin/signup)
+│   │   ├── store/
+│   │   │   ├── auth.state.ts     # AuthState interface & initial state
+│   │   │   ├── auth.events.ts    # Event groups (page & API events)
+│   │   │   ├── auth.store.ts     # Signal store (reducers, computed, effects)
+│   │   │   └── auth.store.spec.ts
+│   │   ├── components/
+│   │   │   ├── signin-form/      # Dumb: email/password form
+│   │   │   └── signup-form/      # Dumb: multi-section signup form
+│   │   └── pages/
+│   │       ├── signin/           # Smart: dispatches signinSubmitted
+│   │       └── signup/           # Smart: dispatches signupSubmitted
+│   └── books/                    # Book management feature
+│       ├── books.routes.ts       # Book routing (lazy-loaded)
+│       ├── components/
+│       │   ├── book-form/        # Dialog: create/edit book
+│       │   ├── book-list/        # Dumb: table display with actions
+│       │   └── author-form/      # Dialog: create/edit author
+│       └── pages/
+│           └── list/             # Smart: mock data, opens dialogs
+└── shared/
+    ├── layout/
+    │   ├── header/               # Material toolbar with auth state
+    │   └── footer/               # Static footer
+    ├── models/
+    │   ├── auth.ts               # SigninRequest, SignupRequest, UserInfo, etc.
+    │   ├── book.ts               # Book interface
+    │   └── author.ts             # Author interface
+    └── validators/
+        └── custom-validators.ts  # noNumbersValidator, passwordMatchValidator
 ```
 
-## Key Form Implementation Highlights
+## Key Implementation Highlights
 
-### Unified Book Form Component
+### Auth Signal Store
 
-The `book-form` component now serves dual purposes for creating and editing books:
-
-```typescript
-// Route parameter detection for mode determination
-ngOnInit() {
-  this.bookId = this.route.snapshot.paramMap.get('id');
-  this.isEditMode = !!this.bookId;
-
-  this.initializeForm();
-
-  if (this.isEditMode && this.bookId) {
-    this.loadBookData(this.bookId);
-  }
-}
-
-// Loading book data from store in edit mode
-private loadBookData(id: string) {
-  const book = this.store.books().find(b => b.id === id);
-  
-  if (book) {
-    this.bookForm.patchValue({
-      title: book.title,
-      authorName: book.authorName,
-      // ... other fields
-    });
-  }
-}
-
-// Form submission handles both create and edit
-onSubmit() {
-  if (this.bookForm.invalid) return;
-
-  const bookData = this.bookForm.value;
-
-  if (this.isEditMode && this.bookId) {
-    this.store.updateBook({ id: this.bookId, ...bookData });
-  } else {
-    this.store.addBook(bookData);
-  }
-
-  this.router.navigate(['/books']);
-}
-```
-
-### State Management Architecture
-
-The book store manages all book-related state with a clean, type-safe API:
+The `AuthStore` manages all authentication state using NgRx Signal Store with event-driven architecture:
 
 ```typescript
-export const BookStore = signalStore(
+export const AuthStore = signalStore(
   { providedIn: 'root' },
 
-  // State initialization
-  withState(initialBookState),
+  // Initialize state
+  withState(initialAuthState),
 
-  // Reducers for state mutations
+  // Reducers handle state changes
   withReducer(
-    on(bookApiEvents.loadSuccess, (event) => ({
-      books: event.payload.books,
+    on(authPageEvents.signinSubmitted, () => ({
+      loading: true,
+      error: null,
+    })),
+
+    on(authApiEvents.signinSuccess, (event) => ({
+      user: event.payload.user,
+      accessToken: event.payload.accessToken,
+      refreshToken: event.payload.refreshToken,
       loading: false,
+      error: null,
     })),
-    on(bookApiEvents.addSuccess, (event) => (state) => ({
-      ...state,
-      books: [...state.books, event.payload.book],
+
+    on(authApiEvents.signinFailure, (event) => ({
+      loading: false,
+      error: event.payload.error,
     })),
-    // ... more reducers
+
+    on(authPageEvents.logoutClicked, () => ({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      loading: false,
+      error: null,
+    })),
   ),
 
   // Computed signals for derived state
   withComputed((store) => ({
-    filteredBooks: computed(() => {
-      let books = store.books();
-      
-      // Apply filtering logic
-      const searchTerm = store.searchTerm().toLowerCase();
-      if (searchTerm) {
-        books = books.filter(b => 
-          b.title.toLowerCase().includes(searchTerm)
-        );
-      }
-
-      return books;
-    }),
-
-    selectedBook: computed(() => {
-      const id = store.selectedBookId();
-      return store.books().find(b => b.id === id) ?? null;
+    isAuthenticated: computed(() => store.accessToken() !== null),
+    currentUser: computed(() => store.user()),
+    userDisplayName: computed(() => {
+      const user = store.user();
+      return user ? `${user.firstName} ${user.lastName}` : '';
     }),
   })),
 
-  // Store methods as public API
-  withMethods((store) => ({
-    loadBooks: () => {
-      // Dispatch event to trigger effects
-    },
-    addBook: (book: Omit<Book, 'id'>) => {
-      // Dispatch event and effects handle API call
-    },
-    updateBook: (book: Book) => {
-      // Dispatch event and effects handle API call
-    },
-  }))
+  // Effects handle async operations
+  withEventHandlers((store, events, authService, router) => ({
+    signin$: events.on(authPageEvents.signinSubmitted).pipe(
+      exhaustMap((event) =>
+        authService.signin(event.payload).pipe(
+          map((response) => authApiEvents.signinSuccess(response)),
+          catchError((error) =>
+            of(authApiEvents.signinFailure({ error: error.message })),
+          ),
+        ),
+      ),
+    ),
+  })),
+
+  // Methods for navigation side effects
+  withMethods((store, events, router) => {
+    events.on(authApiEvents.signinSuccess).subscribe(() => router.navigate(['/books']));
+    events.on(authApiEvents.signupSuccess).subscribe(() => router.navigate(['/auth/signin']));
+    return {};
+  }),
 );
 ```
 
-### Form Validation
+### Event Groups
 
-The form includes comprehensive validation patterns:
+Type-safe events split into page actions and API responses:
 
 ```typescript
-bookForm = this.fb.group({
-  title: ['', [Validators.required, Validators.minLength(3)]],
-  authorName: ['', [Validators.required, Validators.minLength(3)]],
-  genre: ['', Validators.required],
-  price: [null, [Validators.required, Validators.min(0)]],
-  published: ['', Validators.required],
-  isbn: ['', [Validators.required, Validators.minLength(10)]],
+export const authPageEvents = eventGroup({
+  source: 'Auth Page',
+  events: {
+    signinSubmitted: type<SigninRequest>(),
+    signupSubmitted: type<SignupRequest>(),
+    logoutClicked: type<void>(),
+  },
+});
+
+export const authApiEvents = eventGroup({
+  source: 'Auth API',
+  events: {
+    signinSuccess: type<{ user: UserInfo; accessToken: string; refreshToken: string }>(),
+    signinFailure: type<{ error: string }>(),
+    signupSuccess: type<void>(),
+    signupFailure: type<{ error: string }>(),
+  },
 });
 ```
 
-### Book Service Integration
+### Dialog-Based Book Form
 
-The book service handles API communication:
+The `BookForm` component is rendered inside a Material dialog, with create/edit mode determined by injected data:
 
 ```typescript
-export class BookService {
-  constructor(private http: HttpClient) {}
+export class BookForm {
+  private dialogRef = inject(MatDialogRef<BookForm>);
+  private data: BookDialogData | null = inject(MAT_DIALOG_DATA, { optional: true }) ?? null;
 
-  getBooks(): Observable<Book[]> {
-    return this.http.get<Book[]>('/api/books');
+  bookForm = this.fb.nonNullable.group({
+    title: ['', [Validators.required]],
+    isbn: ['', [Validators.required, Validators.pattern(ISBN_PATTERN)]],
+    authorName: ['', [Validators.required]],
+    price: [0, [Validators.required, Validators.min(0)]],
+    genre: ['', [Validators.required]],
+    published: this.fb.control<Date | null>(null, [Validators.required]),
+    description: [''],
+    pageCount: this.fb.control<number | null>(null, [Validators.min(1)]),
+    coverImageUrl: ['', [Validators.pattern(URL_PATTERN)]],
+  });
+
+  get isEditMode(): boolean {
+    return this.data !== null;
+  }
+}
+```
+
+### Custom Validators
+
+Reusable validators for form fields:
+
+```typescript
+export function noNumbersValidator(): ValidatorFn {
+  return (control: AbstractControl<string>): ValidationErrors | null => {
+    if (!control.value) return null;
+    const hasNumbers = /\d/.test(control.value);
+    return hasNumbers ? { noNumbers: { value: control.value } } : null;
+  };
+}
+
+export function passwordMatchValidator(): ValidatorFn {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    if (!password || !confirmPassword) return null;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  };
+}
+```
+
+### Mock Auth Service
+
+Simulated authentication for development:
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  signin(credentials: SigninRequest): Observable<{ user: UserInfo; accessToken: string; refreshToken: string }> {
+    if (credentials.email === 'user@bookstore.com' && credentials.password === 'SecurePass123!') {
+      return of({ user: this.mockUser, accessToken: '...', refreshToken: '...' }).pipe(delay(500));
+    }
+    return throwError(() => new Error('Invalid email or password'));
   }
 
-  addBook(book: Omit<Book, 'id'>): Observable<Book> {
-    return this.http.post<Book>('/api/books', book);
-  }
-
-  updateBook(book: Book): Observable<Book> {
-    return this.http.put<Book>(`/api/books/${book.id}`, book);
-  }
-
-  deleteBook(id: string): Observable<void> {
-    return this.http.delete<void>(`/api/books/${id}`);
+  signup(data: SignupRequest): Observable<void> {
+    if (data.email === 'user@bookstore.com') {
+      return throwError(() => new Error('Email already exists'));
+    }
+    return of(void 0).pipe(delay(500));
   }
 }
 ```
 
 ## Key Learning Points
 
-- **Signal Store Architecture**: Understanding `signalStore`, `withState`, `withReducer`, `withComputed`, and `withMethods`
-- **State Design Patterns**: Organizing application state with clear models and interfaces
-- **Event-Driven Architecture**: Using events for state mutations and side effects
-- **Computed Signals**: Creating derived state for efficient reactive updates
-- **Effects Management**: Handling async operations (API calls) in store effects
-- **Form-Store Integration**: Connecting reactive forms with centralized state
-- **Dual-Mode Components**: Building versatile components for multiple use cases (create/edit)
-- **Route Parameter Handling**: Using route parameters to determine component behavior
-- **Data Transformation**: Converting between form and store formats (dates, etc.)
-- **Service Layer Integration**: Connecting store with HTTP service for API communication
-- **Type Safety**: Maintaining strong typing across store, events, and forms
-- **Comprehensive Testing**: Unit testing stores, computed signals, and form integration
+- **Signal Store Architecture**: Understanding `signalStore`, `withState`, `withReducer`, `withComputed`, `withMethods`, and `withEventHandlers`
+- **Event-Driven Architecture**: Using `eventGroup` to define type-safe page and API events
+- **Computed Signals**: Creating derived state (`isAuthenticated`, `userDisplayName`) for efficient reactive updates
+- **Effects Management**: Handling async operations (signin/signup API calls) and navigation side effects
+- **Form-Store Integration**: Smart components dispatch store events, dumb form components emit outputs
+- **Dialog Components**: Using `MAT_DIALOG_DATA` and `MatDialogRef` for dialog-based create/edit forms
+- **Custom Validators**: Building reusable `ValidatorFn` functions for cross-field and pattern validation
+- **Mock Services**: Simulating backend APIs with `Observable` streams and artificial delays
+- **Signal-Based Form Tracking**: Using `toSignal` with `statusChanges` for reactive form validity
+- **Material Design**: Leveraging Angular Material cards, toolbars, dialogs, tables, spinners, and form fields
+- **Type Safety**: Maintaining strong typing across store state, events, forms, and services
+- **Comprehensive Testing**: Unit testing stores, forms, dialogs, and page components
 
 ## Chapter Summary
 
-This chapter provided comprehensive coverage of Angular state management using NgRx signal store and reactive patterns. Key accomplishments include:
+This chapter provided comprehensive coverage of Angular state management using NgRx Signal Store and reactive patterns. Key accomplishments include:
 
-- **Signal Store Fundamentals**: Implemented `signalStore` with state initialization, reducers, computed signals, and public methods
-- **State Architecture**: Designed clean state models with clear separation between state, events, and business logic
-- **Event-Driven State Mutations**: Created type-safe events for all state changes (load, add, update, delete)
-- **Computed Signals**: Built derived state for filtering, searching, and selection with automatic reactivity
-- **Effects Management**: Integrated async operations (API calls) with store effects for side effect handling
-- **Unified Component Design**: Migrated from separate create/edit components to a single versatile form component
-- **Form-Store Integration**: Connected reactive forms with centralized state for seamless data flow
-- **Route Parameter Handling**: Implemented mode detection and data loading based on URL parameters
-- **Type Safety**: Maintained strong typing across store, events, forms, and services
-- **Book Service Layer**: Created HTTP service for API communication with proper error handling
-- **Comprehensive Testing**: Developed 70+ unit tests covering store mutations, computed signals, form modes, and integration scenarios
-- **Data Transformation**: Implemented proper conversion between form Date objects and store string formats
-- **Business Logic Encapsulation**: Centralized book management logic in the store with clean public API
+- **Auth Signal Store**: Implemented `signalStore` with `withState`, `withReducer`, `withComputed`, `withEventHandlers`, and `withMethods` for complete auth state management
+- **Event-Driven State Mutations**: Created type-safe event groups for page actions (`signinSubmitted`, `signupSubmitted`, `logoutClicked`) and API responses (`signinSuccess`, `signinFailure`, etc.)
+- **Computed Signals**: Built derived signals (`isAuthenticated`, `currentUser`, `userDisplayName`) with automatic reactivity
+- **Effects Management**: Integrated async signin/signup API calls with `exhaustMap` and navigation side effects
+- **Smart/Dumb Component Pattern**: Signin and signup pages dispatch store events while form components handle pure presentation
+- **Material Card Layout**: Auth pages use `mat-card` with header, content (error display + form + spinner), and actions (navigation links)
+- **Dialog-Based Book Form**: Created `BookForm` as a Material dialog with create/edit mode detection via `MAT_DIALOG_DATA`
+- **Dialog-Based Author Form**: Created `AuthorForm` dialog for managing author data
+- **Custom Validators**: Implemented `noNumbersValidator` and `passwordMatchValidator` as reusable `ValidatorFn` functions
+- **Mock Auth Service**: Built a simulated authentication service with hardcoded credentials and artificial delays
+- **Book List Page**: Displayed books in a Material table with dialog-based create/edit actions using mock data
+- **Comprehensive Testing**: Developed unit tests across auth store, form components, page components, dialog forms, and layout components
 
-The comprehensive book store with unified form component demonstrates enterprise-level state management patterns with real-time reactivity, efficient computed signals, and proper separation of concerns that provide a scalable foundation for complex application features.
+The auth store with event-driven architecture demonstrates enterprise-level state management patterns with clear separation between state, events, reducers, effects, and computed signals.
 
 ## Next Steps
 
 Building on this state management and store patterns foundation, you're prepared for:
 
+- **Book Signal Store**: Extending the store pattern to manage book data with API integration
 - **HTTP Interceptors**: Advanced HTTP configuration and request/response interceptors
-- **Route Guards**: Protecting routes with auth guards and data loading guards
-- **Form State Persistence**: Saving and restoring form state across navigation
-- **Advanced Signals**: Signal effects and advanced reactivity patterns
-- **Performance Optimization**: Change detection optimization and lazy loading strategies
+- **Route Guards**: Protecting routes with auth guards using `isAuthenticated` from the store
+- **Real Backend Integration**: Replacing the mock auth service with actual HTTP calls
 - **Error Handling**: Comprehensive error handling across services and stores
+- **Performance Optimization**: Change detection optimization and lazy loading strategies
 - **Integration Testing**: End-to-end testing of complete workflows involving store, forms, and routing
 
 In the next chapter, we will explore advanced concepts in HTTP communication, interceptors, and guard patterns to complete the comprehensive application architecture.

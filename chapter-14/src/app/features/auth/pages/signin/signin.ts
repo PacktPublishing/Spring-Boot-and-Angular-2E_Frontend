@@ -3,7 +3,7 @@ import { SigninForm } from '../../components/signin-form/signin-form';
 import { SigninRequest } from '../../../../shared/models/auth';
 
 @Component({
-  selector: 'auth-signin',
+  selector: 'app-signin',
   imports: [SigninForm],
   templateUrl: './signin.html',
   styleUrl: './signin.scss',

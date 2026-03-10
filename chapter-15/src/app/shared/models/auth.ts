@@ -16,6 +16,22 @@ export interface SigninRequest {
   password: string;
 }
 
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: UserInfo;
+}
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
 export interface UserProfile {
   firstName: string;
   lastName: string;
