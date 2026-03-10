@@ -7,18 +7,16 @@
     <span class="spacer"></span>
 
     @if (store.isAuthenticated()) {
-    <span class="welcome">
-      Welcome, {{ store.userDisplayName() }}
-    </span>
-    <button mat-button (click)="onLogout()">
-      <mat-icon>logout</mat-icon>
-      Logout
-    </button>
-  } @else {
-    <button mat-button routerLink="/auth/signin">
-      <mat-icon>login</mat-icon>
-      Sign In
-    </button>
-  }
+      <span class="welcome"> Welcome, {{ store.userDisplayName() }} </span>
+      <button mat-button (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    } @else {
+      <button mat-button routerLink="/auth/signin">
+        <mat-icon>login</mat-icon>
+        Sign In
+      </button>
+    }
   </mat-toolbar>
 </header>

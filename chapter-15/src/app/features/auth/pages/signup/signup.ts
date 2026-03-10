@@ -21,4 +21,3 @@ export class Signup {
     this.dispatch.signupSubmitted(data);
   }
 }
-

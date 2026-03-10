@@ -21,4 +21,3 @@ export class Header {
     this.dispatch.logoutClicked();
   }
 }
-
