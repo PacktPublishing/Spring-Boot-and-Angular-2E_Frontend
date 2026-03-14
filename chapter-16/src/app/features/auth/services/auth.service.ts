@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../core/services/token.service';
 import {
   SigninRequest,
   SignupRequest,
@@ -13,6 +14,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
+  private tokenService = inject(TokenService);
   private baseUrl = `${environment.apiUrl}/user/api/users`;
 
   signin(credentials: SigninRequest): Observable<{
@@ -63,10 +65,25 @@ export class AuthService {
   }
 
   getProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/profile`);
+    return this.http.get<UserProfile>(`${this.baseUrl}/profile`, {
+      headers: this.buildUserHeaders(),
+    });
   }
 
   updateProfile(profile: UserProfile): Observable<UserProfile> {
-    return this.http.put<UserProfile>(`${this.baseUrl}/profile`, profile);
+    return this.http.put<UserProfile>(`${this.baseUrl}/profile`, profile, {
+      headers: this.buildUserHeaders(),
+    });
+  }
+
+  private buildUserHeaders(): Record<string, string> {
+    const user = this.tokenService.getUser();
+    if (!user?.keycloakId) {
+      return {};
+    }
+
+    return {
+      'X-User-Id': user.keycloakId,
+    };
   }
 }

@@ -1,9 +1,5 @@
 .author-form-card {
   max-width: 480px;
-  margin: 2rem auto;
-  padding: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
 
   .mat-mdc-card-header {
     margin: auto;
@@ -17,41 +13,14 @@
   }
 }
 
-.author-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.full-width {
-  width: 100%;
-}
-
 .form-actions {
   margin-top: 1rem;
   display: flex;
   justify-content: flex-end;
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .author-form-card {
     margin: 1rem;
-    max-width: none;
-    padding: 1.5rem;
-  }
-}
-
-// Enhanced focus states
-.mat-mdc-form-field.mat-focused {
-  .mat-mdc-form-field-outline {
-    opacity: 1;
-  }
-}
-
-// Error state styling enhancement
-.mat-mdc-form-field.mat-form-field-invalid {
-  .mat-mdc-form-field-outline {
-    color: var(--mdc-theme-error, #f44336);
   }
 }

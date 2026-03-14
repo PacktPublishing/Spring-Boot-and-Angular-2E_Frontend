@@ -9,26 +9,6 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-// Keep navigation/content links styled as links without Material hover gray fill.
-a.mat-mdc-button-base {
-  --mat-text-button-hover-state-layer-opacity: 0;
-  --mat-text-button-focus-state-layer-opacity: 0;
-  --mat-text-button-pressed-state-layer-opacity: 0;
-  --mat-text-button-ripple-color: transparent;
-}
-
-a.mat-mdc-button-base:hover,
-a.mat-mdc-button-base:focus-visible {
-  background-color: transparent;
-}
-
-a.mat-mdc-button-base .mat-mdc-button-persistent-ripple::before,
-a.mat-mdc-button-base .mdc-button__ripple::before,
-a.mat-mdc-button-base .mdc-button__ripple::after {
-  background-color: transparent !important;
-  opacity: 0 !important;
-}
-
 // Shared page styles
 .page-container {
   min-height: 100vh;
@@ -75,6 +55,110 @@ a.mat-mdc-button-base .mdc-button__ripple::after {
   }
 }
 
+.error-message {
+  width: min(100%, 700px);
+  margin: 0.75rem auto 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(244, 67, 54, 0.45);
+  border-radius: 8px;
+  background: rgba(244, 67, 54, 0.14);
+  color: #ffebee;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+// Shared form primitives.
+.app-form-card {
+  width: 100%;
+  max-width: none;
+  margin: 1.5rem auto 0;
+  padding: 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  .mat-mdc-card-content {
+    padding: 0;
+  }
+}
+
+.app-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .error-message {
+    border-radius: 8px;
+    border: 1px solid #f5c2c7;
+    background: #fff1f2;
+    color: #b42318;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .mat-mdc-form-field {
+    margin-bottom: 0.2rem;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .form-actions {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .signin-button,
+    .signup-button {
+      height: 48px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .form-links {
+      text-align: center;
+      color: #666;
+      font-size: 0.875rem;
+
+      a {
+        color: var(--mdc-theme-primary, #1976d2);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .group-error {
+    color: #f44336;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+}
+
+.app-form .terms-checkbox a {
+  color: var(--mdc-theme-primary, #1976d2);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.app-form .mat-mdc-form-field.mat-focused .mat-mdc-form-field-outline {
+  opacity: 1;
+}
+
+.app-form .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-outline {
+  color: var(--mdc-theme-error, #f44336);
+}
+
 @media (max-width: 768px) {
   .page-container {
     padding: 1rem;
@@ -89,4 +173,15 @@ a.mat-mdc-button-base .mdc-button__ripple::after {
       font-size: 1rem;
     }
   }
+
+  .app-form-card {
+    max-width: none;
+    padding: 1.25rem;
+  }
+
+  .error-message {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+  }
+
 }

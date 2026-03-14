@@ -14,6 +14,7 @@ import { authPageEvents, authApiEvents } from './auth.events';
 import { initialAuthState } from './auth.state';
 import { withEventHandlers, on, Events, withReducer } from '@ngrx/signals/events';
 import { TokenService } from '../../../core/services/token.service';
+import { normalizeApiErrorMessage } from '../../../shared/utils/error-message';
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
@@ -105,8 +106,12 @@ export const AuthStore = signalStore(
         exhaustMap((event) =>
           authService.signin(event.payload).pipe(
             map((response) => authApiEvents.signinSuccess(response)),
-            catchError((error: { message: string }) =>
-              of(authApiEvents.signinFailure({ error: error.message })),
+            catchError((error: unknown) =>
+              of(
+                authApiEvents.signinFailure({
+                  error: normalizeApiErrorMessage(error, 'Unable to sign in. Please try again.'),
+                }),
+              ),
             ),
           ),
         ),
@@ -116,8 +121,15 @@ export const AuthStore = signalStore(
         exhaustMap((event) =>
           authService.signup(event.payload).pipe(
             map(() => authApiEvents.signupSuccess()),
-            catchError((error: { message: string }) =>
-              of(authApiEvents.signupFailure({ error: error.message })),
+            catchError((error: unknown) =>
+              of(
+                authApiEvents.signupFailure({
+                  error: normalizeApiErrorMessage(
+                    error,
+                    'Unable to create your account right now.',
+                  ),
+                }),
+              ),
             ),
           ),
         ),
@@ -132,10 +144,10 @@ export const AuthStore = signalStore(
           }
           return authService.logout(token, user.keycloakId).pipe(
             map(() => authApiEvents.logoutSuccess()),
-            catchError((error: { message: string }) =>
+            catchError((error: unknown) =>
               of(
                 authApiEvents.logoutFailure({
-                  error: error.message,
+                  error: normalizeApiErrorMessage(error, 'Unable to sign out right now.'),
                 }),
               ),
             ),
@@ -168,7 +180,11 @@ export const AuthStore = signalStore(
       });
       events.on(authApiEvents.logoutSuccess).subscribe(() => tokenService.clearAll());
       events.on(authApiEvents.signinSuccess).subscribe(() => router.navigate(['/books']));
-      events.on(authApiEvents.signupSuccess).subscribe(() => router.navigate(['/auth/signin']));
+      events.on(authApiEvents.signupSuccess).subscribe(() =>
+        router.navigate(['/auth/signin'], {
+          queryParams: { signup: 'success' },
+        }),
+      );
       events.on(authApiEvents.logoutSuccess).subscribe(() => router.navigate(['/auth/signin']));
       return {};
     },
@@ -180,8 +196,12 @@ export const AuthStore = signalStore(
       const accessToken = tokenService.getAccessToken();
       const refreshToken = tokenService.getRefreshToken();
       const user = tokenService.getUser();
-      if (accessToken && refreshToken && user) {
-        patchState(store, { accessToken, refreshToken, user });
+      if (accessToken && refreshToken) {
+        patchState(store, {
+          accessToken,
+          refreshToken,
+          user,
+        });
       }
     },
   }),

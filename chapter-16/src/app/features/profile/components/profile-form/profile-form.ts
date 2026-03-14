@@ -33,7 +33,6 @@ export class ProfileForm {
   profileForm = this.fb.nonNullable.group({
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    phone: [''],
     address: [''],
     city: [''],
     state: [''],
@@ -53,7 +52,6 @@ export class ProfileForm {
         this.profileForm.patchValue({
           firstName: data.firstName,
           lastName: data.lastName,
-          phone: data.phone ?? '',
           address: data.address ?? '',
           city: data.city ?? '',
           state: data.state ?? '',
@@ -77,7 +75,6 @@ export class ProfileForm {
       const profileData: UserProfile = {
         firstName: form.firstName,
         lastName: form.lastName,
-        phone: form.phone || undefined,
         address: form.address || undefined,
         city: form.city || undefined,
         state: form.state || undefined,

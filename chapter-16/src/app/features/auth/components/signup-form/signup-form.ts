@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,6 +33,8 @@ import {
 })
 export class SignupForm {
   private fb = inject(FormBuilder);
+
+  serverError = input<string | null>(null);
 
   signupComplete = output<SignupRequest>();
 

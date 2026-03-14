@@ -4,11 +4,7 @@
     <p>Join thousands of readers in the Packt Bookstore community</p>
   </div>
 
-  @if (store.error()) {
-    <div class="error-message">{{ store.error() }}</div>
-  }
-
-  <app-signup-form (signupComplete)="handleSignupComplete($event)" />
+  <app-signup-form [serverError]="store.error()" (signupComplete)="handleSignupComplete($event)" />
 
   @if (store.loading()) {
     <mat-spinner diameter="24" />

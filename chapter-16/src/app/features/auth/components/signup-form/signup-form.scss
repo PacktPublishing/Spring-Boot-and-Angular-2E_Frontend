@@ -1,19 +1,6 @@
-.signup-card {
-  max-width: 700px;
-  margin: 1.5rem auto 0;
-  padding: 1.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-radius: 12px;
-
-  .mat-mdc-card-content {
-    padding: 0;
-  }
-}
-
-.signup-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+:host {
+  display: block;
+  width: min(100%, 700px);
 }
 
 .section-title {
@@ -48,66 +35,16 @@
   grid-column: span 4;
 }
 
-.full-width {
-  width: 100%;
-}
-
 .terms-checkbox {
   margin-top: 0.15rem;
   margin-bottom: 0.2rem;
-
-  a {
-    color: var(--mdc-theme-primary, #1976d2);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 .group-error {
-  color: #f44336;
-  font-size: 0.75rem;
   margin-top: 0.25rem;
-  text-align: center;
-}
-
-.form-actions {
-  margin-top: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-
-  .signup-button {
-    height: 48px;
-    font-size: 1rem;
-    font-weight: 500;
-  }
-
-  .form-links {
-    text-align: center;
-    color: #666;
-    font-size: 0.875rem;
-
-    a {
-      color: var(--mdc-theme-primary, #1976d2);
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
 }
 
 @media (max-width: 768px) {
-  .signup-card {
-    margin: 1rem;
-    max-width: none;
-    padding: 1.25rem;
-  }
-
   .form-row {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -115,17 +52,5 @@
   .half-width,
   .third-width {
     grid-column: span 1;
-  }
-}
-
-.mat-mdc-form-field.mat-focused {
-  .mat-mdc-form-field-outline {
-    opacity: 1;
-  }
-}
-
-.mat-mdc-form-field.mat-form-field-invalid {
-  .mat-mdc-form-field-outline {
-    color: var(--mdc-theme-error, #f44336);
   }
 }

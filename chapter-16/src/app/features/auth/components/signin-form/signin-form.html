@@ -1,6 +1,6 @@
-<mat-card class="signin-card">
+<mat-card class="app-form-card">
   <mat-card-content>
-    <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" class="signin-form">
+    <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" class="signin-form app-form">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email Address</mat-label>
         <input
@@ -46,6 +46,10 @@
       </div>
 
       <div class="form-actions">
+        @if (serverError()) {
+          <div class="error-message" role="alert" aria-live="polite">{{ serverError() }}</div>
+        }
+
         <button
           mat-raised-button
           color="primary"

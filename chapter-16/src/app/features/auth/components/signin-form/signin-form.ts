@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,6 +29,8 @@ import { SigninRequest } from '../../../../shared/models/auth';
 })
 export class SigninForm {
   private fb = inject(FormBuilder);
+
+  serverError = input<string | null>(null);
 
   signinComplete = output<SigninRequest>();
 

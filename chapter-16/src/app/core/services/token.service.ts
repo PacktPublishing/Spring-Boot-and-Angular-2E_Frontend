@@ -1,5 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { UserInfo } from '../../shared/models/auth';
 
 const ACCESS_TOKEN_KEY = 'bookstore_access_token';
@@ -8,50 +7,24 @@ const USER_KEY = 'bookstore_user';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
-  private readonly platformId = inject(PLATFORM_ID);
-
-  private isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
-  }
-
   saveTokens(accessToken: string, refreshToken: string): void {
-    if (!this.isBrowser()) {
-      return;
-    }
-
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
   }
 
   saveUser(user: UserInfo): void {
-    if (!this.isBrowser()) {
-      return;
-    }
-
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   }
 
   getAccessToken(): string | null {
-    if (!this.isBrowser()) {
-      return null;
-    }
-
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   }
 
   getRefreshToken(): string | null {
-    if (!this.isBrowser()) {
-      return null;
-    }
-
     return localStorage.getItem(REFRESH_TOKEN_KEY);
   }
 
   getUser(): UserInfo | null {
-    if (!this.isBrowser()) {
-      return null;
-    }
-
     const raw = localStorage.getItem(USER_KEY);
     if (!raw) return null;
 
@@ -63,10 +36,6 @@ export class TokenService {
   }
 
   clearAll(): void {
-    if (!this.isBrowser()) {
-      return;
-    }
-
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
