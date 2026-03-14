@@ -1,60 +1,60 @@
 .signup-card {
   max-width: 700px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: 1.5rem auto 0;
+  padding: 1.75rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
+  border-radius: 12px;
 
-  .mat-mdc-card-header {
-    margin: auto;
-    padding-bottom: 2rem;
-    text-align: center;
-
-    .mat-mdc-card-title {
-      font-size: 1.75rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    .mat-mdc-card-subtitle {
-      font-size: 1rem;
-      opacity: 0.7;
-    }
+  .mat-mdc-card-content {
+    padding: 0;
   }
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
+  gap: 0.85rem;
 }
 
 .section-title {
-  margin: -1rem 0 0 0;
+  margin: 0.4rem 0 0.1rem;
   font-weight: 500;
   font-size: 1rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.3rem;
 
   &:first-child {
     margin-top: 0;
+  }
+
+  .optional-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    opacity: 0.7;
   }
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.half-width {
+  grid-column: span 6;
+}
+
+.third-width {
+  grid-column: span 4;
 }
 
 .full-width {
   width: 100%;
 }
 
-// Terms and error styling
 .terms-checkbox {
-  margin-bottom: 0.25rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.2rem;
 
   a {
     color: var(--mdc-theme-primary, #1976d2);
@@ -69,13 +69,12 @@
 .group-error {
   color: #f44336;
   font-size: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   text-align: center;
 }
 
-// Form actions
 .form-actions {
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -102,27 +101,29 @@
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .signup-card {
     margin: 1rem;
     max-width: none;
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .form-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .half-width,
+  .third-width {
+    grid-column: span 1;
   }
 }
 
-// Enhanced focus states
 .mat-mdc-form-field.mat-focused {
   .mat-mdc-form-field-outline {
     opacity: 1;
   }
 }
 
-// Error state styling enhancement
 .mat-mdc-form-field.mat-form-field-invalid {
   .mat-mdc-form-field-outline {
     color: var(--mdc-theme-error, #f44336);

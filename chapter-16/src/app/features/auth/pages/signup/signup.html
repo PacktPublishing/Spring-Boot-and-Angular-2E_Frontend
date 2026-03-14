@@ -2,15 +2,15 @@
   <div class="page-header">
     <h1>Create Your Account</h1>
     <p>Join thousands of readers in the Packt Bookstore community</p>
-
-    @if (store.error()) {
-      <div class="error-message">{{ store.error() }}</div>
-    }
-
-    <app-signup-form (signupComplete)="handleSignupComplete($event)" />
-
-    @if (store.loading()) {
-      <mat-spinner diameter="24" />
-    }
   </div>
+
+  @if (store.error()) {
+    <div class="error-message">{{ store.error() }}</div>
+  }
+
+  <app-signup-form (signupComplete)="handleSignupComplete($event)" />
+
+  @if (store.loading()) {
+    <mat-spinner diameter="24" />
+  }
 </div>

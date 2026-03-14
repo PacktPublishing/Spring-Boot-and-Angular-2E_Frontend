@@ -9,6 +9,26 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
+// Keep navigation/content links styled as links without Material hover gray fill.
+a.mat-mdc-button-base {
+  --mat-text-button-hover-state-layer-opacity: 0;
+  --mat-text-button-focus-state-layer-opacity: 0;
+  --mat-text-button-pressed-state-layer-opacity: 0;
+  --mat-text-button-ripple-color: transparent;
+}
+
+a.mat-mdc-button-base:hover,
+a.mat-mdc-button-base:focus-visible {
+  background-color: transparent;
+}
+
+a.mat-mdc-button-base .mat-mdc-button-persistent-ripple::before,
+a.mat-mdc-button-base .mdc-button__ripple::before,
+a.mat-mdc-button-base .mdc-button__ripple::after {
+  background-color: transparent !important;
+  opacity: 0 !important;
+}
+
 // Shared page styles
 .page-container {
   min-height: 100vh;
