@@ -1,0 +1,22 @@
+<header>
+  <mat-toolbar color="primary">
+    <button matIconButton class="menu-icon" aria-label="Icon-button with menu icon">
+      <mat-icon class="white-icon">menu</mat-icon>
+    </button>
+    <a routerLink="/books">Packt Bookstore</a>
+    <span class="spacer"></span>
+
+    @if (store.isAuthenticated()) {
+      <span class="welcome"> Welcome, {{ store.userDisplayName() }} </span>
+      <button mat-icon-button routerLink="/profile" aria-label="View your profile">
+        <mat-icon>person</mat-icon>
+      </button>
+      <button mat-button (click)="onLogout()"><mat-icon>logout</mat-icon> Logout</button>
+    } @else {
+      <button mat-button routerLink="/auth/signin">
+        <mat-icon>login</mat-icon>
+        Sign In
+      </button>
+    }
+  </mat-toolbar>
+</header>
