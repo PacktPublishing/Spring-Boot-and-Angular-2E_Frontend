@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { AuthStore } from './auth.store';
 import { AuthService } from '../services/auth.service';
 import { authPageEvents, authApiEvents } from './auth.events';
+import { TokenService } from '../../../core/services/token.service';
 
 describe('AuthStore', () => {
   let store: InstanceType<typeof AuthStore>;
@@ -13,11 +14,21 @@ describe('AuthStore', () => {
   let authService: {
     signin: ReturnType<typeof vi.fn>;
     signup: ReturnType<typeof vi.fn>;
+    logout: ReturnType<typeof vi.fn>;
   };
   let router: { navigate: ReturnType<typeof vi.fn> };
+  let tokenService: {
+    saveTokens: ReturnType<typeof vi.fn>;
+    saveUser: ReturnType<typeof vi.fn>;
+    getAccessToken: ReturnType<typeof vi.fn>;
+    getRefreshToken: ReturnType<typeof vi.fn>;
+    getUser: ReturnType<typeof vi.fn>;
+    clearAll: ReturnType<typeof vi.fn>;
+  };
 
   const mockUser = {
     id: '1',
+    keycloakId: 'keycloak-user-1',
     email: 'test@bookstore.com',
     firstName: 'Alice',
     lastName: 'Johnson',
@@ -34,14 +45,24 @@ describe('AuthStore', () => {
     authService = {
       signin: vi.fn(),
       signup: vi.fn(),
+      logout: vi.fn(),
     };
     router = { navigate: vi.fn() };
+    tokenService = {
+      saveTokens: vi.fn(),
+      saveUser: vi.fn(),
+      getAccessToken: vi.fn().mockReturnValue(null),
+      getRefreshToken: vi.fn().mockReturnValue(null),
+      getUser: vi.fn().mockReturnValue(null),
+      clearAll: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         AuthStore,
         { provide: AuthService, useValue: authService },
         { provide: Router, useValue: router },
+        { provide: TokenService, useValue: tokenService },
       ],
     });
 
@@ -187,7 +208,9 @@ describe('AuthStore', () => {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      expect(router.navigate).toHaveBeenCalledWith(['/auth/signin']);
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/signin'], {
+        queryParams: { signup: 'success' },
+      });
     });
 
     it('should set error on signup failure', () => {
@@ -203,20 +226,42 @@ describe('AuthStore', () => {
   });
 
   describe('Logout', () => {
-    it('should clear all auth state', () => {
-      // First, simulate a logged-in state
+    it('should call logout service and clear auth state on success', async () => {
+      authService.logout.mockReturnValue(of(void 0));
+      tokenService.getAccessToken.mockReturnValue('mock-access-token');
+
       dispatcher.dispatch(authApiEvents.signinSuccess(mockAuthResponse));
       expect(store.isAuthenticated()).toBe(true);
 
-      // Now logout
       dispatcher.dispatch(authPageEvents.logoutClicked());
 
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(authService.logout).toHaveBeenCalled();
       expect(store.user()).toBeNull();
       expect(store.accessToken()).toBeNull();
       expect(store.refreshToken()).toBeNull();
       expect(store.isAuthenticated()).toBe(false);
       expect(store.loading()).toBe(false);
       expect(store.error()).toBeNull();
+      expect(tokenService.clearAll).toHaveBeenCalled();
+      expect(router.navigate).toHaveBeenCalledWith(['/auth/signin']);
+    });
+
+    it('should clear auth state immediately when no access token exists', async () => {
+      tokenService.getAccessToken.mockReturnValue(null);
+
+      dispatcher.dispatch(authApiEvents.signinSuccess(mockAuthResponse));
+      dispatcher.dispatch(authPageEvents.logoutClicked());
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(authService.logout).not.toHaveBeenCalled();
+      expect(store.user()).toBeNull();
+      expect(store.accessToken()).toBeNull();
+      expect(store.refreshToken()).toBeNull();
+      expect(store.isAuthenticated()).toBe(false);
+      expect(tokenService.clearAll).toHaveBeenCalled();
     });
   });
 

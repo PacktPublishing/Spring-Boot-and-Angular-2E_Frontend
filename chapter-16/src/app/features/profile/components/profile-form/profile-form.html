@@ -5,10 +5,7 @@
         <mat-form-field appearance="outline">
           <mat-label>First Name</mat-label>
           <input matInput formControlName="firstName" />
-          @if (
-            profileForm.get('firstName')?.invalid
-            && profileForm.get('firstName')?.touched
-          ) {
+          @if (profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched) {
             <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
           }
         </mat-form-field>
@@ -16,10 +13,7 @@
         <mat-form-field appearance="outline">
           <mat-label>Last Name</mat-label>
           <input matInput formControlName="lastName" />
-          @if (
-            profileForm.get('lastName')?.invalid
-            && profileForm.get('lastName')?.touched
-          ) {
+          @if (profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched) {
             <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
           }
         </mat-form-field>

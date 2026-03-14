@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { TokenService } from '../../../core/services/token.service';
 import {
   SigninRequest,
   SignupRequest,
@@ -14,7 +13,6 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private tokenService = inject(TokenService);
   private baseUrl = `${environment.apiUrl}/user/api/users`;
 
   signin(credentials: SigninRequest): Observable<{
@@ -49,41 +47,17 @@ export class AuthService {
     );
   }
 
-  logout(accessToken: string, keycloakId: string): Observable<void> {
+  logout(): Observable<void> {
     return this.http
-      .post<{ success: boolean; message: string }>(
-        `${this.baseUrl}/logout`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'X-User-Id': keycloakId,
-          },
-        },
-      )
+      .post<{ success: boolean; message: string }>(`${this.baseUrl}/logout`, {})
       .pipe(map(() => undefined));
   }
 
   getProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/profile`, {
-      headers: this.buildUserHeaders(),
-    });
+    return this.http.get<UserProfile>(`${this.baseUrl}/profile`);
   }
 
   updateProfile(profile: UserProfile): Observable<UserProfile> {
-    return this.http.put<UserProfile>(`${this.baseUrl}/profile`, profile, {
-      headers: this.buildUserHeaders(),
-    });
-  }
-
-  private buildUserHeaders(): Record<string, string> {
-    const user = this.tokenService.getUser();
-    if (!user?.keycloakId) {
-      return {};
-    }
-
-    return {
-      'X-User-Id': user.keycloakId,
-    };
+    return this.http.put<UserProfile>(`${this.baseUrl}/profile`, profile);
   }
 }

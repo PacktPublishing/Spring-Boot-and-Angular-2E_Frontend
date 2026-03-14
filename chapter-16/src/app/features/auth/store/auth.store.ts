@@ -58,10 +58,7 @@ export const AuthStore = signalStore(
     })),
 
     on(authPageEvents.logoutClicked, () => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      loading: false,
+      loading: true,
       error: null,
     })),
 
@@ -101,6 +98,7 @@ export const AuthStore = signalStore(
       events = inject(Events),
       authService = inject(AuthService),
       router = inject(Router),
+      tokenService = inject(TokenService),
     ) => ({
       signin$: events.on(authPageEvents.signinSubmitted).pipe(
         exhaustMap((event) =>
@@ -136,23 +134,20 @@ export const AuthStore = signalStore(
       ),
 
       logout$: events.on(authPageEvents.logoutClicked).pipe(
-        exhaustMap(() => {
-          const token = store.accessToken();
-          const user = store.user();
-          if (!token || !user) {
-            return of(authApiEvents.logoutSuccess());
-          }
-          return authService.logout(token, user.keycloakId).pipe(
-            map(() => authApiEvents.logoutSuccess()),
-            catchError((error: unknown) =>
-              of(
-                authApiEvents.logoutFailure({
-                  error: normalizeApiErrorMessage(error, 'Unable to sign out right now.'),
-                }),
-              ),
-            ),
-          );
-        }),
+        exhaustMap(() =>
+          tokenService.getAccessToken()
+            ? authService.logout().pipe(
+                map(() => authApiEvents.logoutSuccess()),
+                catchError((error: unknown) =>
+                  of(
+                    authApiEvents.logoutFailure({
+                      error: normalizeApiErrorMessage(error, 'Unable to sign out right now.'),
+                    }),
+                  ),
+                ),
+              )
+            : of(authApiEvents.logoutSuccess()),
+        ),
       ),
 
       refreshToken$: events
@@ -178,14 +173,16 @@ export const AuthStore = signalStore(
       events.on(authApiEvents.tokenRefreshSuccess).subscribe((event) => {
         tokenService.saveTokens(event.payload.accessToken, event.payload.refreshToken);
       });
-      events.on(authApiEvents.logoutSuccess).subscribe(() => tokenService.clearAll());
       events.on(authApiEvents.signinSuccess).subscribe(() => router.navigate(['/books']));
       events.on(authApiEvents.signupSuccess).subscribe(() =>
         router.navigate(['/auth/signin'], {
           queryParams: { signup: 'success' },
         }),
       );
-      events.on(authApiEvents.logoutSuccess).subscribe(() => router.navigate(['/auth/signin']));
+      events.on(authApiEvents.logoutSuccess).subscribe(() => {
+        tokenService.clearAll();
+        router.navigate(['/auth/signin']);
+      });
       return {};
     },
   ),
