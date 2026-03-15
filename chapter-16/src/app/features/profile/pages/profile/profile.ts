@@ -5,7 +5,7 @@ import { AuthStore } from '../../../auth/store/auth.store';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ProfileForm } from '../../components/profile-form/profile-form';
 import { UserProfile } from '../../../../shared/models/auth';
-import { extractErrorMessage } from '../../../../shared/utils/error-message';
+import { normalizeApiErrorMessage } from '../../../../shared/utils/error-message';
 
 @Component({
   selector: 'app-profile',
@@ -35,7 +35,7 @@ export class Profile implements OnInit {
         this.pageLoading.set(false);
       },
       error: (err: unknown) => {
-        const message = extractErrorMessage(err, 'Failed to load profile');
+        const message = normalizeApiErrorMessage(err, 'Failed to load profile');
         this.error.set(message);
         this.pageLoading.set(false);
       },
@@ -51,7 +51,7 @@ export class Profile implements OnInit {
         this.snackBar.open('Profile updated successfully', 'Close', { duration: 3000 });
       },
       error: (err: unknown) => {
-        const message = extractErrorMessage(err, 'Failed to update profile');
+        const message = normalizeApiErrorMessage(err, 'Failed to update profile');
         this.loading.set(false);
         this.snackBar.open(message, 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
       },

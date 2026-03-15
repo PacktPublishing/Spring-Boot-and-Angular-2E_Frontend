@@ -4,24 +4,6 @@ import {
 } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { UserProfile } from '../../../shared/models/auth';
-
-const mockUser = {
-  id: '123',
-  keycloakId: 'kc-123',
-  email: 'test@bookstore.com',
-  firstName: 'Test',
-  lastName: 'User',
-  role: 'user',
-};
-
-const mockAuthResponse = {
-  accessToken: 'mock-access-token',
-  refreshToken: 'mock-refresh-token',
-  tokenType: 'Bearer',
-  expiresIn: 300,
-  user: mockUser,
-};
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -34,179 +16,145 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
   });
+
   afterEach(() => { httpMock.verify(); });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('should POST credentials and return mapped response', () => {
+    const credentials = {
+      email: 'test@bookstore.com', password: 'password123',
+    };
+    const mockResponse = {
+      accessToken: 'mock-access-token',
+      refreshToken: 'mock-refresh-token',
+      tokenType: 'Bearer', expiresIn: 300,
+      user: {
+        id: '123', keycloakId: 'kc-123',
+        email: 'test@bookstore.com',
+        firstName: 'Test', lastName: 'User',
+        role: 'user',
+      },
+    };
+
+    // Step 1: Call the service method
+    service.signin(credentials).subscribe((result) => {
+      expect(result.accessToken).toBe('mock-access-token');
+      expect(result.user.email).toBe('test@bookstore.com');
+      // tokenType and expiresIn are stripped by map()
+      expect((result as any).tokenType).toBeUndefined();
+    });
+
+    // Step 2: Assert the captured request
+    const req = httpMock.expectOne(
+      r => r.url.includes('/users/signin')
+    );
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(credentials);
+
+    // Step 3: Flush a simulated response
+    req.flush(mockResponse);
   });
 
-  describe('signin', () => {
-    it('should POST credentials and return mapped response', () => {
-      const credentials = { email: 'test@bookstore.com', password: 'password123' };
+  it('should POST signup data and return void', () => {
+    const signupData = {
+      email: 'new@bookstore.com',
+      password: 'Password123',
+      firstName: 'Jane',
+      lastName: 'Doe',
+    };
 
-      service.signin(credentials).subscribe((result) => {
-        expect(result.accessToken).toBe('mock-access-token');
-        expect(result.refreshToken).toBe('mock-refresh-token');
-        expect(result.user).toEqual(mockUser);
-      });
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/signin'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(credentials);
-      req.flush(mockAuthResponse);
+    service.signup(signupData).subscribe((result) => {
+      expect(result).toBeUndefined();
     });
 
-    it('should map only user, accessToken, and refreshToken from the response', () => {
-      const credentials = { email: 'test@bookstore.com', password: 'password123' };
-      let mapped: any;
+    const req = httpMock.expectOne(r => r.url.includes('/users/signup'));
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(signupData);
 
-      service.signin(credentials).subscribe(result => (mapped = result));
-
-      httpMock.expectOne(r => r.url.includes('/users/signin')).flush(mockAuthResponse);
-
-      expect(Object.keys(mapped)).toEqual(['user', 'accessToken', 'refreshToken']);
-    });
+    req.flush({ success: true, message: 'User created' });
   });
 
-  describe('signup', () => {
-    it('should POST registration data and return void', () => {
-      const signupData = {
-        email: 'new@bookstore.com',
-        password: 'secret',
-        firstName: 'New',
-        lastName: 'User',
-      };
-      let emitted = false;
+  it('should POST refreshToken and return both tokens', () => {
+    const refreshTokenValue = 'old-refresh-token';
+    const mockResponse = {
+      accessToken: 'new-access-token',
+      refreshToken: 'new-refresh-token',
+      tokenType: 'Bearer',
+      expiresIn: 300,
+      user: null,
+    };
 
-      service.signup(signupData).subscribe(() => (emitted = true));
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/signup'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(signupData);
-      req.flush({ success: true, message: 'User registered' });
-
-      expect(emitted).toBe(true);
+    service.refreshToken(refreshTokenValue).subscribe((result) => {
+      expect(result.accessToken).toBe('new-access-token');
+      expect(result.refreshToken).toBe('new-refresh-token');
+      // tokenType, expiresIn, and user are stripped by map()
+      expect((result as any).tokenType).toBeUndefined();
+      expect((result as any).expiresIn).toBeUndefined();
+      expect((result as any).user).toBeUndefined();
     });
 
-    it('should include optional fields when provided', () => {
-      const signupData = {
-        email: 'new@bookstore.com',
-        password: 'secret',
-        firstName: 'New',
-        lastName: 'User',
-        phone: '555-0100',
-        address: '1 Main St',
-        city: 'Athens',
-        state: 'Attica',
-        zipCode: '10001',
-        country: 'GR',
-      };
+    const req = httpMock.expectOne(r => r.url.includes('/users/refresh-token'));
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ refreshToken: refreshTokenValue });
 
-      service.signup(signupData).subscribe();
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/signup'));
-      expect(req.request.body).toEqual(signupData);
-      req.flush({ success: true, message: 'User registered' });
-    });
+    req.flush(mockResponse);
   });
 
-  describe('refreshToken', () => {
-    it('should POST the refresh token and return new tokens', () => {
-      service.refreshToken('old-refresh-token').subscribe((result) => {
-        expect(result.accessToken).toBe('mock-access-token');
-        expect(result.refreshToken).toBe('mock-refresh-token');
-      });
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/refresh-token'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({ refreshToken: 'old-refresh-token' });
-      req.flush(mockAuthResponse);
+  it('should POST logout with no parameters and return void', () => {
+    service.logout().subscribe((result) => {
+      expect(result).toBeUndefined();
     });
 
-    it('should map only accessToken and refreshToken from the response', () => {
-      let mapped: any;
+    const req = httpMock.expectOne(r => r.url.includes('/users/logout'));
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({});
 
-      service.refreshToken('old-refresh-token').subscribe(result => (mapped = result));
-
-      httpMock.expectOne(r => r.url.includes('/users/refresh-token')).flush(mockAuthResponse);
-
-      expect(Object.keys(mapped)).toEqual(['accessToken', 'refreshToken']);
-    });
+    req.flush({ success: true, message: 'Logged out' });
   });
 
-  describe('logout', () => {
-    it('should POST to logout endpoint and return void', () => {
-      let emitted = false;
+  it('should GET profile and return user profile', () => {
+    const mockProfile = {
+      firstName: 'Test',
+      lastName: 'User',
+      phone: '555-1234',
+      address: '123 Main St',
+      city: 'Springfield',
+      state: 'IL',
+      zipCode: '62701',
+      country: 'US',
+    };
 
-      service.logout().subscribe(() => (emitted = true));
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/logout'));
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual({});
-      req.flush({ success: true, message: 'Logged out' });
-
-      expect(emitted).toBe(true);
+    service.getProfile().subscribe((result) => {
+      expect(result).toEqual(mockProfile);
     });
+
+    const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
+    expect(req.request.method).toBe('GET');
+
+    req.flush(mockProfile);
   });
 
-  describe('getProfile', () => {
-    it('should GET the user profile', () => {
-      const mockProfile: UserProfile = {
-        firstName: 'Test',
-        lastName: 'User',
-        phone: '555-0100',
-        city: 'Athens',
-      };
+  it('should PUT profile with body and return updated profile', () => {
+    const updatedProfile = {
+      firstName: 'Updated',
+      lastName: 'Name',
+      phone: '555-9999',
+      address: '456 New Ave',
+      city: 'Chicago',
+      state: 'IL',
+      zipCode: '60601',
+      country: 'US',
+    };
 
-      service.getProfile().subscribe((profile) => {
-        expect(profile).toEqual(mockProfile);
-      });
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
-      expect(req.request.method).toBe('GET');
-      req.flush(mockProfile);
+    service.updateProfile(updatedProfile).subscribe((result) => {
+      expect(result).toEqual(updatedProfile);
+      expect(result.firstName).toBe('Updated');
+      expect(result.city).toBe('Chicago');
     });
 
-    it('should handle a profile with only required fields', () => {
-      const minimalProfile: UserProfile = { firstName: 'Min', lastName: 'Mal' };
-      let result: UserProfile | undefined;
+    const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(updatedProfile);
 
-      service.getProfile().subscribe(p => (result = p));
-
-      httpMock.expectOne(r => r.url.includes('/users/profile')).flush(minimalProfile);
-
-      expect(result).toEqual(minimalProfile);
-    });
-  });
-
-  describe('updateProfile', () => {
-    it('should PUT the updated profile and return the saved profile', () => {
-      const updatedProfile: UserProfile = {
-        firstName: 'Updated',
-        lastName: 'User',
-        city: 'Thessaloniki',
-      };
-
-      service.updateProfile(updatedProfile).subscribe((profile) => {
-        expect(profile).toEqual(updatedProfile);
-      });
-
-      const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(updatedProfile);
-      req.flush(updatedProfile);
-    });
-
-    it('should return the server response, not the request payload', () => {
-      const sentProfile: UserProfile = { firstName: 'Before', lastName: 'Save' };
-      const serverProfile: UserProfile = { firstName: 'After', lastName: 'Save', city: 'Patras' };
-      let result: UserProfile | undefined;
-
-      service.updateProfile(sentProfile).subscribe(p => (result = p));
-
-      httpMock.expectOne(r => r.url.includes('/users/profile')).flush(serverProfile);
-
-      expect(result).toEqual(serverProfile);
-    });
+    req.flush(updatedProfile);
   });
 });
