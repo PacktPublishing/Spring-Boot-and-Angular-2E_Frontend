@@ -1,0 +1,125 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Book' : 'Add New Book' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" id="book-form" class="book-form app-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter book title" autocomplete="off" />
+      @if (bookForm.get('title')?.invalid && bookForm.get('title')?.touched) {
+        <mat-error>{{ getErrorMessage('title') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>ISBN</mat-label>
+      <input matInput formControlName="isbn" placeholder="e.g. 9780743273565" autocomplete="off" />
+      @if (bookForm.get('isbn')?.invalid && bookForm.get('isbn')?.touched) {
+        <mat-error>{{ getErrorMessage('isbn') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author Name</mat-label>
+      <input
+        matInput
+        formControlName="authorName"
+        placeholder="Enter author's full name"
+        autocomplete="off"
+      />
+      @if (bookForm.get('authorName')?.invalid && bookForm.get('authorName')?.touched) {
+        <mat-error>{{ getErrorMessage('authorName') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Price ($)</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="price"
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+        />
+        @if (bookForm.get('price')?.invalid && bookForm.get('price')?.touched) {
+          <mat-error>{{ getErrorMessage('price') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Genre</mat-label>
+        <mat-select formControlName="genre">
+          @for (genre of genres; track genre) {
+            <mat-option [value]="genre">{{ genre }}</mat-option>
+          }
+        </mat-select>
+        @if (bookForm.get('genre')?.invalid && bookForm.get('genre')?.touched) {
+          <mat-error>{{ getErrorMessage('genre') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Published Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="publishedPicker"
+        formControlName="published"
+        placeholder="MM/DD/YYYY"
+        aria-label="Published date"
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="publishedPicker" />
+      <mat-datepicker #publishedPicker />
+      @if (bookForm.get('published')?.invalid && bookForm.get('published')?.touched) {
+        <mat-error>{{ getErrorMessage('published') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description <span class="optional-label">(optional)</span></mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        placeholder="Enter a brief description"
+        rows="3"
+      ></textarea>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Page Count <span class="optional-label">(optional)</span></mat-label>
+        <input matInput type="number" formControlName="pageCount" placeholder="e.g. 320" min="1" />
+        @if (bookForm.get('pageCount')?.invalid && bookForm.get('pageCount')?.touched) {
+          <mat-error>{{ getErrorMessage('pageCount') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Cover Image URL <span class="optional-label">(optional)</span></mat-label>
+        <input
+          matInput
+          formControlName="coverImageUrl"
+          placeholder="https://example.com/cover.jpg"
+          autocomplete="off"
+        />
+        @if (bookForm.get('coverImageUrl')?.invalid && bookForm.get('coverImageUrl')?.touched) {
+          <mat-error>{{ getErrorMessage('coverImageUrl') }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    form="book-form"
+    [disabled]="!isFormValid()"
+  >
+    {{ isEditMode ? 'Update Book' : 'Create Book' }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,17 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p>Manage your Packt Bookstore account</p>
+  </div>
+  @if (pageLoading()) {
+    <mat-spinner diameter="48" />
+  } @else if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  } @else {
+    <app-profile-form
+      [profileData]="profileData()"
+      [loading]="loading()"
+      (profileSubmit)="handleProfileSubmit($event)"
+    />
+  }
+</div>
