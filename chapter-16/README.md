@@ -60,7 +60,7 @@ This chapter project showcases:
 - Dedicated `/profile` page behind `authGuard`
 - `Profile` page handles API load and update plus user notifications
 - `ProfileForm` component handles presentation and form validation
-- Shared utility `extractErrorMessage` standardizes backend error text extraction
+- Shared utility `normalizeApiErrorMessage` standardizes backend error text extraction
 
 ### Books and Authors (Material Dialog Patterns)
 
@@ -70,9 +70,7 @@ This chapter project showcases:
 
 ### SSR Compatibility
 
-- SSR route config uses prerender mode
-- `TokenService` guards local storage access using platform checks
-- Prevents server crashes from browser-only globals such as local storage on Node.js
+This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `RenderMode.Client` in `app.routes.server.ts`. As a result, `TokenService` accesses `localStorage` directly without platform guards. SSR-safe storage is a natural next step for a production hardening iteration.
 
 ## Tech Stack
 
@@ -135,6 +133,26 @@ Run interactive test UI:
 npm run test:ui
 ```
 
+### Unit Test Coverage
+
+Spec files are co-located with their source files and cover all major layers:
+
+| Layer | Covered files |
+|---|---|
+| App bootstrap | `app.spec.ts` |
+| Guards | `auth.guard.spec.ts` |
+| Interceptors | `auth.interceptor.spec.ts` |
+| Services | `authentication.spec.ts`, `token.service.spec.ts`, `auth.service.spec.ts` |
+| Signal Store | `auth.store.spec.ts` |
+| Auth components | `signin-form.spec.ts`, `signup-form.spec.ts` |
+| Auth pages | `signin.spec.ts`, `signup.spec.ts` |
+| Books components | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts` |
+| Books pages | `list.spec.ts` |
+| Profile component | `profile-form.spec.ts` |
+| Profile page | `profile.spec.ts` |
+| Layout | `header.spec.ts`, `footer.spec.ts` |
+| Utilities | `error.utils.spec.ts` |
+
 ## Formatting
 
 Format source files:
@@ -152,58 +170,70 @@ npm run format:check
 ## Project Structure
 
 ```text
-src/app/
-├── app.config.ts                      # HTTP client + interceptor + hydration
-├── app.routes.ts                      # Route setup with auth and guest guards
-├── app.routes.server.ts               # SSR prerender route config
-├── core/
-│   ├── guards/
-│   │   └── auth.guard.ts              # authGuard and guestGuard
-│   ├── interceptors/
-│   │   └── auth.interceptors.ts       # Bearer + refresh retry strategy
-│   └── services/
-│       ├── authentication.ts          # Legacy helper kept for continuity
-│       └── token.service.ts           # SSR-safe token persistence
-├── features/
-│   ├── auth/
-│   │   ├── auth.routes.ts
-│   │   ├── components/
-│   │   │   ├── signin-form/
-│   │   │   └── signup-form/
-│   │   ├── pages/
-│   │   │   ├── signin/
-│   │   │   └── signup/
-│   │   ├── services/
-│   │   │   └── auth.service.ts        # API integration for auth and profile
-│   │   └── store/
-│   │       ├── auth.state.ts
-│   │       ├── auth.events.ts
-│   │       └── auth.store.ts
-│   ├── books/
-│   │   ├── books.routes.ts
-│   │   ├── components/
-│   │   │   ├── author-form/
-│   │   │   ├── book-form/
-│   │   │   └── book-list/
-│   │   └── pages/
-│   │       └── list/
-│   └── profile/
-│       ├── components/
-│       │   └── profile-form/
-│       └── pages/
-│           └── profile/
-└── shared/
-    ├── layout/
-    │   ├── header/
-    │   └── footer/
-    ├── models/
-    │   ├── auth.ts
-    │   ├── author.ts
-    │   └── book.ts
-    ├── utils/
-    │   └── error-message.ts
-    └── validators/
-        └── custom-validators.ts
+src/
+├── environments/
+│   ├── environment.ts                 # Dev environment config (API base URL)
+│   └── environment.prod.ts            # Prod environment config
+└── app/
+    ├── app.config.ts                      # HTTP client + interceptor + hydration
+    ├── app.routes.ts                      # Route setup with auth and guest guards
+    ├── app.routes.server.ts               # SSR prerender route config
+    ├── app.spec.ts
+    ├── core/
+    │   ├── guards/
+    │   │   ├── auth.guard.ts              # authGuard and guestGuard
+    │   │   └── auth.guard.spec.ts
+    │   ├── interceptors/
+    │   │   ├── auth.interceptors.ts       # Bearer + refresh retry strategy
+    │   │   └── auth.interceptor.spec.ts
+    │   └── services/
+    │       ├── authentication.ts          # Legacy helper kept for continuity
+    │       ├── authentication.spec.ts
+    │       ├── token.service.ts           # SSR-safe token persistence
+    │       └── token.service.spec.ts
+    ├── features/
+    │   ├── auth/
+    │   │   ├── auth.routes.ts
+    │   │   ├── components/
+    │   │   │   ├── signin-form/           # signin-form.ts + .html + .scss + .spec.ts
+    │   │   │   └── signup-form/           # signup-form.ts + .html + .scss + .spec.ts
+    │   │   ├── pages/
+    │   │   │   ├── signin/                # signin.ts + .html + .scss + .spec.ts
+    │   │   │   └── signup/                # signup.ts + .html + .scss + .spec.ts
+    │   │   ├── services/
+    │   │   │   ├── auth.service.ts        # API integration for auth and profile
+    │   │   │   └── auth.service.spec.ts
+    │   │   └── store/
+    │   │       ├── auth.state.ts
+    │   │       ├── auth.events.ts
+    │   │       ├── auth.store.ts
+    │   │       └── auth.store.spec.ts
+    │   ├── books/
+    │   │   ├── books.routes.ts
+    │   │   ├── components/
+    │   │   │   ├── author-form/           # author-form.ts + .html + .scss + .spec.ts
+    │   │   │   ├── book-form/             # book-form.ts + .html + .scss + .spec.ts
+    │   │   │   └── book-list/             # book-list.ts + .html + .scss + .spec.ts
+    │   │   └── pages/
+    │   │       └── list/                  # list.ts + .html + .scss + .spec.ts
+    │   └── profile/
+    │       ├── components/
+    │       │   └── profile-form/          # profile-form.ts + .html + .scss + .spec.ts
+    │       └── pages/
+    │           └── profile/               # profile.ts + .html + .scss + .spec.ts
+    └── shared/
+        ├── layout/
+        │   ├── header/                    # header.ts + .html + .scss + .spec.ts
+        │   └── footer/                    # footer.ts + .html + .scss + .spec.ts
+        ├── models/
+        │   ├── auth.ts
+        │   ├── author.ts
+        │   └── book.ts
+        ├── utils/
+        │   ├── error-message.ts
+        │   └── error.utils.spec.ts
+        └── validators/
+            └── custom-validators.ts
 ```
 
 ## Key Implementation Highlights

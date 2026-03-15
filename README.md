@@ -71,8 +71,23 @@ Advances to centralized state management with NgRx signal store:
 - **Form Integration**: Connecting reactive forms with store state for create and edit workflows
 - **Unified Form Component**: Single component handling both create and edit modes based on route parameters
 - **Book Service**: API integration layer for fetching and managing book data
-- **Advanced Form Patterns**: Building on Chapter 13's reactive forms with state management integration
+- **Advanced Form Patterns**: Building on Chapter 14's reactive forms with state management integration
 - **Comprehensive Testing**: Store testing, form component testing, and state mutation validation with Vitest
+
+### Chapter 16 - HTTP Communication, Interceptors, Guards, and Profile Management
+
+**Location**: `chapter-16/`
+
+Extends the bookstore app with production-style authentication flow patterns:
+
+- **Auth Signal Store**: Typed auth state with events, reducers, computed state, and side effects using NgRx Signal Store + NgRx Events
+- **Route Guards**: `authGuard` protects private routes (`/books`, `/profile`); `guestGuard` prevents signed-in users from visiting `/auth/*`
+- **HTTP Interceptor**: Bearer token injection with automatic 401 refresh-token retry strategy
+- **API-Backed Auth Service**: `signin`, `signup`, `logout`, `refreshToken`, `getProfile`, and `updateProfile` calls via `HttpClient`
+- **Token Persistence**: `TokenService` stores and retrieves tokens and user data from `localStorage` directly (app runs in CSR mode for this chapter)
+- **Profile Feature**: Smart/dumb pair — profile page handles API orchestration; profile form is a reusable presentational component
+- **Shared Utilities**: `normalizeApiErrorMessage` for consistent backend error text extraction; `custom-validators.ts` for reusable form validators
+- **Comprehensive Unit Tests**: Co-located spec files covering guards, interceptors, services, store, all components and pages, layout, and utilities
 
 ## Technology Stack
 
@@ -81,7 +96,8 @@ Advances to centralized state management with NgRx signal store:
 - **Angular Material**: Material Design components and theming
 - **Reactive Forms**: Form building and validation
 - **Angular Router**: Navigation and route protection
-- **RxJS**: Reactive programming and state management
+- **NgRx Signal Store + NgRx Events**: Reactive state management with event-driven architecture
+- **RxJS**: Reactive programming and async workflows
 - **SCSS**: Advanced styling with CSS preprocessor
 - **Vitest**: Modern testing framework for faster unit test execution
 - **GitHub Copilot**: AI-assisted development and code generation
@@ -118,6 +134,11 @@ npm run start
 cd chapter-15
 npm install
 npm run start
+
+# For Chapter 16 - HTTP Communication, Interceptors, Guards, and Profile Management
+cd chapter-16
+npm install
+npm run start
 ```
 
 The application will be available at `http://localhost:4200`
@@ -148,7 +169,7 @@ src/
 │   ├── core/                 # Core services and utilities
 │   │   └── services/
 │   ├── features/             # Feature modules
-│   │   ├── auth/             # Form components (Chapter 13)
+│   │   ├── auth/             # Auth feature (Chapter 14+)
 │   │   │   ├── components/   # Dumb components
 │   │   │   ├── pages/        # Smart components (containers)
 │   │   │   └── auth.routes.ts
@@ -230,8 +251,9 @@ Each chapter includes these npm scripts:
 2. **Progress to Chapter 12** to master AI-assisted development workflows and GitHub Copilot integration
 3. **Continue to Chapter 14** to learn advanced reactive forms and UI component development
 4. **Advance to Chapter 15** to master centralized state management with NgRx signal store and event-driven architecture
-5. **Explore the GitHub instructions** to understand AI-assisted development patterns
-6. **Experiment with modifications** to reinforce learning concepts
+5. **Complete with Chapter 16** to integrate HTTP communication, route guards, an auth interceptor with refresh-token retry, and `localStorage`-based token persistence (CSR mode)
+6. **Explore the GitHub instructions** to understand AI-assisted development patterns
+7. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
 
