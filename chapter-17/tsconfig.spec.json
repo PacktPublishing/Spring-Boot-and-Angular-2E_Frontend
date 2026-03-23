@@ -3,14 +3,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
+    "outDir": "./out-tsc/spec",
     "rootDir": "./src",
-    "types": []
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
-    "src/**/*.ts"
-, "../chapter-17/src/app/shared/models/paginated.ts"  ],
-  "exclude": [
+    "src/**/*.d.ts",
     "src/**/*.spec.ts"
   ]
 }

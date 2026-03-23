@@ -1,0 +1,107 @@
+:host {
+  display: block;
+  min-width: 580px;
+}
+
+.dialog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  mat-form-field {
+    flex: 1;
+    // Remove the subscript reserved space so the button aligns correctly
+    margin-bottom: -1.25em;
+  }
+
+  button {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.authors-table {
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: #f5f5f5;
+  }
+
+  tr.mat-mdc-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: background-color 0.15s ease;
+  }
+
+  .actions-col {
+    width: 112px;
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 4px;
+  }
+
+  .edit-btn {
+    color: #3f51b5;
+  }
+
+  .delete-btn {
+    color: #e53935;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background-color: #fdecea;
+  color: #c62828;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 0;
+  color: rgba(0, 0, 0, 0.38);
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+mat-paginator {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 0.5rem;
+}

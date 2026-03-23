@@ -1,0 +1,20 @@
+.book-form {
+  padding-top: 0.5rem;
+  min-width: 480px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.optional-label {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-weight: 400;
+}

@@ -11,3 +11,14 @@ export interface Book {
   coverImageUrl?: string;
 }
 
+export interface BookRequest {
+  title: string;
+  isbn: string;
+  authorId: number;
+  price: number;
+  genre: string;
+  published: string;
+  description?: string;
+  pageCount?: number;
+  coverImageUrl?: string;
+}
