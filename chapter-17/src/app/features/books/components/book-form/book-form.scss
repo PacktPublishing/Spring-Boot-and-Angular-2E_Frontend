@@ -1,15 +1,30 @@
 .book-form {
   padding-top: 0.5rem;
-  min-width: 480px;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  mat-form-field {
+    margin: 0;
+    width: 100%;
+  }
+
+  // Apply minimum width on tablet and desktop
+  @media (min-width: 601px) {
+    min-width: 480px;
+  }
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
 
   mat-form-field {
     width: 100%;
+    margin: 0;
   }
 }
 

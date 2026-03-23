@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Manage Authors</h2>
 <mat-dialog-content>
   <div class="dialog-toolbar">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Search by name</mat-label>
       <input
         matInput
@@ -15,10 +15,6 @@
         </button>
       }
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="openCreateDialog()">
-      <mat-icon>add</mat-icon>
-      Add Author
-    </button>
   </div>
 
   @if (store.loading()) {
@@ -35,6 +31,7 @@
   }
 
   @if (store.hasAuthors() && !store.loading()) {
+    <div class="table-wrapper">
     <table mat-table [dataSource]="store.authors()" class="authors-table">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -76,6 +73,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    </div>
 
     @if (!store.isSearching()) {
       <mat-paginator
@@ -97,6 +95,10 @@
   }
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions class="dialog-actions">
   <button mat-button (click)="close()">Close</button>
+  <button mat-raised-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Add Author
+  </button>
 </mat-dialog-actions>

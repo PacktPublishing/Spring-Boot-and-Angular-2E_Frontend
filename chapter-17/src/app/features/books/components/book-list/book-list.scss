@@ -1,0 +1,12 @@
+// Keep action buttons on one row
+.mat-mdc-cell.actions-cell,
+.mat-mdc-header-cell.actions-cell {
+  white-space: nowrap;
+  width: 96px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
