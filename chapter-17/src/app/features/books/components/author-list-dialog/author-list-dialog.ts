@@ -78,7 +78,7 @@ export class AuthorListDialog implements OnInit {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(AuthorForm, {
-      width: '480px',
+      width: '560px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -91,7 +91,7 @@ export class AuthorListDialog implements OnInit {
 
   openEditDialog(author: Author) {
     const dialogRef = this.dialog.open(AuthorForm, {
-      width: '480px',
+      width: '560px',
       data: author,
     });
 

@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,7 +12,6 @@ import { Author } from '../../../../shared/models/author';
   selector: 'author-form',
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,

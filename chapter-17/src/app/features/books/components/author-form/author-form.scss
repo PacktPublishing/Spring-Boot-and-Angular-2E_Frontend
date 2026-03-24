@@ -1,26 +1,3 @@
-.author-form-card {
-  max-width: 480px;
-
-  .mat-mdc-card-header {
-    margin: auto;
-    padding-bottom: 1.5rem;
-    text-align: center;
-
-    .mat-mdc-card-title {
-      font-size: 1.5rem;
-      font-weight: 500;
-    }
-  }
-}
-
-.form-actions {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-@media (max-width: 768px) {
-  .author-form-card {
-    margin: 1rem;
-  }
+:host {
+  display: block;
 }

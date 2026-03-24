@@ -159,6 +159,120 @@ body {
   color: var(--mdc-theme-error, #f44336);
 }
 
+// Shared modal utilities.
+.app-modal-content-static {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.app-modal-toolbar {
+  display: flex;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+
+  .mat-mdc-form-field {
+    width: 100%;
+    margin: 0;
+    margin-bottom: -1.25em;
+  }
+}
+
+.mat-mdc-dialog-actions.app-modal-actions-end {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+// Shared table chrome: uppercase headers + row hover
+.app-table {
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: #f5f5f5;
+  }
+
+  tr.mat-mdc-row:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: background-color 0.15s ease;
+  }
+}
+
+.app-modal-scroll-x {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+}
+
+.app-modal-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+.app-modal-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  background-color: #fdecea;
+  color: #c62828;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+.app-modal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 0;
+  color: rgba(0, 0, 0, 0.38);
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.app-modal-form {
+  padding-top: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .mat-mdc-form-field {
+    width: 100%;
+    margin: 0;
+  }
+
+  @media (min-width: 601px) {
+    min-width: 480px;
+  }
+}
+
 @media (max-width: 768px) {
   .page-container {
     padding: 1rem;
@@ -182,5 +296,9 @@ body {
   .error-message {
     margin-top: 0.6rem;
     font-size: 0.9rem;
+  }
+
+  .app-modal-toolbar .mat-mdc-form-field {
+    margin-bottom: 0;
   }
 }

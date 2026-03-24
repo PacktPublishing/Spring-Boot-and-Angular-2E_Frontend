@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Manage Authors</h2>
-<mat-dialog-content>
-  <div class="dialog-toolbar">
+<mat-dialog-content class="app-modal-content-static">
+  <div class="app-modal-toolbar">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Search by name</mat-label>
       <input
@@ -18,21 +18,21 @@
   </div>
 
   @if (store.loading()) {
-    <div class="loading-container">
+    <div class="app-modal-loading">
       <mat-spinner diameter="40"></mat-spinner>
     </div>
   }
 
   @if (store.error()) {
-    <div class="error-message">
+    <div class="app-modal-error">
       <mat-icon>error</mat-icon>
       {{ store.error() }}
     </div>
   }
 
   @if (store.hasAuthors() && !store.loading()) {
-    <div class="table-wrapper">
-    <table mat-table [dataSource]="store.authors()" class="authors-table">
+    <div class="app-modal-scroll-x">
+    <table mat-table [dataSource]="store.authors()" class="authors-table app-table">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let author">{{ author.name }}</td>
@@ -88,14 +88,14 @@
   }
 
   @if (!store.hasAuthors() && !store.loading()) {
-    <div class="empty-state">
+    <div class="app-modal-empty">
       <mat-icon>person_off</mat-icon>
       <p>No authors found. Click "Add Author" to create one.</p>
     </div>
   }
 </mat-dialog-content>
 
-<mat-dialog-actions class="dialog-actions">
+<mat-dialog-actions class="app-modal-actions-end">
   <button mat-button (click)="close()">Close</button>
   <button mat-raised-button color="primary" (click)="openCreateDialog()">
     <mat-icon>add</mat-icon>
