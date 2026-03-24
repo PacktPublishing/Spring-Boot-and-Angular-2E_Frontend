@@ -32,47 +32,47 @@
 
   @if (store.hasAuthors() && !store.loading()) {
     <div class="app-modal-scroll-x">
-    <table mat-table [dataSource]="store.authors()" class="authors-table app-table">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let author">{{ author.name }}</td>
-      </ng-container>
+      <table mat-table [dataSource]="store.authors()" class="authors-table app-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let author">{{ author.name }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="nationality">
-        <th mat-header-cell *matHeaderCellDef>Nationality</th>
-        <td mat-cell *matCellDef="let author">{{ author.nationality }}</td>
-      </ng-container>
+        <ng-container matColumnDef="nationality">
+          <th mat-header-cell *matHeaderCellDef>Nationality</th>
+          <td mat-cell *matCellDef="let author">{{ author.nationality }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="books">
-        <th mat-header-cell *matHeaderCellDef>Books</th>
-        <td mat-cell *matCellDef="let author">{{ author.books?.length ?? 0 }}</td>
-      </ng-container>
+        <ng-container matColumnDef="books">
+          <th mat-header-cell *matHeaderCellDef>Books</th>
+          <td mat-cell *matCellDef="let author">{{ author.books?.length ?? 0 }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef class="actions-col">Actions</th>
-        <td mat-cell *matCellDef="let author" class="actions-col">
-          <button
-            mat-icon-button
-            class="edit-btn"
-            aria-label="Edit author"
-            (click)="openEditDialog(author)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            class="delete-btn"
-            aria-label="Delete author"
-            (click)="confirmDelete(author)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-col">Actions</th>
+          <td mat-cell *matCellDef="let author" class="actions-col">
+            <button
+              mat-icon-button
+              class="edit-btn"
+              aria-label="Edit author"
+              (click)="openEditDialog(author)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="delete-btn"
+              aria-label="Delete author"
+              (click)="confirmDelete(author)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
     </div>
 
     @if (!store.isSearching()) {

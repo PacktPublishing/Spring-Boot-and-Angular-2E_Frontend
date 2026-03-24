@@ -1,13 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { Dispatcher } from '@ngrx/signals/events';
@@ -135,10 +128,7 @@ describe('authInterceptor', () => {
       // --- Flush 1: original /api/books request receives 401 ---
       const originalReq = httpMock.expectOne('/api/books');
       expect(originalReq.request.headers.get('Authorization')).toBe('Bearer old-access-token');
-      originalReq.flush(
-        { message: 'Unauthorized' },
-        { status: 401, statusText: 'Unauthorized' },
-      );
+      originalReq.flush({ message: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
 
       expect(mockAuthService.refreshToken).toHaveBeenCalledWith('old-refresh-token');
       expect(mockAuthService.refreshToken).toHaveBeenCalledTimes(1);

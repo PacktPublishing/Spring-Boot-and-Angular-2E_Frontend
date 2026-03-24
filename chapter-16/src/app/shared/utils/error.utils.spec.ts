@@ -42,7 +42,9 @@ describe('normalizeApiErrorMessage', () => {
   });
 
   it('should return the fallback when the message is an Angular HTTP noise string', () => {
-    const err = { message: 'Http failure response for https://api.example.com/books: 0 Unknown Error' };
+    const err = {
+      message: 'Http failure response for https://api.example.com/books: 0 Unknown Error',
+    };
     expect(normalizeApiErrorMessage(err, FALLBACK)).toBe(FALLBACK);
   });
 });

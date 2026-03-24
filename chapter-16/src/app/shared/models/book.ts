@@ -10,4 +10,3 @@ export interface Book {
   pageCount?: number;
   coverImageUrl?: string;
 }
-

@@ -1,7 +1,12 @@
 <h2 mat-dialog-title>{{ isEditMode ? 'Edit Book' : 'Add New Book' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" id="book-form" class="book-form app-form app-modal-form">
+  <form
+    [formGroup]="bookForm"
+    (ngSubmit)="onSubmit()"
+    id="book-form"
+    class="book-form app-form app-modal-form"
+  >
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Title</mat-label>
       <input matInput formControlName="title" placeholder="Enter book title" autocomplete="off" />

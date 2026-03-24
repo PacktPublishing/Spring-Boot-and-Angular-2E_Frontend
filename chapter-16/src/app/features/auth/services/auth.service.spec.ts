@@ -1,7 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpTestingController, provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 
@@ -17,20 +15,26 @@ describe('AuthService', () => {
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => { httpMock.verify(); });
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   it('should POST credentials and return mapped response', () => {
     const credentials = {
-      email: 'test@bookstore.com', password: 'password123',
+      email: 'test@bookstore.com',
+      password: 'password123',
     };
     const mockResponse = {
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
-      tokenType: 'Bearer', expiresIn: 300,
+      tokenType: 'Bearer',
+      expiresIn: 300,
       user: {
-        id: '123', keycloakId: 'kc-123',
+        id: '123',
+        keycloakId: 'kc-123',
         email: 'test@bookstore.com',
-        firstName: 'Test', lastName: 'User',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'user',
       },
     };
@@ -44,9 +48,7 @@ describe('AuthService', () => {
     });
 
     // Step 2: Assert the captured request
-    const req = httpMock.expectOne(
-      r => r.url.includes('/users/signin')
-    );
+    const req = httpMock.expectOne((r) => r.url.includes('/users/signin'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(credentials);
 
@@ -66,7 +68,7 @@ describe('AuthService', () => {
       expect(result).toBeUndefined();
     });
 
-    const req = httpMock.expectOne(r => r.url.includes('/users/signup'));
+    const req = httpMock.expectOne((r) => r.url.includes('/users/signup'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(signupData);
 
@@ -92,7 +94,7 @@ describe('AuthService', () => {
       expect((result as any).user).toBeUndefined();
     });
 
-    const req = httpMock.expectOne(r => r.url.includes('/users/refresh-token'));
+    const req = httpMock.expectOne((r) => r.url.includes('/users/refresh-token'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ refreshToken: refreshTokenValue });
 
@@ -104,7 +106,7 @@ describe('AuthService', () => {
       expect(result).toBeUndefined();
     });
 
-    const req = httpMock.expectOne(r => r.url.includes('/users/logout'));
+    const req = httpMock.expectOne((r) => r.url.includes('/users/logout'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({});
 
@@ -127,7 +129,7 @@ describe('AuthService', () => {
       expect(result).toEqual(mockProfile);
     });
 
-    const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
+    const req = httpMock.expectOne((r) => r.url.includes('/users/profile'));
     expect(req.request.method).toBe('GET');
 
     req.flush(mockProfile);
@@ -151,7 +153,7 @@ describe('AuthService', () => {
       expect(result.city).toBe('Chicago');
     });
 
-    const req = httpMock.expectOne(r => r.url.includes('/users/profile'));
+    const req = httpMock.expectOne((r) => r.url.includes('/users/profile'));
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(updatedProfile);
 
