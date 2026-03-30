@@ -4,12 +4,13 @@ import { vi } from 'vitest';
 
 import { BookForm } from './book-form';
 import { Book } from '../../../../shared/models/book';
+import { AuthorStore } from '../../store/author-store/author.store';
 
 const VALID_BOOK_DATA: Book & { id: number } = {
   id: 123,
   title: 'Clean Code',
   isbn: '9780132350884',
-  authorName: 'Robert C. Martin',
+  author: { id: 2, name: 'Robert C. Martin', nationality: 'US' },
   price: 29.99,
   genre: 'Technology',
   published: '2008-08-01',
@@ -20,11 +21,19 @@ const VALID_BOOK_DATA: Book & { id: number } = {
 
 function createTestBed(dialogData: unknown) {
   const dialogRefSpy = { close: vi.fn() };
+  const authorStoreMock = {
+    authors: () => [
+      { id: 1, name: 'Jane Doe', nationality: 'US' },
+      { id: 2, name: 'Robert C. Martin', nationality: 'US' },
+    ],
+  };
+
   return TestBed.configureTestingModule({
     imports: [BookForm],
     providers: [
       { provide: MatDialogRef, useValue: dialogRefSpy },
       { provide: MAT_DIALOG_DATA, useValue: dialogData },
+      { provide: AuthorStore, useValue: authorStoreMock },
     ],
   }).compileComponents();
 }
@@ -60,7 +69,7 @@ describe('BookForm', () => {
       it('should have all required form controls', () => {
         expect(component.bookForm.get('title')).toBeTruthy();
         expect(component.bookForm.get('isbn')).toBeTruthy();
-        expect(component.bookForm.get('authorName')).toBeTruthy();
+        expect(component.bookForm.get('authorId')).toBeTruthy();
         expect(component.bookForm.get('price')).toBeTruthy();
         expect(component.bookForm.get('genre')).toBeTruthy();
         expect(component.bookForm.get('published')).toBeTruthy();
@@ -105,8 +114,8 @@ describe('BookForm', () => {
         expect(component.bookForm.get('isbn')?.hasError('required')).toBe(true);
       });
 
-      it('should mark authorName as required when empty', () => {
-        expect(component.bookForm.get('authorName')?.hasError('required')).toBe(true);
+      it('should mark authorId as required when empty', () => {
+        expect(component.bookForm.get('authorId')?.hasError('required')).toBe(true);
       });
 
       it('should mark genre as required when empty', () => {
@@ -121,13 +130,13 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           genre: 'Fiction',
           published: new Date('2020-01-01'),
         });
         expect(component.bookForm.get('title')?.hasError('required')).toBe(false);
         expect(component.bookForm.get('isbn')?.hasError('required')).toBe(false);
-        expect(component.bookForm.get('authorName')?.hasError('required')).toBe(false);
+        expect(component.bookForm.get('authorId')?.hasError('required')).toBe(false);
         expect(component.bookForm.get('genre')?.hasError('required')).toBe(false);
         expect(component.bookForm.get('published')?.hasError('required')).toBe(false);
       });
@@ -138,7 +147,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-01-01'),
@@ -150,7 +159,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-01-01'),
@@ -163,7 +172,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-01-01'),
@@ -271,9 +280,9 @@ describe('BookForm', () => {
         expect(component.getErrorMessage('title')).toContain('required');
       });
 
-      it('should return required error message for touched empty authorName', () => {
-        component.bookForm.get('authorName')?.markAsTouched();
-        expect(component.getErrorMessage('authorName')).toContain('required');
+      it('should return required error message for touched empty authorId', () => {
+        component.bookForm.get('authorId')?.markAsTouched();
+        expect(component.getErrorMessage('authorId')).toContain('required');
       });
 
       it('should return required error message for touched empty genre', () => {
@@ -322,7 +331,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-06-15'),
@@ -334,7 +343,7 @@ describe('BookForm', () => {
           expect.objectContaining({
             title: 'My Book',
             isbn: '9780132350884',
-            authorName: 'Jane Doe',
+            authorId: 1,
             price: 9.99,
             genre: 'Fiction',
           }),
@@ -345,7 +354,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-06-15'),
@@ -364,7 +373,7 @@ describe('BookForm', () => {
         component.bookForm.patchValue({
           title: 'My Book',
           isbn: '9780132350884',
-          authorName: 'Jane Doe',
+          authorId: 1,
           price: 9.99,
           genre: 'Fiction',
           published: new Date('2020-06-15'),
@@ -422,8 +431,8 @@ describe('BookForm', () => {
       expect(component.bookForm.get('isbn')?.value).toBe(VALID_BOOK_DATA.isbn);
     });
 
-    it('should pre-populate authorName from dialog data', () => {
-      expect(component.bookForm.get('authorName')?.value).toBe(VALID_BOOK_DATA.authorName);
+    it('should pre-populate authorId from dialog data author name mapping', () => {
+      expect(component.bookForm.get('authorId')?.value).toBe(2);
     });
 
     it('should pre-populate price from dialog data', () => {
@@ -458,7 +467,7 @@ describe('BookForm', () => {
           expect.objectContaining({
             id: VALID_BOOK_DATA.id,
             title: VALID_BOOK_DATA.title,
-            authorName: VALID_BOOK_DATA.authorName,
+            authorId: 2,
           }),
         );
       });

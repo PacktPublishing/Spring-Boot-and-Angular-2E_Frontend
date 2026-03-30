@@ -14,18 +14,20 @@ import { Book } from '../../../../shared/models/book';
 export class BookList {
   books = input<Book[]>([]);
   book = output<Book>();
+  editBookEvent = output<Book>();
+  deleteBookEvent = output<Book>();
 
-  columns: string[] = ['title', 'authorName', 'genre', 'price', 'published', 'actions'];
+  columns: string[] = ['title', 'author', 'genre', 'price', 'published', 'actions'];
 
   selectBook(book: Book) {
     this.book.emit(book);
   }
 
   editBook(book: Book) {
-    console.log('Edit book:', book);
+    this.editBookEvent.emit(book);
   }
 
   deleteBook(book: Book) {
-    console.log('Delete book:', book);
+    this.deleteBookEvent.emit(book);
   }
 }

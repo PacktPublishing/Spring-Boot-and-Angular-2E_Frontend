@@ -15,7 +15,7 @@ describe('BookList', () => {
   const mockBooks: Book[] = [
     {
       title: 'Clean Code',
-      authorName: 'Robert C. Martin',
+      author: { id: 1, name: 'Robert C. Martin', nationality: '' },
       genre: 'Software Engineering',
       price: 29.99,
       published: '2008-08-01',
@@ -23,7 +23,7 @@ describe('BookList', () => {
     },
     {
       title: 'The Pragmatic Programmer',
-      authorName: 'David Thomas',
+      author: { id: 2, name: 'David Thomas', nationality: '' },
       genre: 'Software Engineering',
       price: 39.95,
       published: '1999-10-20',
@@ -31,7 +31,7 @@ describe('BookList', () => {
     },
     {
       title: 'Design Patterns',
-      authorName: 'Gang of Four',
+      author: { id: 3, name: 'Gang of Four', nationality: '' },
       genre: 'Software Architecture',
       price: 54.99,
       published: '1994-10-31',
@@ -63,7 +63,7 @@ describe('BookList', () => {
   it('should define the correct column definitions', () => {
     expect(component.columns).toEqual([
       'title',
-      'authorName',
+      'author',
       'genre',
       'price',
       'published',
@@ -212,16 +212,18 @@ describe('BookList', () => {
       }
     });
 
-    it('should log the correct message when editBook is called', () => {
-      vi.spyOn(console, 'log');
+    it('should emit via editBookEvent when editBook is called', () => {
+      let emittedBook: Book | undefined;
+      component.editBookEvent.subscribe((book) => (emittedBook = book));
       component.editBook(mockBooks[0]);
-      expect(console.log).toHaveBeenCalledWith('Edit book:', mockBooks[0]);
+      expect(emittedBook).toEqual(mockBooks[0]);
     });
 
-    it('should log the correct message when deleteBook is called', () => {
-      vi.spyOn(console, 'log');
+    it('should emit via deleteBookEvent when deleteBook is called', () => {
+      let emittedBook: Book | undefined;
+      component.deleteBookEvent.subscribe((book) => (emittedBook = book));
       component.deleteBook(mockBooks[1]);
-      expect(console.log).toHaveBeenCalledWith('Delete book:', mockBooks[1]);
+      expect(emittedBook).toEqual(mockBooks[1]);
     });
 
     it('should call editBook with the correct book for every row', () => {
@@ -264,7 +266,7 @@ describe('BookList', () => {
       component.book.subscribe((book) => (emittedBook = book));
       component.selectBook(mockBooks[1]);
       expect(emittedBook?.title).toBe('The Pragmatic Programmer');
-      expect(emittedBook?.authorName).toBe('David Thomas');
+      expect(emittedBook?.author.name).toBe('David Thomas');
       expect(emittedBook?.price).toBe(39.95);
       expect(emittedBook?.isbn).toBe('978-0201616224');
     });

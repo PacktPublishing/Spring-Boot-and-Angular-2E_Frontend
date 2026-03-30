@@ -1,7 +1,9 @@
+import { Author } from "./author";
+
 export interface Book {
   id?: number;
   title: string;
-  authorName: string;
+  author: Author;
   genre: string;
   price: number;
   published: string;

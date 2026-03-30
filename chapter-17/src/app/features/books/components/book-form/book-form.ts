@@ -8,10 +8,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { injectDispatch } from '@ngrx/signals/events';
 import { map } from 'rxjs';
-import { Book } from '../../../../shared/models/book';
+import { Book, BookRequest } from '../../../../shared/models/book';
+import { authorPageEvents } from '../../store/author-store/author.events';
+import { AuthorStore } from '../../store/author-store/author.store';
 
-type BookDialogData = Book & { id?: string };
+type BookDialogData = Book & { id?: number };
 
 const ISBN_PATTERN = /^(?:\d{9}[\dXx]|\d{13})$/;
 const URL_PATTERN = /^https?:\/\/.+\..+/;
@@ -54,13 +57,15 @@ export class BookForm {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<BookForm>);
   private data: BookDialogData | null = inject(MAT_DIALOG_DATA, { optional: true }) ?? null;
+  readonly authorStore = inject(AuthorStore);
+  private readonly dispatch = injectDispatch(authorPageEvents);
 
   readonly genres = BOOK_GENRES;
 
   bookForm = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
     isbn: ['', [Validators.required, Validators.pattern(ISBN_PATTERN)]],
-    authorName: ['', [Validators.required]],
+    authorId: this.fb.control<number | null>(null, [Validators.required, Validators.min(1)]),
     price: [0, [Validators.required, Validators.min(0)]],
     genre: ['', [Validators.required]],
     published: this.fb.control<Date | null>(null, [Validators.required]),
@@ -79,11 +84,16 @@ export class BookForm {
   }
 
   constructor() {
+    this.dispatch.loadAuthors({
+      page: 0,
+      size: 100,
+    });
+
     if (this.data) {
       this.bookForm.patchValue({
         title: this.data.title,
         isbn: this.data.isbn,
-        authorName: this.data.authorName,
+        authorId: this.data.author.id ?? null,
         price: this.data.price,
         genre: this.data.genre,
         published: this.data.published ? new Date(this.data.published) : null,
@@ -117,11 +127,16 @@ export class BookForm {
       const publishedStr = formValue.published
         ? (formValue.published as Date).toISOString().split('T')[0]
         : '';
+      const selectedAuthorId = formValue.authorId;
 
-      const bookData: Book = {
+      if (selectedAuthorId === null) {
+        return;
+      }
+
+      const bookData: BookRequest = {
         title: formValue.title,
         isbn: formValue.isbn,
-        authorName: formValue.authorName,
+        authorId: selectedAuthorId,
         price: formValue.price,
         genre: formValue.genre,
         published: publishedStr,
@@ -130,8 +145,8 @@ export class BookForm {
         ...(formValue.coverImageUrl ? { coverImageUrl: formValue.coverImageUrl } : {}),
       };
 
-      if (this.isEditMode) {
-        this.dialogRef.close({ id: this.data!.id, ...bookData });
+      if (this.isEditMode && this.data?.id != null) {
+        this.dialogRef.close({ id: this.data.id, ...bookData });
       } else {
         this.dialogRef.close(bookData);
       }

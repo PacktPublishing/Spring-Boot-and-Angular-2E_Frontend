@@ -2,7 +2,7 @@
   display: block;
 
   // Apply minimum width on tablet and desktop
-  @media (min-width: 601px) {
+  @media (min-width: 768px) {
     min-width: 580px;
   }
 }

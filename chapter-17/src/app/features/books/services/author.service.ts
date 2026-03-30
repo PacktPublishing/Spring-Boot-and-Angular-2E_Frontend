@@ -21,7 +21,7 @@ export class AuthorService {
 
   searchByName(name: string): Observable<Author[]> {
     const params = new HttpParams().set('name', name);
-    return this.http.get<Author[]>(`${this.baseUrl}/by-name`, { params });
+    return this.http.get<Author[]>(`${this.baseUrl}/by-name-ignore-case`, { params });
   }
 
   getById(id: number): Observable<Author> {
