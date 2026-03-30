@@ -89,6 +89,20 @@ Extends the bookstore app with production-style authentication flow patterns:
 - **Shared Utilities**: `normalizeApiErrorMessage` for consistent backend error text extraction; `custom-validators.ts` for reusable form validators
 - **Comprehensive Unit Tests**: Co-located spec files covering guards, interceptors, services, store, all components and pages, layout, and utilities
 
+### Chapter 17 - API-Driven Books and Authors with NgRx Signal Store
+
+**Location**: `chapter-17/`
+
+Extends the bookstore app by replacing mock book data with a fully API-driven books and authors feature:
+
+- **BookStore**: Dedicated NgRx Signal Store for books with typed state (`books`, `totalElements`, `currentPage`, `searchTerm`, `genreFilter`, `loading`, `error`), page and API event groups, computed signals (`hasBooks`, `isSearching`, `bookCount`), and event handlers for paginated load, title search, create, update, and delete
+- **AuthorStore**: Mirrors the BookStore pattern for authors — paginated load, name search, and full CRUD with the same event-driven architecture
+- **BookService and AuthorService**: `HttpClient`-backed services for paginated, search, and CRUD endpoints
+- **Author Management Dialog**: `AuthorListDialog` provides full author CRUD inline inside a Material dialog
+- **Edit and Delete Wired End-to-End**: `BookList` emits typed `editBookEvent` and `deleteBookEvent` outputs; the `List` page dispatches `updateSubmitted` and `deleteConfirmed` to `BookStore`
+- **Pre-Populated Edit Form**: `BookForm` patches `authorId` directly from `book.author.id` when opened in edit mode — no deferred effect needed
+- **Comprehensive Unit Tests**: Spec files covering both stores, both services, all book and author components, and the list page
+
 ## Technology Stack
 
 - **Angular 21**: Latest version with standalone components and signals
@@ -137,6 +151,11 @@ npm run start
 
 # For Chapter 16 - HTTP Communication, Interceptors, Guards, and Profile Management
 cd chapter-16
+npm install
+npm run start
+
+# For Chapter 17 - API-Driven Books and Authors with NgRx Signal Store
+cd chapter-17
 npm install
 npm run start
 ```
@@ -251,8 +270,9 @@ Each chapter includes these npm scripts:
 2. **Progress to Chapter 12** to master AI-assisted development workflows and GitHub Copilot integration
 3. **Continue to Chapter 14** to learn advanced reactive forms and UI component development
 4. **Advance to Chapter 15** to master centralized state management with NgRx signal store and event-driven architecture
-5. **Complete with Chapter 16** to integrate HTTP communication, route guards, an auth interceptor with refresh-token retry, and `localStorage`-based token persistence (CSR mode)
-6. **Explore the GitHub instructions** to understand AI-assisted development patterns
+5. **Continue with Chapter 16** to integrate HTTP communication, route guards, an auth interceptor with refresh-token retry, and `localStorage`-based token persistence (CSR mode)
+6. **Complete with Chapter 17** to build a fully API-driven books and authors feature with dedicated NgRx Signal Stores, full CRUD event flows, and end-to-end edit and delete wiring
+7. **Explore the GitHub instructions** to understand AI-assisted development patterns
 7. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
