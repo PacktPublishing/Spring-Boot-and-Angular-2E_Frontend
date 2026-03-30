@@ -1,27 +1,28 @@
-# Chapter 16 - HTTP Communication, Interceptors, Guards, and Profile Management
+# Chapter 17 - API-Driven Books and Authors with NgRx Signal Store
 
-This chapter extends the bookstore app with production-style authentication flow patterns on Angular 21:
+This chapter extends the bookstore app by replacing mock book data with a fully API-driven books and authors feature on Angular 21:
 
-- API-driven authentication and profile endpoints
-- Route protection with guards
-- Centralized auth state with NgRx Signal Store
-- HTTP interceptor-based bearer token attachment and refresh retry
-- SSR-safe token persistence
+- Full CRUD operations for books and authors via HTTP API
+- Paginated and searchable book and author lists
+- Dedicated NgRx Signal Stores for books and authors with events, reducers, computed state, and side effects
+- Author management dialog with create, edit, and delete support
+- Book list wired to edit and delete store actions
+- Book form pre-populated with existing data including author selection
 
-It builds on the forms and component architecture from previous chapters while moving auth behavior closer to real backend integration.
+It builds on the authentication, guards, interceptors, and profile management from the previous chapter while adding a production-style feature store pattern for domain data.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- NgRx Signal Store for auth state with events, reducers, computed state, and side effects
-- Functional route guards for authenticated and guest-only routes
-- Functional HTTP interceptor for auth header injection and 401 refresh token handling
-- Token persistence with browser-safe local storage access in SSR contexts
-- API-based signin, signup, logout, refresh token, and profile update flows
-- Smart/dumb component structure for auth and profile pages
-- Shared error parsing utility for consistent UI messaging
-- Angular Material dialogs and forms for books and authors
+- NgRx Signal Store for books and authors with events, reducers, computed state, and side effects
+- Paginated API fetching with `page` and `size` parameters for both books and authors
+- Search by title (books) and search by name (authors)
+- Full CRUD event flows: `createSubmitted`, `updateSubmitted`, `deleteConfirmed` wired to API effects
+- Smart/dumb component pattern: `List` page orchestrates store dispatches; `BookList`, `BookForm`, and `AuthorListDialog` are presentational
+- Book form pre-populates all fields including author selection from `author.id` when opened in edit mode
+- Author management via a dedicated `AuthorListDialog` with inline create, edit, and delete
+- Auth Signal Store, guards, interceptors, and profile management carried forward from chapter 16
 
 ## Project Features
 
@@ -62,17 +63,24 @@ This chapter project showcases:
 - `ProfileForm` component handles presentation and form validation
 - Shared utility `normalizeApiErrorMessage` standardizes backend error text extraction
 
-### Books and Authors (Material Dialog Patterns)
+### Books and Authors (API-Driven Signal Store)
 
-- Book list page with create and edit dialog interactions
-- Book form with validation for ISBN, URL, numeric constraints, required fields, and dates
-- Author form with required and minimum length validation
+- **BookStore** (`book.store.ts`) with:
+  - Typed book state (`books`, `totalElements`, `totalPages`, `currentPage`, `pageSize`, `searchTerm`, `genreFilter`, `loading`, `error`)
+  - Page events: `loadBooks`, `searchByTitle`, `createSubmitted`, `updateSubmitted`, `deleteConfirmed`
+  - API events for load, search, create, update, and delete success and failure
+  - Computed state: `hasBooks`, `isSearching`, `bookCount`
+  - Event handlers using `switchMap` for load/search and `exhaustMap` for mutations
+- **AuthorStore** (`author.store.ts`) with the same event-driven structure for authors
+- `BookService` and `AuthorService` for paginated API integration
+- `List` page dispatches store events for create, edit, and delete
+- `BookList` component emits `editBookEvent` and `deleteBookEvent` outputs wired to the page
+- `AuthorListDialog` provides full author CRUD in a Material dialog
+- `BookForm` patches `authorId` directly from `book.author.id` when opened in edit mode
 
 ### SSR Compatibility
 
 This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `RenderMode.Client` in `app.routes.server.ts`. As a result, `TokenService` accesses `localStorage` directly without platform guards. SSR-safe storage is a natural next step for a production hardening iteration.
-
-## Tech Stack
 
 - Angular 21 (standalone APIs)
 - Angular Material
@@ -110,7 +118,7 @@ npm run build
 ### SSR Serve (after build)
 
 ```bash
-npm run serve:ssr:chapter-16
+npm run serve:ssr:chapter-17
 ```
 
 ## Testing
@@ -142,11 +150,11 @@ Spec files are co-located with their source files and cover all major layers:
 | App bootstrap | `app.spec.ts` |
 | Guards | `auth.guard.spec.ts` |
 | Interceptors | `auth.interceptor.spec.ts` |
-| Services | `authentication.spec.ts`, `token.service.spec.ts`, `auth.service.spec.ts` |
-| Signal Store | `auth.store.spec.ts` |
+| Services | `authentication.spec.ts`, `token.service.spec.ts`, `auth.service.spec.ts`, `book.service.spec.ts`, `author.service.spec.ts` |
+| Signal Store | `auth.store.spec.ts`, `author.store.spec.ts` |
 | Auth components | `signin-form.spec.ts`, `signup-form.spec.ts` |
 | Auth pages | `signin.spec.ts`, `signup.spec.ts` |
-| Books components | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts` |
+| Books components | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts`, `author-list-dialog.spec.ts` |
 | Books pages | `list.spec.ts` |
 | Profile component | `profile-form.spec.ts` |
 | Profile page | `profile.spec.ts` |
@@ -212,10 +220,26 @@ src/
     │   │   ├── books.routes.ts
     │   │   ├── components/
     │   │   │   ├── author-form/           # author-form.ts + .html + .scss + .spec.ts
+    │   │   │   ├── author-list-dialog/    # author-list-dialog.ts + .html + .scss + .spec.ts
     │   │   │   ├── book-form/             # book-form.ts + .html + .scss + .spec.ts
     │   │   │   └── book-list/             # book-list.ts + .html + .scss + .spec.ts
-    │   │   └── pages/
-    │   │       └── list/                  # list.ts + .html + .scss + .spec.ts
+    │   │   ├── pages/
+    │   │   │   └── list/                  # list.ts + .html + .scss + .spec.ts
+    │   │   ├── services/
+    │   │   │   ├── author.service.ts      # API integration for authors
+    │   │   │   ├── author.service.spec.ts
+    │   │   │   ├── book.service.ts        # API integration for books
+    │   │   │   └── book.service.spec.ts
+    │   │   └── store/
+    │   │       ├── author-store/
+    │   │       │   ├── author.state.ts
+    │   │       │   ├── author.events.ts
+    │   │       │   ├── author.store.ts
+    │   │       │   └── author.store.spec.ts
+    │   │       └── book-store/
+    │   │           ├── book.state.ts
+    │   │           ├── book.events.ts
+    │   │           └── book.store.ts
     │   └── profile/
     │       ├── components/
     │       │   └── profile-form/          # profile-form.ts + .html + .scss + .spec.ts
@@ -228,7 +252,8 @@ src/
         ├── models/
         │   ├── auth.ts
         │   ├── author.ts
-        │   └── book.ts
+        │   ├── book.ts
+        │   └── paginated.ts
         ├── utils/
         │   ├── error-message.ts
         │   └── error.utils.spec.ts
@@ -240,31 +265,38 @@ src/
 
 ### 1) Signal Store + Event-Driven Auth State
 
-The store coordinates page events, API events, token updates, and navigation side effects while exposing computed auth state for components.
+The auth store coordinates page events, API events, token updates, and navigation side effects while exposing computed auth state for components.
 
-### 2) Interceptor-Based Refresh Flow
+### 2) Signal Store + Event-Driven Books and Authors
+
+`BookStore` and `AuthorStore` follow the same event-driven pattern: page events trigger reducers that set loading state, event handlers perform API calls, and API events carry results back to reducers. Computed signals (`hasBooks`, `isSearching`, `bookCount`) derive from store state.
+
+### 3) Interceptor-Based Refresh Flow
 
 The interceptor retries unauthorized requests after successful refresh and synchronizes refreshed tokens back into store state.
 
-### 3) Guarded Routing
+### 4) Guarded Routing
 
 The app separates public auth pages and private app pages via functional guards tied to reactive auth state.
 
-### 4) SSR-Safe Storage Access
+### 5) SSR-Safe Storage Access
 
 Token persistence logic is guarded with platform checks so server rendering does not attempt to touch browser-only APIs.
 
-### 5) Profile Feature as Smart and Dumb Pair
+### 6) Profile Feature as Smart and Dumb Pair
 
 The profile page handles API orchestration and notifications; the profile form remains a reusable presentational component.
+
+### 7) Edit and Delete Wired End-to-End
+
+`BookList` emits typed `editBookEvent` and `deleteBookEvent` outputs. The `List` page handles these by opening the `BookForm` dialog (pre-populated with `author.id`) or calling `confirmDelete`, both dispatching to `BookStore`.
 
 ## Next Steps
 
 Potential enhancements for the next chapter or iteration:
 
-- Move books from mock array to API-backed state and store
+- Add pagination controls to navigate between book and author pages
 - Add refresh token expiry handling and forced re-auth UX
-- Add end-to-end auth and profile workflow tests
-- Introduce optimistic updates and cache strategies for profile and book data
-
-For Angular CLI references, see https://angular.dev/tools/cli.
+- Add end-to-end auth and book workflow tests
+- Introduce optimistic updates for create/update/delete operations
+- Enable SSR-safe rendering for the books feature
