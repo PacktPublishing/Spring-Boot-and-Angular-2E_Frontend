@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Author' : 'Add New Author' }}</h2>
+
+<mat-dialog-content class="app-modal-content-static">
+  <form
+    [formGroup]="authorForm"
+    (ngSubmit)="onSubmit()"
+    id="author-form"
+    class="author-form app-form app-modal-form"
+  >
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter author's full name" />
+      @if (authorForm.get('name')?.invalid && authorForm.get('name')?.touched) {
+        <mat-error>{{ getErrorMessage('name') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nationality</mat-label>
+      <input matInput formControlName="nationality" placeholder="Enter author's nationality" />
+      @if (authorForm.get('nationality')?.invalid && authorForm.get('nationality')?.touched) {
+        <mat-error>{{ getErrorMessage('nationality') }}</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="app-modal-actions-end">
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    form="author-form"
+    [disabled]="!isFormValid()"
+  >
+    {{ isEditMode ? 'Update Author' : 'Create Author' }}
+  </button>
+</mat-dialog-actions>

@@ -18,17 +18,21 @@ import { BookStore } from '../../store/book-store/book.store';
   styleUrl: './list.scss',
 })
 export class List implements OnInit {
-  protected readonly store = inject(BookStore);
+  protected readonly store =
+    inject(BookStore);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
-  protected readonly dispatch = injectDispatch(bookPageEvents);
+  protected readonly dispatch =
+    injectDispatch(bookPageEvents);
 
-  displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
+  displayedColumns = [
+    'title', 'author', 'genre',
+    'price', 'published', 'actions'
+  ];
 
   ngOnInit() {
     this.dispatch.loadBooks({
-      page: 0,
-      size: 10,
+      page: 0, size: 10
     });
   }
 
@@ -40,35 +44,46 @@ export class List implements OnInit {
   }
 
   openCreateDialog() {
-    const dialogRef = this.dialog.open(BookForm, {
-      width: '600px',
-    });
+    const dialogRef =
+      this.dialog.open(BookForm, {
+        width: '600px',
+      });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.dispatch.createSubmitted(result);
-        this.snackBar.open('Book created successfully', 'Close', { duration: 3000 });
-      }
-    });
+    dialogRef.afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.dispatch
+            .createSubmitted(result);
+          this.snackBar.open(
+            'Book created successfully',
+            'Close', { duration: 3000 }
+          );
+        }
+      });
   }
 
   openEditDialog(book: Book) {
-    const dialogRef = this.dialog.open(BookForm, {
-      width: '600px',
-      data: book,
-    });
+    const dialogRef =
+      this.dialog.open(BookForm, {
+        width: '600px',
+        data: book,
+      });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.dispatch.updateSubmitted(result);
-      }
-    });
+    dialogRef.afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.dispatch
+            .updateSubmitted(result);
+        }
+      });
   }
 
   confirmDelete(book: Book) {
-    if (confirm(`Delete "${book.title}"?`)) {
+    if (confirm(
+      `Delete "${book.title}"?`
+    )) {
       this.dispatch.deleteConfirmed({
-        id: book.id!,
+        id: book.id!
       });
     }
   }
@@ -78,3 +93,4 @@ export class List implements OnInit {
     console.log('Selected book:', book);
   }
 }
+

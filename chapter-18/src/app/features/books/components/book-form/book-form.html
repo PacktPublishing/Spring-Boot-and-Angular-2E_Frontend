@@ -26,19 +26,29 @@
     <mat-form-field appearance="outline">
       <mat-label>Author</mat-label>
       <mat-select formControlName="authorId">
-        @for (author of authorStore.authors(); track author.id) {
+        @for (author of authorStore.authors();
+              track author.id) {
           <mat-option [value]="author.id">
             {{ author.name }}
           </mat-option>
         }
       </mat-select>
-      @if (bookForm.get('authorId')?.touched && bookForm.get('authorId')?.hasError('required')) {
-        <mat-error> Author is required. </mat-error>
+      @if (bookForm.get('authorId')?.touched &&
+          bookForm.get('authorId')
+            ?.hasError('required')) {
+        <mat-error>
+          Author is required.
+        </mat-error>
       }
-      @if (bookForm.get('authorId')?.touched && bookForm.get('authorId')?.hasError('min')) {
-        <mat-error> Please select an author. </mat-error>
+      @if (bookForm.get('authorId')?.touched &&
+          bookForm.get('authorId')
+            ?.hasError('min')) {
+        <mat-error>
+          Please select an author.
+        </mat-error>
       }
     </mat-form-field>
+
 
     <div class="form-row">
       <mat-form-field appearance="outline">
