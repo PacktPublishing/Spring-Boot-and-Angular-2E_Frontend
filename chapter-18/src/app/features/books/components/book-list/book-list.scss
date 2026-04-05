@@ -10,3 +10,16 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+.paginator-shell {
+  margin-top: 0.5rem;
+  min-height: 56px;
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 768px) {
+  .paginator-shell {
+    min-height: 96px;
+  }
+}

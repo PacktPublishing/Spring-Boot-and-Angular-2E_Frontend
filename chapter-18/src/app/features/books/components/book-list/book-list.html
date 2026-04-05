@@ -43,3 +43,19 @@
     <tr mat-row *matRowDef="let row; columns: columns()"></tr>
   </table>
 </div>
+
+<div class="paginator-shell">
+  @defer (on viewport) {
+    <mat-paginator
+      [length]="store.totalElements()"
+      [pageSize]="store.pageSize()"
+      [pageIndex]="store.currentPage()"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)"
+    />
+  } @placeholder {
+    <div class="paginator-placeholder"></div>
+  } @loading (minimum 300ms) {
+    <mat-spinner diameter="24" />
+  }
+</div>
