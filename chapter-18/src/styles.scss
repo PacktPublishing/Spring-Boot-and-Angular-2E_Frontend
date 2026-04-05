@@ -39,6 +39,26 @@ body {
   }
 }
 
+.legal-content {
+  max-width: 768px;
+  margin: 1.5rem 0.5rem 0.5rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: #fff;
+  color: #1f2a44;
+  line-height: 1.5;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+
+  p {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  p + p {
+    margin-top: 1rem;
+  }
+}
+
 .page-header-full {
   display: flex;
   align-items: center;
