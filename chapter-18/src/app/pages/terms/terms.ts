@@ -19,6 +19,6 @@ import { Component } from '@angular/core';
         </p>
       </section>
     </div>
-  `
+  `,
 })
 export class Terms {}

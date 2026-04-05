@@ -10,16 +10,16 @@ import { Component } from '@angular/core';
 
       <section aria-label="Privacy policy details" class="legal-content">
         <p>
-          Packt Bookstore collects only the information necessary to process your account. We do
-          not sell or share your personal data with third parties. All communication between your
+          Packt Bookstore collects only the information necessary to process your account. We do not
+          sell or share your personal data with third parties. All communication between your
           browser and our servers is encrypted using TLS.
         </p>
         <p>
-          You may request deletion of your account and associated data at any time by contacting
-          our support team.
+          You may request deletion of your account and associated data at any time by contacting our
+          support team.
         </p>
       </section>
     </div>
-  `
+  `,
 })
 export class Privacy {}

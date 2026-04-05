@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { injectDispatch } from '@ngrx/signals/events';
 import { bookPageEvents } from '../../store/book-store/book.events';
 import { BookStore } from '../../store/book-store/book.store';
+import { AuthStore } from '../../../auth/store/auth.store';
 
 @Component({
   selector: 'book-list-page',
@@ -22,6 +23,7 @@ export class List implements OnInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   protected readonly dispatch = injectDispatch(bookPageEvents);
+  protected readonly authStore = inject(AuthStore);
 
   displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
 
