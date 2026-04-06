@@ -1,28 +1,28 @@
-# Chapter 18 - API-Driven Books and Authors with NgRx Signal Store
+# Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
 
-This chapter extends the bookstore app by replacing mock book data with a fully API-driven books and authors feature on Angular 21:
+This chapter evolves the bookstore app from a CSR-only workaround into a hybrid-rendered Angular 21 application with per-route rendering strategies:
 
-- Full CRUD operations for books and authors via HTTP API
-- Paginated and searchable book and author lists
-- Dedicated NgRx Signal Stores for books and authors with events, reducers, computed state, and side effects
-- Author management dialog with create, edit, and delete support
-- Book list wired to edit and delete store actions
-- Book form pre-populated with existing data including author selection
+- Public book catalog rendered on the server for SEO and faster first content
+- Static legal pages (`/privacy`, `/terms`) pre-rendered at build time
+- Auth and profile routes kept client-rendered for interactive authenticated flows
+- Authentication enforcement moved from route guard to component-level UI behavior in the catalog
+- Hydration-aware browser guards in `TokenService` to prevent server-side localStorage errors
+- Deferred paginator loading in the book list using `@defer` for better Core Web Vitals
 
-It builds on the authentication, guards, interceptors, and profile management from the previous chapter while adding a production-style feature store pattern for domain data.
+It builds on the API-driven books/authors stores, interceptors, and profile management from Chapter 17 while introducing a production-style rendering pipeline.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- NgRx Signal Store for books and authors with events, reducers, computed state, and side effects
-- Paginated API fetching with `page` and `size` parameters for both books and authors
-- Search by title (books) and search by name (authors)
-- Full CRUD event flows: `createSubmitted`, `updateSubmitted`, `deleteConfirmed` wired to API effects
-- Smart/dumb component pattern: `List` page orchestrates store dispatches; `BookList`, `BookForm`, and `AuthorListDialog` are presentational
-- Book form pre-populates all fields including author selection from `author.id` when opened in edit mode
-- Author management via a dedicated `AuthorListDialog` with inline create, edit, and delete
-- Auth Signal Store, guards, interceptors, and profile management carried forward from chapter 16
+- Per-route rendering with `RenderMode.Server`, `RenderMode.Prerender`, and `RenderMode.Client`
+- A public catalog strategy where browsing is open while management actions remain auth-aware in the UI
+- Privacy and Terms pages as pre-rendered static routes linked from the footer
+- Angular hydration behavior and why reusing server-rendered DOM improves startup work
+- Browser-only storage protection using `isPlatformBrowser` in token persistence logic
+- Deferred rendering of non-critical UI (`mat-paginator`) using `@defer (on viewport)`
+- Continued NgRx Signal Store patterns for books, authors, and auth orchestration
+- Continued API-driven CRUD and pagination flows from Chapter 17
 
 ## Project Features
 
@@ -34,8 +34,11 @@ This chapter project showcases:
   - API events (signin/signup/logout/refresh success and failure)
   - Computed state (`isAuthenticated`, `currentUser`, `userDisplayName`)
 - Route guards:
-  - `authGuard` protects private routes (`/books`, `/profile`)
+  - `authGuard` protects private routes (`/profile`)
   - `guestGuard` prevents signed-in users from visiting `/auth/*`
+- Public catalog access:
+  - `/books` is accessible without `authGuard`
+  - Edit/delete controls in the book list are shown only to authenticated users
 - Token lifecycle:
   - Tokens and user data are persisted in local storage via `TokenService`
   - Store rehydrates state on startup from persisted token and user data
@@ -74,13 +77,21 @@ This chapter project showcases:
 - **AuthorStore** (`author.store.ts`) with the same event-driven structure for authors
 - `BookService` and `AuthorService` for paginated API integration
 - `List` page dispatches store events for create, edit, and delete
-- `BookList` component emits `editBookEvent` and `deleteBookEvent` outputs wired to the page
+- `BookList` component emits `editBookEvent`, `deleteBookEvent`, and page change events
 - `AuthorListDialog` provides full author CRUD in a Material dialog
 - `BookForm` patches `authorId` directly from `book.author.id` when opened in edit mode
 
-### SSR Compatibility
+### Rendering Strategies and Hydration
 
-This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `RenderMode.Client` in `app.routes.server.ts`. As a result, `TokenService` accesses `localStorage` directly without platform guards. SSR-safe storage is a natural next step for a production hardening iteration.
+- `app.routes.server.ts` uses per-route rendering:
+  - `/books` -> `RenderMode.Server`
+  - `/privacy` and `/terms` -> `RenderMode.Prerender`
+  - `/auth/**`, `/profile`, and fallback routes -> `RenderMode.Client`
+- Angular hydration reuses server-rendered DOM during bootstrap instead of rebuilding it from scratch.
+- `TokenService` now uses `isPlatformBrowser` checks so localStorage access only runs in browser contexts.
+- The book list defers paginator rendering with `@defer (on viewport)` to reduce initial bundle work.
+
+## Tech Stack
 
 - Angular 21 (standalone APIs)
 - Angular Material
@@ -118,7 +129,7 @@ npm run build
 ### SSR Serve (after build)
 
 ```bash
-npm run serve:ssr:chapter-17
+npm run serve:ssr:chapter-18
 ```
 
 ## Testing
@@ -158,6 +169,7 @@ Spec files are co-located with their source files and cover all major layers:
 | Books pages | `list.spec.ts` |
 | Profile component | `profile-form.spec.ts` |
 | Profile page | `profile.spec.ts` |
+| Static legal pages | `privacy.spec.ts`, `terms.spec.ts` |
 | Layout | `header.spec.ts`, `footer.spec.ts` |
 | Utilities | `error.utils.spec.ts` |
 
@@ -184,8 +196,8 @@ src/
 │   └── environment.prod.ts            # Prod environment config
 └── app/
     ├── app.config.ts                      # HTTP client + interceptor + hydration
-    ├── app.routes.ts                      # Route setup with auth and guest guards
-    ├── app.routes.server.ts               # SSR prerender route config
+    ├── app.routes.ts                      # Public catalog + auth/guest guarded route setup
+    ├── app.routes.server.ts               # Per-route render mode config (SSR/Prerender/CSR)
     ├── app.spec.ts
     ├── core/
     │   ├── guards/
@@ -245,6 +257,9 @@ src/
     │       │   └── profile-form/          # profile-form.ts + .html + .scss + .spec.ts
     │       └── pages/
     │           └── profile/               # profile.ts + .html + .scss + .spec.ts
+    ├── pages/
+    │   ├── privacy/                       # privacy.ts + .spec.ts
+    │   └── terms/                         # terms.ts + .spec.ts
     └── shared/
         ├── layout/
         │   ├── header/                    # header.ts + .html + .scss + .spec.ts
@@ -263,40 +278,39 @@ src/
 
 ## Key Implementation Highlights
 
-### 1) Signal Store + Event-Driven Auth State
+### 1) Per-Route Rendering Pipeline
 
-The auth store coordinates page events, API events, token updates, and navigation side effects while exposing computed auth state for components.
+The server route config uses all three Angular rendering modes in one app: SSR for the public catalog, pre-rendering for legal pages, and CSR for authenticated routes.
 
-### 2) Signal Store + Event-Driven Books and Authors
+### 2) Public Browsing, Authenticated Management
 
-`BookStore` and `AuthorStore` follow the same event-driven pattern: page events trigger reducers that set loading state, event handlers perform API calls, and API events carry results back to reducers. Computed signals (`hasBooks`, `isSearching`, `bookCount`) derive from store state.
+Authentication enforcement for catalog browsing moved from route-level blocking to component-level behavior, a common production pattern where reading is public and write actions require login.
 
-### 3) Interceptor-Based Refresh Flow
+### 3) Real Footer Destinations with Prerendered Legal Pages
 
-The interceptor retries unauthorized requests after successful refresh and synchronizes refreshed tokens back into store state.
+The new Privacy and Terms routes make footer navigation meaningful while also serving as examples of static pre-rendered content.
 
-### 4) Guarded Routing
+### 4) Hydration-Aware Bootstrapping
 
-The app separates public auth pages and private app pages via functional guards tied to reactive auth state.
+Angular hydration reuses server-rendered DOM nodes, reducing client bootstrap work and improving perceived startup performance.
 
-### 5) SSR-Safe Storage Access
+### 5) SSR-Safe Token Storage Access
 
-Token persistence logic is guarded with platform checks so server rendering does not attempt to touch browser-only APIs.
+`TokenService` wraps localStorage reads and writes with `isPlatformBrowser` guards so server rendering never touches browser-only APIs.
 
-### 6) Profile Feature as Smart and Dumb Pair
+### 6) Deferred Paginator for Better Initial Load
 
-The profile page handles API orchestration and notifications; the profile form remains a reusable presentational component.
+The book list paginator is loaded with `@defer (on viewport)`, reducing initial bundle pressure while preserving full pagination functionality.
 
-### 7) Edit and Delete Wired End-to-End
+### 7) API-Driven Books and Authors Still Intact
 
-`BookList` emits typed `editBookEvent` and `deleteBookEvent` outputs. The `List` page handles these by opening the `BookForm` dialog (pre-populated with `author.id`) or calling `confirmDelete`, both dispatching to `BookStore`.
+Books and authors continue to use Signal Store events/reducers/effects for API-backed CRUD, search, and pagination from the previous chapter.
 
 ## Next Steps
 
 Potential enhancements for the next chapter or iteration:
 
-- Add pagination controls to navigate between book and author pages
-- Add refresh token expiry handling and forced re-auth UX
-- Add end-to-end auth and book workflow tests
-- Introduce optimistic updates for create/update/delete operations
-- Enable SSR-safe rendering for the books feature
+- Add real-time catalog updates with Server-Sent Events (SSE)
+- Push live inserts and price changes to connected clients without manual refresh
+- Add resilient reconnection and transient network handling for event streams
+- Preserve SSR and hydration performance while layering in live updates
