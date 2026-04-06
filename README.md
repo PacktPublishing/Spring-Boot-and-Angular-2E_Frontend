@@ -103,6 +103,19 @@ Extends the bookstore app by replacing mock book data with a fully API-driven bo
 - **Pre-Populated Edit Form**: `BookForm` patches `authorId` directly from `book.author.id` when opened in edit mode — no deferred effect needed
 - **Comprehensive Unit Tests**: Spec files covering both stores, both services, all book and author components, and the list page
 
+### Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
+
+**Location**: `chapter-18/`
+
+Resolves the CSR-only workaround introduced in Chapter 16 by applying per-route rendering strategies:
+
+- **Per-Route Render Modes**: Uses all three Angular rendering modes in one app: `RenderMode.Server` for `/books`, `RenderMode.Prerender` for `/privacy` and `/terms`, and `RenderMode.Client` for authenticated routes
+- **Public Catalog Pattern**: Moves catalog access control from route-level blocking to component-level behavior, enabling public browsing while keeping management actions auth-aware
+- **Legal Static Pages**: Adds Privacy and Terms pages as real footer destinations and pre-rendered static content
+- **Hydration-Aware Storage**: Updates `TokenService` with `isPlatformBrowser` guards so server rendering never touches browser-only localStorage APIs
+- **Deferred UI Loading**: Adds `@defer (on viewport)` for the book-list paginator to reduce initial bundle work and improve Core Web Vitals
+- **Production Rendering Pipeline**: Combines SEO-friendly SSR, instant static pages, and interactive CSR where it fits best
+
 ## Technology Stack
 
 - **Angular 21**: Latest version with standalone components and signals
@@ -156,6 +169,11 @@ npm run start
 
 # For Chapter 17 - API-Driven Books and Authors with NgRx Signal Store
 cd chapter-17
+npm install
+npm run start
+
+# For Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
+cd chapter-18
 npm install
 npm run start
 ```
@@ -239,6 +257,8 @@ These instruction files act as a "style guide" for AI-assisted development, ensu
 - **Reactive Form Patterns**: Advanced form UI components and user experience design
 - **State Management**: Centralized state management with NgRx signal store and event-driven architecture
 - **Computed Signals**: Derived state for filtering, searching, and sorting
+- **Hybrid Rendering**: Per-route SSR, pre-rendering, and CSR strategies in a single Angular app
+- **Hydration and Performance**: Browser guards for SSR-safe storage and deferred UI loading for improved startup metrics
 - **Material Design**: Consistent UI/UX with Angular Material components
 - **Type Safety**: Comprehensive TypeScript usage with interfaces and strict typing
 - **Responsive Design**: Mobile-first approach with flexible layouts
@@ -272,8 +292,9 @@ Each chapter includes these npm scripts:
 4. **Advance to Chapter 15** to master centralized state management with NgRx signal store and event-driven architecture
 5. **Continue with Chapter 16** to integrate HTTP communication, route guards, an auth interceptor with refresh-token retry, and `localStorage`-based token persistence (CSR mode)
 6. **Complete with Chapter 17** to build a fully API-driven books and authors feature with dedicated NgRx Signal Stores, full CRUD event flows, and end-to-end edit and delete wiring
-7. **Explore the GitHub instructions** to understand AI-assisted development patterns
-7. **Experiment with modifications** to reinforce learning concepts
+7. **Advance to Chapter 18** to implement hybrid rendering with per-route SSR/Prerender/CSR, hydration-safe token storage, and deferred loading optimizations
+8. **Explore the GitHub instructions** to understand AI-assisted development patterns
+9. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
 

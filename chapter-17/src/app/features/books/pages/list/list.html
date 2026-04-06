@@ -12,4 +12,9 @@
   </div>
 </div>
 
-<book-list [books]="store.books()" (book)="selectBook($event)" (editBookEvent)="openEditDialog($event)" (deleteBookEvent)="confirmDelete($event)" />
+<book-list
+  [books]="store.books()"
+  (book)="selectBook($event)"
+  (editBookEvent)="openEditDialog($event)"
+  (deleteBookEvent)="confirmDelete($event)"
+/>

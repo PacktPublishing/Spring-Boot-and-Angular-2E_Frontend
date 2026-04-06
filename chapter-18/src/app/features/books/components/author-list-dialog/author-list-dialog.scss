@@ -1,0 +1,34 @@
+:host {
+  display: block;
+
+  // Apply minimum width on tablet and desktop
+  @media (min-width: 768px) {
+    min-width: 580px;
+  }
+}
+
+.authors-table {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+
+  .actions-col {
+    width: 112px;
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 4px;
+  }
+
+  .edit-btn {
+    color: #3f51b5;
+  }
+
+  .delete-btn {
+    color: #e53935;
+  }
+}
+
+mat-paginator {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 0.5rem;
+}

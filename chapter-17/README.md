@@ -295,8 +295,8 @@ The profile page handles API orchestration and notifications; the profile form r
 
 Potential enhancements for the next chapter or iteration:
 
-- Add pagination controls to navigate between book and author pages
-- Add refresh token expiry handling and forced re-auth UX
-- Add end-to-end auth and book workflow tests
-- Introduce optimistic updates for create/update/delete operations
-- Enable SSR-safe rendering for the books feature
+- Introduce per-route rendering strategies (SSR/Prerender/CSR)
+- Make the catalog publicly browseable while keeping management actions auth-aware
+- Add Privacy and Terms pages as pre-rendered static routes
+- Harden token persistence for SSR/hydration with platform guards
+- Defer non-critical UI blocks (for example, paginator) to improve initial load performance
