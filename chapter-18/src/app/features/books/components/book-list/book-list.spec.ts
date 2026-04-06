@@ -1,12 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { CurrencyPipe } from '@angular/common';
+import { PLATFORM_ID, signal } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { vi } from 'vitest';
 import { BookList } from './book-list';
 import { Book } from '../../../../shared/models/book';
+import { AuthStore } from '../../../auth/store/auth.store';
+import { BookStore } from '../../store/book-store/book.store';
 
 describe('BookList', () => {
   let component: BookList;
@@ -42,7 +45,10 @@ describe('BookList', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [BookList, MatTableModule, MatIconModule, MatButtonModule],
-      providers: [CurrencyPipe],
+      providers: [
+        CurrencyPipe,
+        { provide: AuthStore, useValue: { isAuthenticated: signal(true) } },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookList);
@@ -61,7 +67,7 @@ describe('BookList', () => {
   });
 
   it('should define the correct column definitions', () => {
-    expect(component.columns).toEqual([
+    expect(component.columns()).toEqual([
       'title',
       'author',
       'genre',
@@ -307,8 +313,79 @@ describe('BookList', () => {
         expect(deleteButtons.length).toBe(mockBooks.length);
       } else {
         // The "actions" column is declared
-        expect(component.columns).toContain('actions');
+        expect(component.columns()).toContain('actions');
       }
     });
+  });
+});
+
+describe('BookList SSR', () => {
+  it('should render without errors when PLATFORM_ID is server', async () => {
+    const ssrBooks: Book[] = [
+      {
+        title: 'Server Rendered Book',
+        author: { id: 10, name: 'SSR Author', nationality: '' },
+        genre: 'Testing',
+        price: 19.99,
+        published: '2026-01-01',
+        isbn: '978-0000000000',
+      },
+      {
+        title: 'Another SSR Book',
+        author: { id: 11, name: 'Node Renderer', nationality: '' },
+        genre: 'Architecture',
+        price: 25,
+        published: '2026-02-01',
+        isbn: '978-1111111111',
+      },
+    ];
+
+    const mockBookStore = {
+      books: signal(ssrBooks),
+      totalElements: signal(ssrBooks.length),
+      pageSize: signal(5),
+      currentPage: signal(0),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [BookList, MatTableModule, MatIconModule, MatButtonModule],
+      providers: [
+        CurrencyPipe,
+        { provide: PLATFORM_ID, useValue: 'server' },
+        { provide: BookStore, useValue: mockBookStore },
+        { provide: AuthStore, useValue: { isAuthenticated: signal(false) } },
+      ],
+    }).compileComponents();
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const fixture = TestBed.createComponent(BookList);
+    fixture.componentRef.setInput('books', ssrBooks);
+
+    await fixture.whenStable();
+
+    const rows = fixture.debugElement.queryAll(By.css('tr[mat-row]'));
+    const table = fixture.debugElement.query(By.css('table[mat-table]'));
+    const editButtons = fixture.debugElement.queryAll(By.css('button[color="primary"]'));
+    const deleteButtons = fixture.debugElement.queryAll(By.css('button[color="warn"]'));
+
+    expect(table).toBeTruthy();
+    expect(rows.length).toBe(ssrBooks.length);
+    expect(fixture.componentInstance.columns()).toEqual([
+      'title',
+      'author',
+      'genre',
+      'price',
+      'published',
+    ]);
+    expect(editButtons.length).toBe(0);
+    expect(deleteButtons.length).toBe(0);
+
+    const localStorageErrors = consoleErrorSpy.mock.calls
+      .flat()
+      .filter((arg) => typeof arg === 'string')
+      .filter((message) => /localstorage/i.test(message));
+    expect(localStorageErrors).toEqual([]);
+
+    consoleErrorSpy.mockRestore();
   });
 });

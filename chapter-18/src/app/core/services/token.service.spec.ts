@@ -1,3 +1,4 @@
+import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { TokenService } from './token.service';
@@ -132,5 +133,69 @@ describe('TokenService', () => {
       expect(removeItemSpy).toHaveBeenCalledWith(USER_KEY);
       expect(removeItemSpy).toHaveBeenCalledTimes(3);
     });
+  });
+});
+
+describe('TokenService on server (SSR)', () => {
+  let service: TokenService;
+  let setItemSpy: ReturnType<typeof vi.spyOn>;
+  let getItemSpy: ReturnType<typeof vi.spyOn>;
+  let removeItemSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
+    removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'server' }],
+    });
+    service = TestBed.inject(TokenService);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should create', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('saveTokens should not touch localStorage', () => {
+    service.saveTokens('access-abc', 'refresh-xyz');
+    expect(setItemSpy).not.toHaveBeenCalled();
+  });
+
+  it('saveUser should not touch localStorage', () => {
+    const user: UserInfo = {
+      id: '1',
+      keycloakId: 'kc-1',
+      email: 'user@bookstore.com',
+      firstName: 'Jane',
+      lastName: 'Doe',
+      role: 'user',
+    };
+    service.saveUser(user);
+    expect(setItemSpy).not.toHaveBeenCalled();
+  });
+
+  it('getAccessToken should return null', () => {
+    expect(service.getAccessToken()).toBeNull();
+    expect(getItemSpy).not.toHaveBeenCalled();
+  });
+
+  it('getRefreshToken should return null', () => {
+    expect(service.getRefreshToken()).toBeNull();
+    expect(getItemSpy).not.toHaveBeenCalled();
+  });
+
+  it('getUser should return null', () => {
+    expect(service.getUser()).toBeNull();
+    expect(getItemSpy).not.toHaveBeenCalled();
+  });
+
+  it('clearAll should not touch localStorage', () => {
+    service.clearAll();
+    expect(removeItemSpy).not.toHaveBeenCalled();
   });
 });
