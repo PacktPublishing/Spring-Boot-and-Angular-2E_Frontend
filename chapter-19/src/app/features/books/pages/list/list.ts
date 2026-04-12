@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { BookList } from '../../components/book-list/book-list';
 import { Book } from '../../../../shared/models/book';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { injectDispatch } from '@ngrx/signals/events';
 import { bookPageEvents } from '../../store/book-store/book.events';
 import { BookStore } from '../../store/book-store/book.store';
 import { AuthStore } from '../../../auth/store/auth.store';
+import { NotificationService } from '../../services/notification.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'book-list-page',
@@ -25,13 +27,34 @@ export class List implements OnInit {
   protected readonly dispatch = injectDispatch(bookPageEvents);
   protected readonly authStore = inject(AuthStore);
 
+  private destroyRef = inject(DestroyRef);
+  private notificationService = inject(NotificationService);
+
   displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
+
+  private locallyCreatedIsbns = new Set<string>();
 
   ngOnInit() {
     this.dispatch.loadBooks({
       page: 0,
       size: 10,
     });
+    this.notificationService
+      .connect()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((notification) => {
+        if (notification.isbn && this.locallyCreatedIsbns.has(notification.isbn)) {
+          this.locallyCreatedIsbns.delete(notification.isbn);
+          return;
+        }
+        this.snackBar.open(`📚 New book added: ` + `${notification.bookTitle}`, 'Dismiss', {
+          duration: 5000,
+        });
+        this.dispatch.loadBooks({
+          page: this.store.currentPage(),
+          size: this.store.pageSize(),
+        });
+      });
   }
 
   openAuthorManagement() {
@@ -43,11 +66,11 @@ export class List implements OnInit {
 
   openCreateDialog() {
     const dialogRef = this.dialog.open(BookForm, {
-      width: '600px',
+      width: '560px',
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        this.locallyCreatedIsbns.add(result.isbn);
         this.dispatch.createSubmitted(result);
         this.snackBar.open('Book created successfully', 'Close', { duration: 3000 });
       }

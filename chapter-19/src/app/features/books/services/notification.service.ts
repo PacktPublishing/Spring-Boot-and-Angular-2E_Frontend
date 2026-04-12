@@ -8,6 +8,7 @@ import { BookNotification } from '../../../shared/models/notification';
 export class NotificationService {
   private platformId = inject(PLATFORM_ID);
   private streamUrl = `${environment.apiUrl}/inventory/api` + `/notifications/stream`;
+
   connect(): Observable<BookNotification> {
     return new Observable<BookNotification>((subscriber) => {
       if (!isPlatformBrowser(this.platformId)) {
@@ -15,29 +16,24 @@ export class NotificationService {
         return;
       }
       const eventSource = new EventSource(this.streamUrl);
-      eventSource.onmessage = (event: MessageEvent) => {
+      const handleMessage = (event: MessageEvent) => {
         try {
           const parsed = JSON.parse(event.data);
-          if (parsed.type !== 'NEW_BOOK') {
-            return; // Ignore other event types
+          if (parsed.eventType !== 'NEW_BOOK') {
+            return;
           }
-          const notification: BookNotification = {
-            ...parsed,
-            timestamp: new Date().toISOString(),
-          };
-          subscriber.next(notification);
+          subscriber.next(parsed as BookNotification);
         } catch (error) {
           console.error('Failed to parse notification:', error);
         }
       };
+      eventSource.onmessage = handleMessage;
+      eventSource.addEventListener('NEW_BOOK', (event: Event) => {
+        handleMessage(event as MessageEvent);
+      });
       eventSource.onerror = () => {
-        // EventSource reconnects automatically.
-        // We log but don't complete the observable
-        // — the stream will resume on its own.
-        console.warn('SSE connection error. Reconnecting...');
+        console.warn('SSE connection error. ' + 'Reconnecting...');
       };
-      // Cleanup: close the connection when
-      // the observable is unsubscribed
       return () => {
         eventSource.close();
       };

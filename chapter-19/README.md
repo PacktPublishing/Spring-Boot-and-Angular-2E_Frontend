@@ -1,102 +1,85 @@
-# Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
+# Chapter 19 - Real-Time Updates with Server-Sent Events
 
-This chapter evolves the bookstore app from a CSR-only workaround into a hybrid-rendered Angular 21 application with per-route rendering strategies:
+This chapter extends the hybrid-rendered bookstore app with real-time updates using Server-Sent Events (SSE).
 
-- Public book catalog rendered on the server for SEO and faster first content
-- Static legal pages (`/privacy`, `/terms`) pre-rendered at build time
-- Auth and profile routes kept client-rendered for interactive authenticated flows
-- Authentication enforcement moved from route guard to component-level UI behavior in the catalog
-- Hydration-aware browser guards in `TokenService` to prevent server-side localStorage errors
-- Deferred paginator loading in the book list using `@defer` for better Core Web Vitals
+Building on Chapter 18, we keep the existing SSR/hydration and API-driven Signal Store architecture, then add a lightweight push channel for live catalog updates:
 
-It builds on the API-driven books/authors stores, interceptors, and profile management from Chapter 17 while introducing a production-style rendering pipeline.
+- A dedicated `NotificationService` wraps the browser `EventSource` API in an RxJS `Observable`
+- The service listens to both default SSE messages and named `NEW_BOOK` events
+- Only `NEW_BOOK` notifications are forwarded to the UI through `eventType` filtering
+- The books list page subscribes with `takeUntilDestroyed` for automatic cleanup
+- On each incoming event, the page shows a `MatSnackBar` toast and reloads the current book page via existing `BookStore` events
+- ISBN-based suppression prevents users from receiving duplicate notifications for books they just created locally
+
+This chapter demonstrates a production-oriented pattern where unidirectional server-to-client push is enough: CRUD remains request-response, rendering remains hybrid for SEO/performance, and SSE delivers low-friction real-time updates.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- Per-route rendering with `RenderMode.Server`, `RenderMode.Prerender`, and `RenderMode.Client`
-- A public catalog strategy where browsing is open while management actions remain auth-aware in the UI
-- Privacy and Terms pages as pre-rendered static routes linked from the footer
-- Angular hydration behavior and why reusing server-rendered DOM improves startup work
-- Browser-only storage protection using `isPlatformBrowser` in token persistence logic
-- Deferred rendering of non-critical UI (`mat-paginator`) using `@defer (on viewport)`
-- Continued NgRx Signal Store patterns for books, authors, and auth orchestration
-- Continued API-driven CRUD and pagination flows from Chapter 17
+- How to integrate SSE in Angular using `EventSource` and RxJS
+- How to consume both unnamed (`onmessage`) and named (`addEventListener`) SSE channels
+- How to filter push payloads by `eventType` before emitting to the app layer
+- How to wire real-time updates into a smart page without introducing new store infrastructure
+- How to use `takeUntilDestroyed` for subscription lifecycle safety
+- How to suppress self-notifications using a local ISBN tracking set
+- Why SSE is a practical choice for one-way server push over standard HTTP infrastructure
 
 ## Project Features
 
-### Authentication and Authorization
+### Real-Time Notifications (SSE)
 
-- Auth Signal Store includes:
-  - Typed auth state (`user`, `accessToken`, `refreshToken`, `loading`, `error`)
-  - Page events (`signinSubmitted`, `signupSubmitted`, `logoutClicked`)
-  - API events (signin/signup/logout/refresh success and failure)
-  - Computed state (`isAuthenticated`, `currentUser`, `userDisplayName`)
-- Route guards:
-  - `authGuard` protects private routes (`/profile`)
-  - `guestGuard` prevents signed-in users from visiting `/auth/*`
-- Public catalog access:
-  - `/books` is accessible without `authGuard`
-  - Edit/delete controls in the book list are shown only to authenticated users
-- Token lifecycle:
-  - Tokens and user data are persisted in local storage via `TokenService`
-  - Store rehydrates state on startup from persisted token and user data
+- `NotificationService` (`features/books/services/notification.service.ts`):
+  - Creates an `EventSource` connection to `/inventory/api/notifications/stream`
+  - Parses incoming JSON payloads from both `onmessage` and `NEW_BOOK` listeners
+  - Filters non-matching events (`eventType !== 'NEW_BOOK'`)
+  - Emits typed `BookNotification` values (`shared/models/notification.ts`)
+  - Closes the SSE connection when subscribers unsubscribe
+  - Uses `isPlatformBrowser` to avoid EventSource usage during server rendering
 
-### HTTP and Backend Integration
+### Books Page SSE Integration
 
-- `AuthService` is API-based and uses `HttpClient` with environment URL:
-  - `signin`
-  - `signup`
-  - `refreshToken`
-  - `logout`
-  - `getProfile`
-  - `updateProfile`
-- `authInterceptor` behavior:
-  - Adds bearer token to protected requests
-  - Skips auth endpoints (`signin`, `signup`, `refresh-token`)
-  - On `401`, attempts refresh token flow
-  - Retries failed request with new access token after refresh
-  - Dispatches refresh failure event when refresh is unavailable or fails
+- `List` page (`features/books/pages/list/list.ts`) now:
+  - Subscribes to `notificationService.connect()` during `ngOnInit`
+  - Uses `takeUntilDestroyed` with `DestroyRef` for cleanup
+  - Displays a `MatSnackBar` when a new book notification arrives
+  - Reloads the currently viewed page via `dispatch.loadBooks({ page, size })`
+  - Reuses Chapter 17 store event pipelines rather than adding a new state layer
 
-### Profile Management
+### Self-Notification Suppression
 
-- Dedicated `/profile` page behind `authGuard`
-- `Profile` page handles API load and update plus user notifications
-- `ProfileForm` component handles presentation and form validation
-- Shared utility `normalizeApiErrorMessage` standardizes backend error text extraction
+- The list page tracks ISBNs for locally created books in a `Set<string>`
+- When the server later broadcasts the same ISBN, the notification is ignored once and removed from the set
+- This prevents redundant "new book" toasts for the same user action
 
-### Books and Authors (API-Driven Signal Store)
+### Existing Hybrid Rendering and Auth Flows Preserved
 
-- **BookStore** (`book.store.ts`) with:
-  - Typed book state (`books`, `totalElements`, `totalPages`, `currentPage`, `pageSize`, `searchTerm`, `genreFilter`, `loading`, `error`)
-  - Page events: `loadBooks`, `searchByTitle`, `createSubmitted`, `updateSubmitted`, `deleteConfirmed`
-  - API events for load, search, create, update, and delete success and failure
-  - Computed state: `hasBooks`, `isSearching`, `bookCount`
-  - Event handlers using `switchMap` for load/search and `exhaustMap` for mutations
-- **AuthorStore** (`author.store.ts`) with the same event-driven structure for authors
-- `BookService` and `AuthorService` for paginated API integration
-- `List` page dispatches store events for create, edit, and delete
-- `BookList` component emits `editBookEvent`, `deleteBookEvent`, and page change events
-- `AuthorListDialog` provides full author CRUD in a Material dialog
-- `BookForm` patches `authorId` directly from `book.author.id` when opened in edit mode
+- `/books` remains server-rendered (`RenderMode.Server`)
+- `/privacy` and `/terms` remain pre-rendered (`RenderMode.Prerender`)
+- `/auth/**` and `/profile` remain client-rendered (`RenderMode.Client`)
+- Existing auth, profile, CRUD, pagination, and interceptor flows continue unchanged
 
-### Rendering Strategies and Hydration
+## Why SSE Here?
 
-- `app.routes.server.ts` uses per-route rendering:
-  - `/books` -> `RenderMode.Server`
-  - `/privacy` and `/terms` -> `RenderMode.Prerender`
-  - `/auth/**`, `/profile`, and fallback routes -> `RenderMode.Client`
-- Angular hydration reuses server-rendered DOM during bootstrap instead of rebuilding it from scratch.
-- `TokenService` now uses `isPlatformBrowser` checks so localStorage access only runs in browser contexts.
-- The book list defers paginator rendering with `@defer (on viewport)` to reduce initial bundle work.
+For this chapter's requirements, SSE is a strong fit:
+
+- Unidirectional push is sufficient (server to client)
+- No specialized bidirectional socket infrastructure required
+- Automatic browser reconnection behavior is built in
+- Works well across standard HTTP proxies and gateways
+
+Together with SSR and API CRUD, the app now demonstrates three complementary data/rendering patterns:
+
+- Request-response for CRUD and auth
+- Hybrid SSR/prerender/CSR for rendering strategy
+- Real-time push notifications for live catalog updates
 
 ## Tech Stack
 
 - Angular 21 (standalone APIs)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
-- RxJS
+- RxJS + EventSource bridge for SSE
 - Vitest-compatible Angular test runner setup
 
 ## Getting Started
@@ -129,7 +112,7 @@ npm run build
 ### SSR Serve (after build)
 
 ```bash
-npm run serve:ssr:chapter-18
+npm run serve:ssr:chapter-19
 ```
 
 ## Testing
@@ -161,17 +144,15 @@ Spec files are co-located with their source files and cover all major layers:
 | App bootstrap | `app.spec.ts` |
 | Guards | `auth.guard.spec.ts` |
 | Interceptors | `auth.interceptor.spec.ts` |
-| Services | `authentication.spec.ts`, `token.service.spec.ts`, `auth.service.spec.ts`, `book.service.spec.ts`, `author.service.spec.ts` |
-| Signal Store | `auth.store.spec.ts`, `author.store.spec.ts` |
-| Auth components | `signin-form.spec.ts`, `signup-form.spec.ts` |
-| Auth pages | `signin.spec.ts`, `signup.spec.ts` |
-| Books components | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts`, `author-list-dialog.spec.ts` |
-| Books pages | `list.spec.ts` |
-| Profile component | `profile-form.spec.ts` |
-| Profile page | `profile.spec.ts` |
-| Static legal pages | `privacy.spec.ts`, `terms.spec.ts` |
-| Layout | `header.spec.ts`, `footer.spec.ts` |
-| Utilities | `error.utils.spec.ts` |
+| Core services | `authentication.spec.ts`, `token.service.spec.ts` |
+| Auth services/store | `auth.service.spec.ts`, `auth.store.spec.ts` |
+| Books services | `book.service.spec.ts`, `author.service.spec.ts`, `notification.service.spec.ts` |
+| Books stores | `author.store.spec.ts` |
+| Auth components/pages | `signin-form.spec.ts`, `signup-form.spec.ts`, `signin.spec.ts`, `signup.spec.ts` |
+| Books components/pages | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts`, `author-list-dialog.spec.ts`, `list.spec.ts` |
+| Profile | `profile-form.spec.ts`, `profile.spec.ts` |
+| Static pages | `privacy.spec.ts`, `terms.spec.ts` |
+| Layout and utilities | `header.spec.ts`, `footer.spec.ts`, `error.utils.spec.ts` |
 
 ## Formatting
 
@@ -195,122 +176,65 @@ src/
 │   ├── environment.ts                 # Dev environment config (API base URL)
 │   └── environment.prod.ts            # Prod environment config
 └── app/
-    ├── app.config.ts                      # HTTP client + interceptor + hydration
-    ├── app.routes.ts                      # Public catalog + auth/guest guarded route setup
-    ├── app.routes.server.ts               # Per-route render mode config (SSR/Prerender/CSR)
+    ├── app.config.ts                  # HTTP client + interceptor + hydration
+    ├── app.routes.ts                  # Public catalog + auth/guest guarded route setup
+    ├── app.routes.server.ts           # Per-route render mode config (SSR/Prerender/CSR)
     ├── app.spec.ts
     ├── core/
     │   ├── guards/
-    │   │   ├── auth.guard.ts              # authGuard and guestGuard
-    │   │   └── auth.guard.spec.ts
     │   ├── interceptors/
-    │   │   ├── auth.interceptors.ts       # Bearer + refresh retry strategy
-    │   │   └── auth.interceptor.spec.ts
     │   └── services/
-    │       ├── authentication.ts          # Legacy helper kept for continuity
-    │       ├── authentication.spec.ts
-    │       ├── token.service.ts           # SSR-safe token persistence
-    │       └── token.service.spec.ts
     ├── features/
     │   ├── auth/
-    │   │   ├── auth.routes.ts
-    │   │   ├── components/
-    │   │   │   ├── signin-form/           # signin-form.ts + .html + .scss + .spec.ts
-    │   │   │   └── signup-form/           # signup-form.ts + .html + .scss + .spec.ts
-    │   │   ├── pages/
-    │   │   │   ├── signin/                # signin.ts + .html + .scss + .spec.ts
-    │   │   │   └── signup/                # signup.ts + .html + .scss + .spec.ts
-    │   │   ├── services/
-    │   │   │   ├── auth.service.ts        # API integration for auth and profile
-    │   │   │   └── auth.service.spec.ts
-    │   │   └── store/
-    │   │       ├── auth.state.ts
-    │   │       ├── auth.events.ts
-    │   │       ├── auth.store.ts
-    │   │       └── auth.store.spec.ts
     │   ├── books/
     │   │   ├── books.routes.ts
     │   │   ├── components/
-    │   │   │   ├── author-form/           # author-form.ts + .html + .scss + .spec.ts
-    │   │   │   ├── author-list-dialog/    # author-list-dialog.ts + .html + .scss + .spec.ts
-    │   │   │   ├── book-form/             # book-form.ts + .html + .scss + .spec.ts
-    │   │   │   └── book-list/             # book-list.ts + .html + .scss + .spec.ts
     │   │   ├── pages/
-    │   │   │   └── list/                  # list.ts + .html + .scss + .spec.ts
+    │   │   │   └── list/              # List page consumes SSE and reloads current page
     │   │   ├── services/
-    │   │   │   ├── author.service.ts      # API integration for authors
-    │   │   │   ├── author.service.spec.ts
-    │   │   │   ├── book.service.ts        # API integration for books
-    │   │   │   └── book.service.spec.ts
+    │   │   │   ├── book.service.ts
+    │   │   │   ├── author.service.ts
+    │   │   │   └── notification.service.ts
     │   │   └── store/
-    │   │       ├── author-store/
-    │   │       │   ├── author.state.ts
-    │   │       │   ├── author.events.ts
-    │   │       │   ├── author.store.ts
-    │   │       │   └── author.store.spec.ts
-    │   │       └── book-store/
-    │   │           ├── book.state.ts
-    │   │           ├── book.events.ts
-    │   │           └── book.store.ts
     │   └── profile/
-    │       ├── components/
-    │       │   └── profile-form/          # profile-form.ts + .html + .scss + .spec.ts
-    │       └── pages/
-    │           └── profile/               # profile.ts + .html + .scss + .spec.ts
     ├── pages/
-    │   ├── privacy/                       # privacy.ts + .spec.ts
-    │   └── terms/                         # terms.ts + .spec.ts
+    │   ├── privacy/
+    │   └── terms/
     └── shared/
         ├── layout/
-        │   ├── header/                    # header.ts + .html + .scss + .spec.ts
-        │   └── footer/                    # footer.ts + .html + .scss + .spec.ts
         ├── models/
-        │   ├── auth.ts
-        │   ├── author.ts
-        │   ├── book.ts
-        │   └── paginated.ts
+        │   └── notification.ts        # `BookNotification` SSE payload type
         ├── utils/
-        │   ├── error-message.ts
-        │   └── error.utils.spec.ts
         └── validators/
-            └── custom-validators.ts
 ```
 
 ## Key Implementation Highlights
 
-### 1) Per-Route Rendering Pipeline
+### 1) EventSource Wrapped as Observable
 
-The server route config uses all three Angular rendering modes in one app: SSR for the public catalog, pre-rendering for legal pages, and CSR for authenticated routes.
+The notification layer exposes SSE as a standard RxJS stream, making it easy to compose with Angular lifecycle utilities and existing store dispatch patterns.
 
-### 2) Public Browsing, Authenticated Management
+### 2) Default + Named Event Handling
 
-Authentication enforcement for catalog browsing moved from route-level blocking to component-level behavior, a common production pattern where reading is public and write actions require login.
+The service listens to both `onmessage` and named `NEW_BOOK` events so backend dispatch style does not leak complexity into the page component.
 
-### 3) Real Footer Destinations with Prerendered Legal Pages
+### 3) UI Reaction Without New State Infrastructure
 
-The new Privacy and Terms routes make footer navigation meaningful while also serving as examples of static pre-rendered content.
+Incoming events trigger `MatSnackBar` feedback and dispatch an existing `loadBooks` page event to refresh data. No extra reducer/state slice is required.
 
-### 4) Hydration-Aware Bootstrapping
+### 4) Self-Notification Suppression by ISBN
 
-Angular hydration reuses server-rendered DOM nodes, reducing client bootstrap work and improving perceived startup performance.
+The UI records locally created ISBNs and drops the corresponding first matching SSE event, avoiding noisy duplicate notifications.
 
-### 5) SSR-Safe Token Storage Access
+### 5) Full-Stack Pattern Composition
 
-`TokenService` wraps localStorage reads and writes with `isPlatformBrowser` guards so server rendering never touches browser-only APIs.
-
-### 6) Deferred Paginator for Better Initial Load
-
-The book list paginator is loaded with `@defer (on viewport)`, reducing initial bundle pressure while preserving full pagination functionality.
-
-### 7) API-Driven Books and Authors Still Intact
-
-Books and authors continue to use Signal Store events/reducers/effects for API-backed CRUD, search, and pagination from the previous chapter.
+This chapter now combines SSR for discoverability and startup performance, classic HTTP for writes and reads, and SSE for low-latency visibility of remote changes.
 
 ## Next Steps
 
-Potential enhancements for the next chapter or iteration:
+In Chapter 20, we will package and deploy the Angular frontend for production:
 
-- Add real-time catalog updates with Server-Sent Events (SSE)
-- Push live inserts and price changes to connected clients without manual refresh
-- Add resilient reconnection and transient network handling for event streams
-- Preserve SSR and hydration performance while layering in live updates
+- Build optimized production artifacts
+- Containerize the frontend with Docker
+- Configure deployment alongside backend services
+- Validate runtime configuration for production environments
