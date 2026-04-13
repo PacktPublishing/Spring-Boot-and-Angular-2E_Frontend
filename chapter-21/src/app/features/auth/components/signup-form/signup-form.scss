@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  width: min(100%, 700px);
+}
+
+.section-title {
+  margin: 0.4rem 0 0.1rem;
+  font-weight: 500;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 0.3rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  .optional-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.half-width {
+  grid-column: span 6;
+}
+
+.third-width {
+  grid-column: span 4;
+}
+
+.terms-checkbox {
+  margin-top: 0.15rem;
+  margin-bottom: 0.2rem;
+}
+
+.group-error {
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .half-width,
+  .third-width {
+    grid-column: span 1;
+  }
+}
