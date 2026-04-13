@@ -1,0 +1,12 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Sign In</h1>
+    <p>Access your Packt Bookstore account</p>
+  </div>
+
+  <signin-form [serverError]="store.error()" (signinComplete)="handleSigninComplete($event)" />
+
+  @if (store.loading()) {
+    <mat-spinner diameter="24" />
+  }
+</div>

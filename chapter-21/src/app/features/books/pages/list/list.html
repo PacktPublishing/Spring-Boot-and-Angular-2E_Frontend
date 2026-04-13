@@ -1,0 +1,22 @@
+<div class="page-header-full">
+  <h1>Book Catalog</h1>
+  @if (authStore.isAuthenticated()) {
+    <div class="header-actions">
+      <button mat-stroked-button (click)="openAuthorManagement()">
+        <mat-icon>people</mat-icon>
+        Authors
+      </button>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        Add New Book
+      </button>
+    </div>
+  }
+</div>
+
+<book-list
+  [books]="store.books()"
+  (book)="selectBook($event)"
+  (editBookEvent)="openEditDialog($event)"
+  (deleteBookEvent)="confirmDelete($event)"
+/>

@@ -1,10 +1,10 @@
 # Spring Boot and Angular 2E - Frontend
 
-This repository contains the Angular frontend code for the "Spring Boot and Angular 2E" book published by Packt Publishing. The project demonstrates modern Angular development practices through a comprehensive bookstore application built progressively across multiple chapters.
+This repository contains the Angular frontend code for the "Spring Boot and Angular 2E" book published by Packt Publishing. The project demonstrates modern Angular development practices through a comprehensive bookstore application built progressively across multiple chapters, culminating in a production-style full-stack deployment.
 
 ## Project Overview
 
-The Packt Bookstore is a modern web application showcasing Angular 21's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, and user interactions.
+The Packt Bookstore is a modern web application showcasing Angular 21's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, server-side rendering, real-time notifications, and final containerized deployment behind a single entry point.
 
 ## Architecture
 
@@ -142,6 +142,19 @@ Packages and containerizes the Angular frontend for production deployment:
 - **Docker Image Publishing**: Builds, tags, and publishes the container image to Docker Hub for portable deployment across environments
 - **Environment-Driven Configuration**: Reads `API_URL` and `PORT` from process environment at startup, enabling the same image to target different backends without rebuilding
 
+### Chapter 21 - Connecting Frontend and Backend in Production
+
+**Location**: `chapter-21/`
+
+Connects the containerized Angular frontend from Chapter 20 with the Spring Boot backend stack into a single production-style deployment:
+
+- **Full-Stack Docker Compose Deployment**: Extends orchestration to include PostgreSQL, MongoDB, Keycloak, Zipkin, Eureka, Inventory Service, User Service, Gateway Server, Angular SSR, and Nginx
+- **Nginx Edge Proxy**: Introduces Nginx as the single public entry point, routing browser requests to Angular SSR and API traffic to Spring Cloud Gateway
+- **SSE Proxy Support**: Adds dedicated reverse proxy handling for Server-Sent Events so real-time notifications stream correctly through Nginx
+- **Single-Command Startup**: Runs the complete Bookstore platform with one `docker compose up -d` command
+- **Keycloak Realm Seeding**: Uses a helper realm import file to bootstrap roles, users, and client configuration automatically
+- **Operational Helper Scripts**: Documents containerization helper files for clean rebuilds and local environment reset workflows
+
 ## Technology Stack
 
 - **Angular 21**: Latest version with standalone components and signals
@@ -154,6 +167,8 @@ Packages and containerizes the Angular frontend for production deployment:
 - **SCSS**: Advanced styling with CSS preprocessor
 - **Vitest**: Modern testing framework for faster unit test execution
 - **GitHub Copilot**: AI-assisted development and code generation
+- **Docker & Docker Compose**: Container build and orchestration across frontend, backend, and infrastructure services
+- **Nginx**: Reverse proxy for browser traffic, API forwarding, and SSE streaming
 
 ## Getting Started
 
@@ -212,9 +227,23 @@ npm run start
 cd chapter-20
 npm install
 npm run start
+
+# For Chapter 21 - Connecting Frontend and Backend in Production
+cd chapter-21
+npm install
+npm run start
 ```
 
 The application will be available at `http://localhost:4200`
+
+For the full Chapter 21 deployment, start the containerized platform with:
+
+```bash
+cd chapter-21
+docker compose up -d
+```
+
+The complete stack is then available at `http://localhost`
 
 ### Build for Production
 
@@ -295,6 +324,8 @@ These instruction files act as a "style guide" for AI-assisted development, ensu
 - **Computed Signals**: Derived state for filtering, searching, and sorting
 - **Hybrid Rendering**: Per-route SSR, pre-rendering, and CSR strategies in a single Angular app
 - **Hydration and Performance**: Browser guards for SSR-safe storage and deferred UI loading for improved startup metrics
+- **Containerized Deployment**: Production-style Docker images and orchestration for frontend, backend, and supporting infrastructure
+- **Reverse Proxy Architecture**: Single-entry Nginx routing for SSR, APIs, and SSE notifications
 - **Material Design**: Consistent UI/UX with Angular Material components
 - **Type Safety**: Comprehensive TypeScript usage with interfaces and strict typing
 - **Responsive Design**: Mobile-first approach with flexible layouts
@@ -320,6 +351,12 @@ Each chapter includes these npm scripts:
 - `npm test` or `npm run test` - Run unit tests with Vitest
 - `npm run serve:ssr:chapter-X` - Serve server-side rendered application
 
+Chapter 21 additionally includes:
+
+- `docker compose up -d` - Start the complete containerized Bookstore platform
+- `docker compose down` - Stop the full platform
+- `./containerization/docker-clean-rebuild.sh` - Clean and rebuild the local Docker environment
+
 ## Learning Path
 
 1. **Start with Chapter 11** to understand Angular fundamentals and project setup
@@ -331,8 +368,9 @@ Each chapter includes these npm scripts:
 7. **Advance to Chapter 18** to implement hybrid rendering with per-route SSR/Prerender/CSR, hydration-safe token storage, and deferred loading optimizations
 8. **Complete with Chapter 19** to add real-time server-to-client push notifications using Server-Sent Events, including self-notification suppression and lifecycle-safe subscriptions
 9. **Advance to Chapter 20** to build and containerize the Angular frontend for production, configure Express proxy middleware for backend communication, and publish the Docker image
-10. **Explore the GitHub instructions** to understand AI-assisted development patterns
-11. **Experiment with modifications** to reinforce learning concepts
+10. **Finish with Chapter 21** to connect frontend and backend containers behind Nginx, add Docker Compose orchestration for the full stack, and run the entire platform through a single public entry point
+11. **Explore the GitHub instructions** to understand AI-assisted development patterns
+12. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
 

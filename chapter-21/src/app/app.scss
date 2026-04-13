@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.content {
+  /* Reserve space for the fixed footer so page content stays visible when scrolled to bottom. */
+  padding-bottom: calc(3rem + 0.75rem + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}

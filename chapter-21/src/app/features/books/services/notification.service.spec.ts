@@ -55,8 +55,8 @@ describe('NotificationService', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks(); // restores vi.spyOn spies
-    vi.unstubAllGlobals(); // restores globals set via vi.stubGlobal (e.g. EventSource)
+    vi.restoreAllMocks();    // restores vi.spyOn spies
+    vi.unstubAllGlobals();   // restores globals set via vi.stubGlobal (e.g. EventSource)
   });
 
   it('should be created', () => {
