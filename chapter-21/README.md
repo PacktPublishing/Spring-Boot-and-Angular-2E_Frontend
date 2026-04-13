@@ -140,6 +140,25 @@ If you need to rebuild images and restart everything from a clean state:
 ./containerization/docker-clean-rebuild.sh
 ```
 
+### Build and Push Fresh Latest Images
+
+If the Compose deployment should use images built from the current Chapter 21 sources, publish fresh `latest` tags with:
+
+```bash
+./containerization/docker-build-push-latest.sh
+```
+
+The script builds and pushes both images referenced by Compose:
+
+- `dkiriakakis/ng-bookstore:latest`
+- `dkiriakakis/nginx:latest`
+
+You can override the default namespace, image names, or tag with environment variables:
+
+```bash
+DOCKER_NAMESPACE=yourdockerhub IMAGE_TAG=latest ./containerization/docker-build-push-latest.sh
+```
+
 ## Containerization Helper Files
 
 The `containerization/` directory contains helper assets used by the Compose deployment.
@@ -172,6 +191,24 @@ It performs a more aggressive workflow than a normal `docker compose down` by:
 
 Use it when stale containers, conflicting names, broken images, or leftover networks prevent a clean startup.
 
+### `docker-build-push-latest.sh`
+
+This script packages the current Chapter 21 frontend and Nginx proxy into Docker images and pushes them to the configured registry namespace.
+
+It:
+
+- builds the Angular SSR image from the Chapter 21 `Dockerfile`
+- builds the Nginx image from `nginx/Dockerfile`
+- tags both images with `latest` by default
+- pushes both images so `docker compose up -d` can pull current artifacts
+
+By default it publishes:
+
+- `dkiriakakis/ng-bookstore:latest`
+- `dkiriakakis/nginx:latest`
+
+Override `DOCKER_NAMESPACE`, `FRONTEND_IMAGE_NAME`, `NGINX_IMAGE_NAME`, or `IMAGE_TAG` if you need to publish to a different registry path.
+
 ## Reverse Proxy Files
 
 The `nginx/` directory contains the files for the edge proxy image:
@@ -192,6 +229,7 @@ Together, these files turn Nginx into the single browser-facing entry point for 
 │   └── nginx.conf                     # Reverse proxy and SSE routing rules
 ├── containerization/
 │   ├── bookstore-realm.json           # Keycloak realm import with sample users and roles
+│   ├── docker-build-push-latest.sh    # Build and publish the Chapter 21 frontend and Nginx images
 │   └── docker-clean-rebuild.sh        # Clean rebuild helper for the local Docker environment
 ├── package.json                       # Frontend build, serve, and test scripts
 ├── angular.json

@@ -11,13 +11,16 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+const angularApp = new AngularNodeAppEngine({
+  allowedHosts: ['localhost', '127.0.0.1'],
+});
 
 app.use(
   '/packt',
   createProxyMiddleware({
     target: process.env['API_URL'] || 'http://localhost:8080',
     changeOrigin: true,
+    pathRewrite: (path) => `/packt${path}`,
   }),
 );
 
