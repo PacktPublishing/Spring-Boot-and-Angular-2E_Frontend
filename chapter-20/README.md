@@ -1,86 +1,92 @@
-# Chapter 19 - Real-Time Updates with Server-Sent Events
+# Chapter 20 - Production Build and Docker Containerization
 
-This chapter extends the hybrid-rendered bookstore app with real-time updates using Server-Sent Events (SSE).
+This chapter packages and containerizes the Angular frontend built over Chapters 11–19 for production deployment.
 
-Building on Chapter 18, we keep the existing SSR/hydration and API-driven Signal Store architecture, then add a lightweight push channel for live catalog updates:
+Building on the fully featured bookstore app (hybrid rendering, real-time SSE notifications, Signal Store architecture, and authentication), we now:
 
-- A dedicated `NotificationService` wraps the browser `EventSource` API in an RxJS `Observable`
-- The service listens to both default SSE messages and named `NEW_BOOK` events
-- Only `NEW_BOOK` notifications are forwarded to the UI through `eventType` filtering
-- The books list page subscribes with `takeUntilDestroyed` for automatic cleanup
-- On each incoming event, the page shows a `MatSnackBar` toast and reloads the current book page via existing `BookStore` events
-- ISBN-based suppression prevents users from receiving duplicate notifications for books they just created locally
+- Run `ng build` to generate optimized production artifacts via AOT compilation, tree-shaking, and code minification
+- Examine the build output structure and compare it to Spring Boot JAR packaging from Chapter 10
+- Configure Express proxy middleware in `server.ts` so SSR-initiated API calls resolve to the backend gateway via the configurable `API_URL` environment variable
+- Create a multi-stage Dockerfile following Chapter 10 patterns, adapting for Node.js runtime differences (node_modules vs. JAR bundling)
+- Build, test, and publish the frontend container image to Docker Hub
 
-This chapter demonstrates a production-oriented pattern where unidirectional server-to-client push is enough: CRUD remains request-response, rendering remains hybrid for SEO/performance, and SSE delivers low-friction real-time updates.
+The result is a portable, self-contained Angular frontend container ready for orchestration with backend services.
 
 ## What You'll Learn
 
 This chapter project showcases:
 
-- How to integrate SSE in Angular using `EventSource` and RxJS
-- How to consume both unnamed (`onmessage`) and named (`addEventListener`) SSE channels
-- How to filter push payloads by `eventType` before emitting to the app layer
-- How to wire real-time updates into a smart page without introducing new store infrastructure
-- How to use `takeUntilDestroyed` for subscription lifecycle safety
-- How to suppress self-notifications using a local ISBN tracking set
-- Why SSE is a practical choice for one-way server push over standard HTTP infrastructure
+- How to run `ng build` for production with AOT compilation, tree-shaking, and minification
+- How build output structure organizes chunks, assets, and source maps
+- How to compare frontend build artifacts to Spring Boot JAR packaging patterns
+- How to configure Express proxy middleware for SSR-initiated backend API calls
+- How to make the backend gateway URL configurable via environment variables
+- How to design a multi-stage Dockerfile adapted for Node.js (vs. Java)
+- How to handle node_modules dependency installation in a container runtime
+- How to tag and publish a container image to Docker Hub
+- How to validate the containerized frontend runs correctly in isolation
 
 ## Project Features
 
-### Real-Time Notifications (SSE)
+### Production Build Pipeline
 
-- `NotificationService` (`features/books/services/notification.service.ts`):
-  - Creates an `EventSource` connection to `/inventory/api/notifications/stream`
-  - Parses incoming JSON payloads from both `onmessage` and `NEW_BOOK` listeners
-  - Filters non-matching events (`eventType !== 'NEW_BOOK'`)
-  - Emits typed `BookNotification` values (`shared/models/notification.ts`)
-  - Closes the SSE connection when subscribers unsubscribe
-  - Uses `isPlatformBrowser` to avoid EventSource usage during server rendering
+- **AOT Compilation**: `ng build` compiles TypeScript with Angular's Ahead-of-Time compiler, catching template errors at build time
+- **Tree-Shaking**: Webpack removes unused code, significantly reducing bundle sizes
+- **Minification**: JavaScript, CSS, and HTML are minified for optimal transfer size
+- **Environment File Swap**: Build process replaces `environment.ts` with `environment.prod.ts` (configured in Chapter 16)
+- **Source Maps**: Optional `.js.map` files for production debugging without exposing source
 
-### Books Page SSE Integration
+### Build Output Structure
 
-- `List` page (`features/books/pages/list/list.ts`) now:
-  - Subscribes to `notificationService.connect()` during `ngOnInit`
-  - Uses `takeUntilDestroyed` with `DestroyRef` for cleanup
-  - Displays a `MatSnackBar` when a new book notification arrives
-  - Reloads the currently viewed page via `dispatch.loadBooks({ page, size })`
-  - Reuses Chapter 17 store event pipelines rather than adding a new state layer
+- `index.html`: Main entry point with prerendered/server-rendered routes embedded
+- `server.js`: SSR server bundle
+- `browser/`: Client-side bundles organized by route chunks
+- `styles/`: Global CSS bundles
+- `assets/`: Static resources (images, fonts, JSON)
+- `public/`: Public directory contents (favicon, robots.txt, etc.)
 
-### Self-Notification Suppression
+### Express Proxy Middleware (server.ts)
 
-- The list page tracks ISBNs for locally created books in a `Set<string>`
-- When the server later broadcasts the same ISBN, the notification is ignored once and removed from the set
-- This prevents redundant "new book" toasts for the same user action
+- `server.ts` configures Express proxy middleware to route SSR-initiated API calls to the backend gateway
+- The `API_URL` environment variable (set during container bootstrap) controls the backend target
+- Proxy middleware intercepts requests matching `/inventory/api/**` patterns and forwards them upstream
+- Allows the frontend container to communicate with backend services without hardcoding hostnames
 
-### Existing Hybrid Rendering and Auth Flows Preserved
+### Multi-Stage Dockerfile
 
-- `/books` remains server-rendered (`RenderMode.Server`)
-- `/privacy` and `/terms` remain pre-rendered (`RenderMode.Prerender`)
-- `/auth/**` and `/profile` remain client-rendered (`RenderMode.Client`)
-- Existing auth, profile, CRUD, pagination, and interceptor flows continue unchanged
+- **Stage 1 (Builder)**: Node.js base image, installs dependencies, runs `npm run build`
+- **Stage 2 (Runtime)**: Leaner Node.js base, copies built artifacts and `node_modules` from builder
+- **Key Difference from Java**: node_modules must be copied to runtime (Java JAR bundles all dependencies)
+- Exposes port 4200; reads `API_URL` and `PORT` environment variables at startup
+- Runs `npm run serve:ssr:chapter-20` to start the production SSR server
 
-## Why SSE Here?
+### Docker Image Publishing
 
-For this chapter's requirements, SSE is a strong fit:
+- Build image with appropriate tag: `docker build -t yourdockerhub/bookstore-frontend:latest .`
+- Configure Docker Hub credentials and push: `docker push yourdockerhub/bookstore-frontend:latest`
+- Image is portable and can be deployed anywhere Docker runs
 
-- Unidirectional push is sufficient (server to client)
-- No specialized bidirectional socket infrastructure required
-- Automatic browser reconnection behavior is built in
-- Works well across standard HTTP proxies and gateways
+## Build and Deployment Strategy
 
-Together with SSR and API CRUD, the app now demonstrates three complementary data/rendering patterns:
+The production pipeline combines three complementary patterns:
 
-- Request-response for CRUD and auth
-- Hybrid SSR/prerender/CSR for rendering strategy
-- Real-time push notifications for live catalog updates
+- **AOT + Tree-Shaking + Minification**: Optimal bundle sizes and fast startup performance
+- **Environment-Driven Configuration**: `API_URL` and `PORT` set at container boot, not at build time
+- **Multi-Stage Docker Build**: Minimize runtime image size by excluding build toolchain
+- **Express Proxy in SSR Server**: Backend connectivity is transparent to routes; no CORS complexity
+
+This approach mirrors the containerization strategy from Chapter 10 (Spring Boot), adapting for Node.js dependency management.
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs)
+- Angular 21 (standalone APIs, SSR)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
-- RxJS + EventSource bridge for SSE
-- Vitest-compatible Angular test runner setup
+- RxJS for reactive streams
+- Express.js for proxy middleware
+- Node.js 20+
+- Docker & Docker Hub
+- Multi-stage Dockerfile builds
 
 ## Getting Started
 
@@ -88,6 +94,8 @@ Together with SSR and API CRUD, the app now demonstrates three complementary dat
 
 - Node.js 20+
 - Angular CLI 21.x
+- Docker (for containerization)
+- Docker Hub account (for publishing images)
 
 ### Installation
 
@@ -103,16 +111,40 @@ npm run start
 
 Open `http://localhost:4200/`.
 
-### Build
+### Production Build
 
 ```bash
 npm run build
 ```
 
+This generates optimized artifacts in the `dist/` directory with AOT compilation, tree-shaking, and minification applied.
+
 ### SSR Serve (after build)
 
 ```bash
-npm run serve:ssr:chapter-19
+npm run serve:ssr:chapter-20
+```
+
+Launches the production SSR server. Reads `API_URL` and `PORT` from environment:
+```bash
+API_URL=http://localhost:8080 PORT=4200 npm run serve:ssr:chapter-20
+```
+
+### Docker Build and Run
+
+Build the image:
+```bash
+docker build -t yourdockerhub/bookstore-frontend:latest .
+```
+
+Run a container:
+```bash
+docker run -e API_URL=http://host.docker.internal:8080 -p 4200:4200 yourdockerhub/bookstore-frontend:latest
+```
+
+Publish to Docker Hub:
+```bash
+docker push yourdockerhub/bookstore-frontend:latest
 ```
 
 ## Testing
@@ -171,70 +203,70 @@ npm run format:check
 ## Project Structure
 
 ```text
-src/
-├── environments/
-│   ├── environment.ts                 # Dev environment config (API base URL)
-│   └── environment.prod.ts            # Prod environment config
-└── app/
-    ├── app.config.ts                  # HTTP client + interceptor + hydration
-    ├── app.routes.ts                  # Public catalog + auth/guest guarded route setup
-    ├── app.routes.server.ts           # Per-route render mode config (SSR/Prerender/CSR)
-    ├── app.spec.ts
-    ├── core/
-    │   ├── guards/
-    │   ├── interceptors/
-    │   └── services/
-    ├── features/
-    │   ├── auth/
-    │   ├── books/
-    │   │   ├── books.routes.ts
-    │   │   ├── components/
-    │   │   ├── pages/
-    │   │   │   └── list/              # List page consumes SSE and reloads current page
-    │   │   ├── services/
-    │   │   │   ├── book.service.ts
-    │   │   │   ├── author.service.ts
-    │   │   │   └── notification.service.ts
-    │   │   └── store/
-    │   └── profile/
-    ├── pages/
-    │   ├── privacy/
-    │   └── terms/
-    └── shared/
-        ├── layout/
-        ├── models/
-        │   └── notification.ts        # `BookNotification` SSE payload type
-        ├── utils/
-        └── validators/
+.
+├── Dockerfile                         # Multi-stage build for production container
+├── package.json                       # Build, serve, and test scripts
+├── angular.json                       # AOT, treeshake, minify, environment swap config
+├── tsconfig.json
+├── tsconfig.app.json
+├── src/
+│   ├── main.ts                        # Client bootstrap
+│   ├── main.server.ts                 # SSR server bootstrap
+│   ├── server.ts                      # Express server + proxy middleware
+│   ├── environments/
+│   │   ├── environment.ts             # Dev API base URL
+│   │   └── environment.prod.ts        # Prod API base URL (swapped by ng build)
+│   └── app/
+│       ├── app.config.ts              # HTTP client + interceptor + hydration
+│       ├── app.routes.ts              # Public catalog + auth/guest guarded routes
+│       ├── app.routes.server.ts       # Per-route render mode (SSR/Prerender/CSR)
+│       ├── core/
+│       ├── features/
+│       ├── pages/
+│       └── shared/
+└── dist/                              # Build output (gitignored)
+    ├── server.js                      # Production SSR server bundle
+    ├── browser/                       # Client-side route chunks
+    ├── styles/                        # Global CSS bundles
+    ├── assets/                        # Static resources
+    └── public/                        # Favicon, robots.txt, etc.
 ```
 
 ## Key Implementation Highlights
 
-### 1) EventSource Wrapped as Observable
+### 1) AOT Compilation and Build Optimization
 
-The notification layer exposes SSE as a standard RxJS stream, making it easy to compose with Angular lifecycle utilities and existing store dispatch patterns.
+`ng build` applies Angular's ahead-of-time compiler, Webpack tree-shaking, and code minification. Build output is organized into chunks (one per lazy-loaded route), global styles, and assets, totaling a fraction of the dev bundle.
 
-### 2) Default + Named Event Handling
+### 2) Environment Configuration at Runtime
 
-The service listens to both `onmessage` and named `NEW_BOOK` events so backend dispatch style does not leak complexity into the page component.
+Rather than building separate images per environment, `environment.prod.ts` includes a default `API_BASE_URL`. The Express server reads `API_URL` from process environment at startup, allowing the same image to target different backends without rebuilding.
 
-### 3) UI Reaction Without New State Infrastructure
+### 3) Express Proxy Middleware
 
-Incoming events trigger `MatSnackBar` feedback and dispatch an existing `loadBooks` page event to refresh data. No extra reducer/state slice is required.
+The SSR server (`server.ts`) adds proxy middleware to intercept `/inventory/api/**` requests and forward them upstream. This eliminates CORS issues and allows the frontend to reference the backend by hostname only.
 
-### 4) Self-Notification Suppression by ISBN
+### 4) Multi-Stage Dockerfile Architecture
 
-The UI records locally created ISBNs and drops the corresponding first matching SSE event, avoiding noisy duplicate notifications.
+Stage 1 builds the app; Stage 2 copies only the runtime artifacts. This keeps the final image lean by excluding Node build tools.
 
-### 5) Full-Stack Pattern Composition
+### 5) Dependency Management in Containers
 
-This chapter now combines SSR for discoverability and startup performance, classic HTTP for writes and reads, and SSE for low-latency visibility of remote changes.
+Unlike Java's self-contained JAR, Node.js requires `node_modules` in the runtime container. The Dockerfile copies `node_modules` from the builder stage or relies on `npm ci --production` in the runtime stage, depending on strategy.
+
+### 6) Container Image Publishing and Portability
+
+The built image is tagged and pushed to a registry (Docker Hub, ECR, etc.), making it reusable across development, staging, and production environments without rebuilding.
+
+### 7) Full-Stack Parity with Chapter 10 Patterns
+
+Chapter 20 mirrors Chapter 10's containerization approach, ensuring frontend and backend follow parallel deployment practices for consistency and operational familiarity.
 
 ## Next Steps
 
-In Chapter 20, we will package and deploy the Angular frontend for production:
+The frontend is now a portable, self-contained container — but it runs in isolation. In **Chapter 21: Connecting Frontend and Backend in Production**, we will:
 
-- Build optimized production artifacts
-- Containerize the frontend with Docker
-- Configure deployment alongside backend services
-- Validate runtime configuration for production environments
+- Connect the containerized frontend to the Spring Boot backend services
+- Add an Nginx reverse proxy for load balancing and SSL termination
+- Define a Docker Compose deployment orchestrating frontend, backend, and database
+- Complete the full-stack Bookstore platform as a single reproducible deployment
