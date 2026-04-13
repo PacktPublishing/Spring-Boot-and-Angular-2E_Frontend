@@ -116,6 +116,32 @@ Resolves the CSR-only workaround introduced in Chapter 16 by applying per-route 
 - **Deferred UI Loading**: Adds `@defer (on viewport)` for the book-list paginator to reduce initial bundle work and improve Core Web Vitals
 - **Production Rendering Pipeline**: Combines SEO-friendly SSR, instant static pages, and interactive CSR where it fits best
 
+### Chapter 19 - Real-Time Updates with Server-Sent Events
+
+**Location**: `chapter-19/`
+
+Extends the hybrid-rendered bookstore app with a lightweight real-time push channel using Server-Sent Events (SSE):
+
+- **NotificationService**: Wraps the browser `EventSource` API in an RxJS `Observable`, connecting to `/inventory/api/notifications/stream` and emitting typed `BookNotification` values; uses `isPlatformBrowser` to prevent SSE usage during server rendering
+- **Named Event Filtering**: Listens to both default (`onmessage`) and named (`NEW_BOOK`) SSE channels, forwarding only `NEW_BOOK` events to the application layer
+- **Smart Page Integration**: The `List` page subscribes to `notificationService.connect()` in `ngOnInit`, displays a `MatSnackBar` toast on each incoming notification, and reloads the current page via existing `BookStore` events — no new store infrastructure required
+- **Lifecycle Safety**: Uses `takeUntilDestroyed` with `DestroyRef` for automatic subscription cleanup
+- **Self-Notification Suppression**: Tracks ISBNs of locally created books in a `Set<string>`; incoming SSE events for those ISBNs are silently ignored once to avoid duplicate toasts for the same user action
+- **Existing Flows Preserved**: SSR, pre-rendering, CSR, auth, profile, CRUD, pagination, and interceptor flows from previous chapters remain unchanged
+
+### Chapter 20 - Production Build and Docker Containerization
+
+**Location**: `chapter-20/`
+
+Packages and containerizes the Angular frontend for production deployment:
+
+- **Production Build Pipeline**: Runs `ng build` for AOT compilation, tree-shaking, minification, and environment file swap, generating optimized artifacts organized into chunks, styles, and assets
+- **Build Output Structure**: Organizes compiled code into route-based chunks, global CSS bundles, and static resources; compares structure to Spring Boot JAR packaging patterns from Chapter 10
+- **Express Proxy Middleware**: Configures `server.ts` with proxy middleware to route SSR-initiated API calls to the backend gateway via the configurable `API_URL` environment variable
+- **Multi-Stage Dockerfile**: Implements a multi-stage build process — Stage 1 builds the app; Stage 2 copies only runtime artifacts — adapting the Chapter 10 pattern to Node.js dependencies (`node_modules` vs. JAR bundling)
+- **Docker Image Publishing**: Builds, tags, and publishes the container image to Docker Hub for portable deployment across environments
+- **Environment-Driven Configuration**: Reads `API_URL` and `PORT` from process environment at startup, enabling the same image to target different backends without rebuilding
+
 ## Technology Stack
 
 - **Angular 21**: Latest version with standalone components and signals
@@ -174,6 +200,16 @@ npm run start
 
 # For Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
 cd chapter-18
+npm install
+npm run start
+
+# For Chapter 19 - Real-Time Updates with Server-Sent Events
+cd chapter-19
+npm install
+npm run start
+
+# For Chapter 20 - Production Build and Docker Containerization
+cd chapter-20
 npm install
 npm run start
 ```
@@ -293,8 +329,10 @@ Each chapter includes these npm scripts:
 5. **Continue with Chapter 16** to integrate HTTP communication, route guards, an auth interceptor with refresh-token retry, and `localStorage`-based token persistence (CSR mode)
 6. **Complete with Chapter 17** to build a fully API-driven books and authors feature with dedicated NgRx Signal Stores, full CRUD event flows, and end-to-end edit and delete wiring
 7. **Advance to Chapter 18** to implement hybrid rendering with per-route SSR/Prerender/CSR, hydration-safe token storage, and deferred loading optimizations
-8. **Explore the GitHub instructions** to understand AI-assisted development patterns
-9. **Experiment with modifications** to reinforce learning concepts
+8. **Complete with Chapter 19** to add real-time server-to-client push notifications using Server-Sent Events, including self-notification suppression and lifecycle-safe subscriptions
+9. **Advance to Chapter 20** to build and containerize the Angular frontend for production, configure Express proxy middleware for backend communication, and publish the Docker image
+10. **Explore the GitHub instructions** to understand AI-assisted development patterns
+11. **Experiment with modifications** to reinforce learning concepts
 
 ## Contributing
 
