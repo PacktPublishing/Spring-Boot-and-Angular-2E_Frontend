@@ -1,272 +1,248 @@
-# Chapter 20 - Production Build and Docker Containerization
+# Chapter 21 - Connecting Frontend and Backend in Production
 
-This chapter packages and containerizes the Angular frontend built over Chapters 11–19 for production deployment.
+This chapter connects the containerized Angular frontend from Chapter 20 with the Spring Boot backend from Chapter 10 into one production-style deployment. The Bookstore platform now runs behind a single edge entry point, with Nginx routing browser traffic to the Angular SSR server and forwarding API requests to the Spring Cloud Gateway.
 
-Building on the fully featured bookstore app (hybrid rendering, real-time SSE notifications, Signal Store architecture, and authentication), we now:
-
-- Run `ng build` to generate optimized production artifacts via AOT compilation, tree-shaking, and code minification
-- Examine the build output structure and compare it to Spring Boot JAR packaging from Chapter 10
-- Configure Express proxy middleware in `server.ts` so SSR-initiated API calls resolve to the backend gateway via the configurable `API_URL` environment variable
-- Create a multi-stage Dockerfile following Chapter 10 patterns, adapting for Node.js runtime differences (node_modules vs. JAR bundling)
-- Build, test, and publish the frontend container image to Docker Hub
-
-The result is a portable, self-contained Angular frontend container ready for orchestration with backend services.
+This closes the loop opened in Chapter 10. Across the book, we built a modern full-stack application with reactive forms, event-driven state management, JWT authentication, CRUD workflows, server-side rendering, and real-time notifications. In this final step, those pieces run together as independently deployable containers orchestrated by Docker Compose.
 
 ## What You'll Learn
 
-This chapter project showcases:
+This chapter project shows how to:
 
-- How to run `ng build` for production with AOT compilation, tree-shaking, and minification
-- How build output structure organizes chunks, assets, and source maps
-- How to compare frontend build artifacts to Spring Boot JAR packaging patterns
-- How to configure Express proxy middleware for SSR-initiated backend API calls
-- How to make the backend gateway URL configurable via environment variables
-- How to design a multi-stage Dockerfile adapted for Node.js (vs. Java)
-- How to handle node_modules dependency installation in a container runtime
-- How to tag and publish a container image to Docker Hub
-- How to validate the containerized frontend runs correctly in isolation
+- Connect the Angular SSR container to the Spring Boot microservices stack
+- Add Nginx as the edge reverse proxy for browser and API traffic
+- Route Server-Sent Events through a dedicated proxy configuration
+- Extend Docker Compose with frontend and reverse proxy services
+- Start the full Bookstore platform with a single `docker compose up -d` command
+- Use a production-style deployment topology with clear service boundaries
+
+## Architecture Overview
+
+The deployed system consists of the following layers:
+
+- **Infrastructure**: PostgreSQL, MongoDB, Zipkin, and Keycloak
+- **Service Discovery**: Eureka Server
+- **Business Services**: Inventory Service and User Service
+- **API Layer**: Spring Cloud Gateway
+- **Frontend Runtime**: Angular SSR container
+- **Edge Proxy**: Nginx
+
+Request flow:
+
+1. The browser connects to Nginx on port `80`.
+2. Nginx forwards page requests to the Angular SSR container.
+3. Nginx forwards API requests to the Gateway container.
+4. The Gateway routes requests to the underlying Spring Boot services.
+5. SSE notification traffic is proxied with streaming-friendly settings so live updates are not buffered or broken.
 
 ## Project Features
 
-### Production Build Pipeline
+### Unified Docker Compose Deployment
 
-- **AOT Compilation**: `ng build` compiles TypeScript with Angular's Ahead-of-Time compiler, catching template errors at build time
-- **Tree-Shaking**: Webpack removes unused code, significantly reducing bundle sizes
-- **Minification**: JavaScript, CSS, and HTML are minified for optimal transfer size
-- **Environment File Swap**: Build process replaces `environment.ts` with `environment.prod.ts` (configured in Chapter 16)
-- **Source Maps**: Optional `.js.map` files for production debugging without exposing source
+The `docker-compose.yml` file now defines the entire platform in one place. It includes:
 
-### Build Output Structure
+- PostgreSQL for the inventory domain
+- MongoDB for the user domain
+- Zipkin for distributed tracing
+- Keycloak for authentication and authorization
+- Eureka Server for service registration and discovery
+- Inventory Service
+- User Service
+- Gateway Server
+- Angular SSR frontend
+- Nginx reverse proxy
 
-- `index.html`: Main entry point with prerendered/server-rendered routes embedded
-- `server.js`: SSR server bundle
-- `browser/`: Client-side bundles organized by route chunks
-- `styles/`: Global CSS bundles
-- `assets/`: Static resources (images, fonts, JSON)
-- `public/`: Public directory contents (favicon, robots.txt, etc.)
+Service startup order is controlled with health checks and `depends_on` conditions so containers wait for their dependencies before coming online.
 
-### Express Proxy Middleware (server.ts)
+### Angular SSR as a Runtime Service
 
-- `server.ts` configures Express proxy middleware to route SSR-initiated API calls to the backend gateway
-- The `API_URL` environment variable (set during container bootstrap) controls the backend target
-- Proxy middleware intercepts requests matching `/inventory/api/**` patterns and forwards them upstream
-- Allows the frontend container to communicate with backend services without hardcoding hostnames
+The frontend is packaged as a Node-based SSR container. It exposes port `4000` internally and reads the backend target from `API_URL`, which is set in Docker Compose to point at the gateway service.
 
-### Multi-Stage Dockerfile
+This keeps the frontend runtime environment-specific without rebuilding the image for each deployment target.
 
-- **Stage 1 (Builder)**: Node.js base image, installs dependencies, runs `npm run build`
-- **Stage 2 (Runtime)**: Leaner Node.js base, copies built artifacts and `node_modules` from builder
-- **Key Difference from Java**: node_modules must be copied to runtime (Java JAR bundles all dependencies)
-- Exposes port 4200; reads `API_URL` and `PORT` environment variables at startup
-- Runs `npm run serve:ssr:chapter-20` to start the production SSR server
+### Nginx as the Single Public Entry Point
 
-### Docker Image Publishing
+Nginx is the only service exposed to the browser. It centralizes:
 
-- Build image with appropriate tag: `docker build -t yourdockerhub/bookstore-frontend:latest .`
-- Configure Docker Hub credentials and push: `docker push yourdockerhub/bookstore-frontend:latest`
-- Image is portable and can be deployed anywhere Docker runs
+- SSR page delivery
+- API proxying
+- consistent public routing
+- support for streaming notification endpoints
 
-## Build and Deployment Strategy
+This mirrors real production deployments where an edge proxy sits in front of application containers and hides internal network topology from clients.
 
-The production pipeline combines three complementary patterns:
+### SSE-Aware Proxying
 
-- **AOT + Tree-Shaking + Minification**: Optimal bundle sizes and fast startup performance
-- **Environment-Driven Configuration**: `API_URL` and `PORT` set at container boot, not at build time
-- **Multi-Stage Docker Build**: Minimize runtime image size by excluding build toolchain
-- **Express Proxy in SSR Server**: Backend connectivity is transparent to routes; no CORS complexity
+Real-time notifications use Server-Sent Events, which require long-lived HTTP connections and no response buffering. Nginx is configured to proxy these requests separately so event streams pass through correctly.
 
-This approach mirrors the containerization strategy from Chapter 10 (Spring Boot), adapting for Node.js dependency management.
+Without this dedicated configuration, notifications can stall, buffer, or disconnect unexpectedly.
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs, SSR)
-- Angular Material
-- NgRx Signal Store plus NgRx Events
-- RxJS for reactive streams
-- Express.js for proxy middleware
-- Node.js 20+
-- Docker & Docker Hub
-- Multi-stage Dockerfile builds
+- Angular 21 with SSR
+- Node.js 22 runtime for the frontend container
+- Spring Boot microservices
+- Spring Cloud Gateway
+- Eureka Server
+- Keycloak
+- PostgreSQL
+- MongoDB
+- Zipkin
+- Docker
+- Docker Compose
+- Nginx
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
-- Docker (for containerization)
-- Docker Hub account (for publishing images)
+- Docker
+- Docker Compose
+- Access to the container images referenced in `docker-compose.yml`
 
-### Installation
+### Start the Full Platform
 
-```bash
-npm install
-```
-
-### Development Server
+From the `chapter-21` directory, run:
 
 ```bash
-npm run start
+docker compose up -d
 ```
 
-Open `http://localhost:4200/`.
+This starts the full stack:
 
-### Production Build
+- PostgreSQL
+- MongoDB
+- Keycloak
+- Zipkin
+- Eureka Server
+- Inventory Service
+- User Service
+- Gateway Server
+- Angular SSR frontend
+- Nginx
+
+Open the application at:
+
+```text
+http://localhost
+```
+
+### Stop the Platform
 
 ```bash
-npm run build
+docker compose down
 ```
 
-This generates optimized artifacts in the `dist/` directory with AOT compilation, tree-shaking, and minification applied.
+### Rebuild and Restart
 
-### SSR Serve (after build)
+If you need to rebuild images and restart everything from a clean state:
 
 ```bash
-npm run serve:ssr:chapter-20
+./containerization/docker-clean-rebuild.sh
 ```
 
-Launches the production SSR server. Reads `API_URL` and `PORT` from environment:
-```bash
-API_URL=http://localhost:8080 PORT=4200 npm run serve:ssr:chapter-20
-```
+## Containerization Helper Files
 
-### Docker Build and Run
+The `containerization/` directory contains helper assets used by the Compose deployment.
 
-Build the image:
-```bash
-docker build -t yourdockerhub/bookstore-frontend:latest .
-```
+### `bookstore-realm.json`
 
-Run a container:
-```bash
-docker run -e API_URL=http://host.docker.internal:8080 -p 4200:4200 yourdockerhub/bookstore-frontend:latest
-```
+This file seeds Keycloak during container startup.
 
-Publish to Docker Hub:
-```bash
-docker push yourdockerhub/bookstore-frontend:latest
-```
+It defines:
 
-## Testing
+- the `bookstore` realm
+- default realm roles such as `admin`, `author`, and `user`
+- the gateway client configuration
+- sample users with predefined credentials and roles
 
-Run tests:
+Docker Compose mounts this file into the Keycloak container and starts Keycloak with `start-dev --import-realm`, so the authentication server is initialized automatically.
 
-```bash
-npm test
-```
+### `docker-clean-rebuild.sh`
 
-Run tests once:
+This is an operational helper script for resetting the local Docker environment and recreating the stack.
 
-```bash
-npm run test:run
-```
+It performs a more aggressive workflow than a normal `docker compose down` by:
 
-Run interactive test UI:
+- removing known Bookstore containers by explicit name
+- stopping and deleting related leftover containers
+- removing matching images, volumes, and networks
+- pruning unused Docker resources
+- rebuilding images without cache
+- starting the Compose stack again
 
-```bash
-npm run test:ui
-```
+Use it when stale containers, conflicting names, broken images, or leftover networks prevent a clean startup.
 
-### Unit Test Coverage
+## Reverse Proxy Files
 
-Spec files are co-located with their source files and cover all major layers:
+The `nginx/` directory contains the files for the edge proxy image:
 
-| Layer | Covered files |
-|---|---|
-| App bootstrap | `app.spec.ts` |
-| Guards | `auth.guard.spec.ts` |
-| Interceptors | `auth.interceptor.spec.ts` |
-| Core services | `authentication.spec.ts`, `token.service.spec.ts` |
-| Auth services/store | `auth.service.spec.ts`, `auth.store.spec.ts` |
-| Books services | `book.service.spec.ts`, `author.service.spec.ts`, `notification.service.spec.ts` |
-| Books stores | `author.store.spec.ts` |
-| Auth components/pages | `signin-form.spec.ts`, `signup-form.spec.ts`, `signin.spec.ts`, `signup.spec.ts` |
-| Books components/pages | `book-form.spec.ts`, `book-list.spec.ts`, `author-form.spec.ts`, `author-list-dialog.spec.ts`, `list.spec.ts` |
-| Profile | `profile-form.spec.ts`, `profile.spec.ts` |
-| Static pages | `privacy.spec.ts`, `terms.spec.ts` |
-| Layout and utilities | `header.spec.ts`, `footer.spec.ts`, `error.utils.spec.ts` |
+- `nginx.conf`: Nginx routing rules for SSR, API proxying, and SSE-friendly streaming
+- `Dockerfile`: packages the custom Nginx configuration into a deployable image
 
-## Formatting
-
-Format source files:
-
-```bash
-npm run format
-```
-
-Check formatting:
-
-```bash
-npm run format:check
-```
+Together, these files turn Nginx into the single browser-facing entry point for the platform.
 
 ## Project Structure
 
 ```text
 .
-├── Dockerfile                         # Multi-stage build for production container
-├── package.json                       # Build, serve, and test scripts
-├── angular.json                       # AOT, treeshake, minify, environment swap config
-├── tsconfig.json
-├── tsconfig.app.json
+├── Dockerfile                         # Multi-stage Angular SSR image
+├── docker-compose.yml                 # Full-stack orchestration for frontend, backend, and infra
+├── nginx/
+│   ├── Dockerfile                     # Custom Nginx image build
+│   └── nginx.conf                     # Reverse proxy and SSE routing rules
+├── containerization/
+│   ├── bookstore-realm.json           # Keycloak realm import with sample users and roles
+│   └── docker-clean-rebuild.sh        # Clean rebuild helper for the local Docker environment
+├── package.json                       # Frontend build, serve, and test scripts
+├── angular.json
 ├── src/
-│   ├── main.ts                        # Client bootstrap
-│   ├── main.server.ts                 # SSR server bootstrap
-│   ├── server.ts                      # Express server + proxy middleware
+│   ├── main.ts                        # Browser bootstrap
+│   ├── main.server.ts                 # SSR bootstrap
+│   ├── server.ts                      # Angular SSR server
 │   ├── environments/
-│   │   ├── environment.ts             # Dev API base URL
-│   │   └── environment.prod.ts        # Prod API base URL (swapped by ng build)
 │   └── app/
-│       ├── app.config.ts              # HTTP client + interceptor + hydration
-│       ├── app.routes.ts              # Public catalog + auth/guest guarded routes
-│       ├── app.routes.server.ts       # Per-route render mode (SSR/Prerender/CSR)
-│       ├── core/
-│       ├── features/
-│       ├── pages/
-│       └── shared/
-└── dist/                              # Build output (gitignored)
-    ├── server.js                      # Production SSR server bundle
-    ├── browser/                       # Client-side route chunks
-    ├── styles/                        # Global CSS bundles
-    ├── assets/                        # Static resources
-    └── public/                        # Favicon, robots.txt, etc.
+└── public/
 ```
 
-## Key Implementation Highlights
+## Deployment Notes
 
-### 1) AOT Compilation and Build Optimization
+### Internal Ports
 
-`ng build` applies Angular's ahead-of-time compiler, Webpack tree-shaking, and code minification. Build output is organized into chunks (one per lazy-loaded route), global styles, and assets, totaling a fraction of the dev bundle.
+- Nginx listens on `80`
+- Angular SSR listens on `4000`
+- Gateway Server listens on `8080`
+- Inventory Service listens on `8081`
+- User Service listens on `8082`
+- Eureka listens on `8761`
+- Keycloak listens on `8090`
+- Zipkin listens on `9411`
 
-### 2) Environment Configuration at Runtime
+### Why This Setup Matters
 
-Rather than building separate images per environment, `environment.prod.ts` includes a default `API_BASE_URL`. The Express server reads `API_URL` from process environment at startup, allowing the same image to target different backends without rebuilding.
+This deployment reflects common production architecture patterns:
 
-### 3) Express Proxy Middleware
+- each service is independently deployable
+- infrastructure is defined declaratively in Compose
+- internal service communication stays on a private Docker network
+- the browser talks to a single public entry point
+- frontend and backend containers remain loosely coupled through environment-driven configuration
 
-The SSR server (`server.ts`) adds proxy middleware to intercept `/inventory/api/**` requests and forward them upstream. This eliminates CORS issues and allows the frontend to reference the backend by hostname only.
+The result is a reproducible, full-stack deployment that developers can start with one command while still following patterns used in real microservice environments.
 
-### 4) Multi-Stage Dockerfile Architecture
+## Testing
 
-Stage 1 builds the app; Stage 2 copies only the runtime artifacts. This keeps the final image lean by excluding Node build tools.
+Run the frontend test suite with:
 
-### 5) Dependency Management in Containers
+```bash
+npm test
+```
 
-Unlike Java's self-contained JAR, Node.js requires `node_modules` in the runtime container. The Dockerfile copies `node_modules` from the builder stage or relies on `npm ci --production` in the runtime stage, depending on strategy.
+Run tests once with:
 
-### 6) Container Image Publishing and Portability
-
-The built image is tagged and pushed to a registry (Docker Hub, ECR, etc.), making it reusable across development, staging, and production environments without rebuilding.
-
-### 7) Full-Stack Parity with Chapter 10 Patterns
-
-Chapter 20 mirrors Chapter 10's containerization approach, ensuring frontend and backend follow parallel deployment practices for consistency and operational familiarity.
+```bash
+npm run test:run
+```
 
 ## Next Steps
 
-The frontend is now a portable, self-contained container — but it runs in isolation. In **Chapter 21: Connecting Frontend and Backend in Production**, we will:
-
-- Connect the containerized frontend to the Spring Boot backend services
-- Add an Nginx reverse proxy for load balancing and SSL termination
-- Define a Docker Compose deployment orchestrating frontend, backend, and database
-- Complete the full-stack Bookstore platform as a single reproducible deployment
+At this point, the Bookstore platform is fully containerized from the browser edge to the data layer. A natural next step is to adapt this local Compose deployment for cloud infrastructure, external secrets management, TLS termination, and CI/CD-based image delivery.

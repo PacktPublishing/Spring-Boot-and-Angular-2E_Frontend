@@ -1,0 +1,112 @@
+{
+  "realm": "bookstore",
+  "enabled": true,
+  "displayName": "Bookstore",
+  "registrationAllowed": true,
+  "editUsernameAllowed": true,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "loginWithEmailAllowed": true,
+  "registrationEmailAsUsername": true,
+  "passwordPolicy": "length(8) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1)",
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Full administrative access",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "author",
+        "description": "Create and update inventory",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "user",
+        "description": "Browse catalog and make purchases",
+        "composite": false,
+        "clientRole": false
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "bookstore-gateway",
+      "name": "Bookstore API Gateway",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "redirectUris": [
+        "http://localhost:8081/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8081"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin-user",
+      "email": "admin@bookstore.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    },
+    {
+      "username": "author-user",
+      "email": "author@bookstore.com",
+      "firstName": "Author",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "author",
+        "user"
+      ]
+    },
+    {
+      "username": "regular-user",
+      "email": "user@bookstore.com",
+      "firstName": "Regular",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Password123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    }
+  ]
+}
