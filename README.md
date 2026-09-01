@@ -4,7 +4,7 @@ This repository contains the Angular frontend code for the "Spring Boot and Angu
 
 ## Project Overview
 
-The Packt Bookstore is a modern web application showcasing Angular 21's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, server-side rendering, real-time notifications, and final containerized deployment behind a single entry point.
+The Packt Bookstore is a modern web application showcasing Angular 22's latest features and best practices. The project is organized by chapters, with each chapter building upon the previous one to create a complete bookstore platform with authentication, book management, server-side rendering, real-time notifications, and final containerized deployment behind a single entry point.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ This project follows modern Angular architectural patterns:
 
 Establishes the foundation of the Angular application:
 
-- Modern Angular v21 setup with standalone components
+- Modern Angular v22 setup with standalone components
 - Basic project structure and folder organization
 - Angular Material integration
 - Book listing functionality with signal-based communication
@@ -157,7 +157,7 @@ Connects the containerized Angular frontend from Chapter 20 with the Spring Boot
 
 ## Technology Stack
 
-- **Angular 21**: Latest version with standalone components and signals
+- **Angular 22**: Latest version with standalone components and signals
 - **TypeScript**: Strict type checking and modern ES features
 - **Angular Material**: Material Design components and theming
 - **Reactive Forms**: Form building and validation
@@ -174,9 +174,9 @@ Connects the containerized Angular frontend from Chapter 20 with the Spring Boot
 
 ### Prerequisites
 
-- Node.js (v24.2.0 or higher)
+- Node.js (v24.15.0 or higher)
 - npm (v11.4.2 or higher)
-- Angular CLI v21.1.4
+- Angular CLI v22.1.6
 
 ### Installation & Running
 
