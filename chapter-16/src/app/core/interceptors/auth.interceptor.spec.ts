@@ -107,6 +107,26 @@ describe('authInterceptor', () => {
   });
 
   describe('401 handling and token refresh', () => {
+    it('should issue only one refresh when two requests 401 at the same time', () => {
+      mockTokenService.getAccessToken.mockReturnValue('old-access-token');
+      mockTokenService.getUser.mockReturnValue(mockUser);
+      mockTokenService.getRefreshToken.mockReturnValue('old-refresh-token');
+
+      http.get('/api/books').subscribe({ next: () => {}, error: () => {} });
+      http.get('/api/authors').subscribe({ next: () => {}, error: () => {} });
+
+      httpMock.expectOne('/api/books').flush({}, { status: 401, statusText: 'Unauthorized' });
+      httpMock.expectOne('/api/authors').flush({}, { status: 401, statusText: 'Unauthorized' });
+
+      const refreshes = httpMock.match((r) => r.url.includes('/users/refresh-token'));
+      expect(refreshes.length).toBe(1);
+
+      refreshes[0].flush({ accessToken: 'new-access-token', refreshToken: 'new-refresh-token' });
+
+      expect(httpMock.match('/api/books').length).toBe(1);
+      expect(httpMock.match('/api/authors').length).toBe(1);
+    });
+
     it('should call refreshToken on 401, dispatch tokenRefreshSuccess, and retry with new token', () => {
       // buildAuthHeaders is called twice by the interceptor:
       //   1st — when sending the original request
@@ -130,8 +150,11 @@ describe('authInterceptor', () => {
       expect(originalReq.request.headers.get('Authorization')).toBe('Bearer old-access-token');
       originalReq.flush({ message: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
 
-      expect(mockAuthService.refreshToken).toHaveBeenCalledWith('old-refresh-token');
-      expect(mockAuthService.refreshToken).toHaveBeenCalledTimes(1);
+      const refreshReq = httpMock.expectOne((r) => r.url.includes('/users/refresh-token'));
+      expect(refreshReq.request.method).toBe('POST');
+      expect(refreshReq.request.body).toEqual({ refreshToken: 'old-refresh-token' });
+      refreshReq.flush({ accessToken: 'new-access-token', refreshToken: 'new-refresh-token' });
+
       expect(mockDispatcher.dispatch).toHaveBeenCalledTimes(1);
 
       // --- Flush 2: retried /api/books request carries the refreshed token ---

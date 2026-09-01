@@ -197,7 +197,7 @@ export const AuthStore = signalStore(
       const accessToken = tokenService.getAccessToken();
       const refreshToken = tokenService.getRefreshToken();
       const user = tokenService.getUser();
-      if (accessToken && refreshToken) {
+      if (accessToken && refreshToken && !tokenService.isTokenExpired(refreshToken)) {
         patchState(store, {
           accessToken,
           refreshToken,
