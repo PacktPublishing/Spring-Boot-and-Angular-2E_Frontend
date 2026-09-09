@@ -40,4 +40,17 @@ export class TokenService {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
   }
+
+  isTokenExpired(token: string): boolean {
+    const payload = token.split('.')[1];
+    if (!payload) {
+      return true;
+    }
+    try {
+      const { exp } = JSON.parse(atob(payload)) as { exp?: number };
+      return exp === undefined || exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
+  }
 }
