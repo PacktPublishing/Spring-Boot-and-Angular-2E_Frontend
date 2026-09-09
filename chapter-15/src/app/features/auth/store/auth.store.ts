@@ -1,4 +1,5 @@
 import { computed, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
 import { Router } from '@angular/router';
 import { exhaustMap, map, catchError, of } from 'rxjs';
@@ -107,10 +108,16 @@ export const AuthStore = signalStore(
   // Methods for navigation side effects
   withMethods((store, events = inject(Events), router = inject(Router)) => {
     // Navigate after successful signin
-    events.on(authApiEvents.signinSuccess).subscribe(() => router.navigate(['/books']));
+    events
+      .on(authApiEvents.signinSuccess)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => router.navigate(['/books']));
 
     // Navigate after successful signup
-    events.on(authApiEvents.signupSuccess).subscribe(() => router.navigate(['/auth/signin']));
+    events
+      .on(authApiEvents.signupSuccess)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => router.navigate(['/auth/signin']));
 
     return {};
   }),

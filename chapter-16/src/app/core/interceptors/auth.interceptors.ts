@@ -44,7 +44,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       const retryWith = (token: string) =>
-        next(req.clone({ setHeaders: buildAuthHeaders(tokenService) }));
+        next(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }));
 
       if (isRefreshing) {
         return refreshedToken$.pipe(
