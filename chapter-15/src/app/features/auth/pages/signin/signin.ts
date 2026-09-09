@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { SigninForm } from '../../components/signin-form/signin-form';
 import { SigninRequest } from '../../../../shared/models/auth';
 import { injectDispatch } from '@ngrx/signals/events';
@@ -13,9 +13,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   templateUrl: './signin.html',
   styleUrl: './signin.scss',
 })
-export class Signin {
+export class Signin implements OnInit {
   protected readonly store = inject(AuthStore);
   protected readonly dispatch = injectDispatch(authPageEvents);
+
+  ngOnInit() {
+    this.store.clearError();
+  }
 
   handleSigninComplete(credentials: SigninRequest) {
     this.dispatch.signinSubmitted(credentials);

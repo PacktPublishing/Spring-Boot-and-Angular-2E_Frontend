@@ -203,7 +203,9 @@ export const AuthStore = signalStore(
           tokenService.clearAll();
           router.navigate(['/auth/signin']);
         });
-      return {};
+      return {
+        clearError: () => patchState(store, { error: null }),
+      };
     },
   ),
 

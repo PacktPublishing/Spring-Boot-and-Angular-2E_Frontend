@@ -1,6 +1,6 @@
 import { computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
+import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { Router } from '@angular/router';
 import { exhaustMap, map, catchError, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -119,6 +119,8 @@ export const AuthStore = signalStore(
       .pipe(takeUntilDestroyed())
       .subscribe(() => router.navigate(['/auth/signin']));
 
-    return {};
+    return {
+      clearError: () => patchState(store, { error: null }),
+    };
   }),
 );
