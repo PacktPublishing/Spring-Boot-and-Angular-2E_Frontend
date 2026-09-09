@@ -13,12 +13,8 @@ const refreshedToken$ = new BehaviorSubject<string | null>(null);
 function buildAuthHeaders(tokenService: TokenService): Record<string, string> {
   const headers: Record<string, string> = {};
   const token = tokenService.getAccessToken();
-  const user = tokenService.getUser();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
-  }
-  if (user?.keycloakId) {
-    headers['X-User-Id'] = user.keycloakId;
   }
   return headers;
 }

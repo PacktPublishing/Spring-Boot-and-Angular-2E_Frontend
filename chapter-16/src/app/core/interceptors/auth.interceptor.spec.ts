@@ -59,28 +59,36 @@ describe('authInterceptor', () => {
   });
 
   describe('Authorization headers', () => {
-    it('should attach Authorization and X-User-Id headers when access token and user exist', () => {
+    it('should attach the Authorization header when an access token exists', () => {
+      mockTokenService.getAccessToken.mockReturnValue('access-token-abc');
+
+      http.get('/api/books').subscribe();
+
+      const req = httpMock.expectOne('/api/books');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer access-token-abc');
+
+      req.flush([]);
+    });
+
+    it('should never send X-User-Id, since the gateway derives identity from the JWT', () => {
       mockTokenService.getAccessToken.mockReturnValue('access-token-abc');
       mockTokenService.getUser.mockReturnValue(mockUser);
 
       http.get('/api/books').subscribe();
 
       const req = httpMock.expectOne('/api/books');
-      expect(req.request.headers.get('Authorization')).toBe('Bearer access-token-abc');
-      expect(req.request.headers.get('X-User-Id')).toBe('kc-abc');
+      expect(req.request.headers.has('X-User-Id')).toBe(false);
 
       req.flush([]);
     });
 
-    it('should not attach auth headers when TokenService returns null for token and user', () => {
+    it('should not attach auth headers when TokenService returns null for the token', () => {
       mockTokenService.getAccessToken.mockReturnValue(null);
-      mockTokenService.getUser.mockReturnValue(null);
 
       http.get('/api/books').subscribe();
 
       const req = httpMock.expectOne('/api/books');
       expect(req.request.headers.has('Authorization')).toBe(false);
-      expect(req.request.headers.has('X-User-Id')).toBe(false);
 
       req.flush([]);
     });
@@ -99,7 +107,6 @@ describe('authInterceptor', () => {
 
         const req = httpMock.expectOne(endpoint);
         expect(req.request.headers.has('Authorization')).toBe(false);
-        expect(req.request.headers.has('X-User-Id')).toBe(false);
 
         req.flush({});
       },
@@ -160,7 +167,6 @@ describe('authInterceptor', () => {
       // --- Flush 2: retried /api/books request carries the refreshed token ---
       const retryReq = httpMock.expectOne('/api/books');
       expect(retryReq.request.headers.get('Authorization')).toBe('Bearer new-access-token');
-      expect(retryReq.request.headers.get('X-User-Id')).toBe('kc-abc');
       retryReq.flush([{ title: 'Clean Code' }]);
 
       expect(responseData).toEqual([{ title: 'Clean Code' }]);
