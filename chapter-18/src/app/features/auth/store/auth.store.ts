@@ -1,4 +1,5 @@
 import { computed, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   signalStore,
   withState,
@@ -164,30 +165,47 @@ export const AuthStore = signalStore(
       router = inject(Router),
       tokenService = inject(TokenService),
     ) => {
-      events.on(authApiEvents.signinSuccess).subscribe((event) => {
-        tokenService.saveTokens(event.payload.accessToken, event.payload.refreshToken);
-        if (event.payload.user) {
-          tokenService.saveUser(event.payload.user);
-        }
-      });
-      events.on(authApiEvents.tokenRefreshSuccess).subscribe((event) => {
-        tokenService.saveTokens(event.payload.accessToken, event.payload.refreshToken);
-      });
-      events.on(authApiEvents.signinSuccess).subscribe(() => router.navigate(['/books']));
-      events.on(authApiEvents.signupSuccess).subscribe(() =>
-        router.navigate(['/auth/signin'], {
-          queryParams: { signup: 'success' },
-        }),
-      );
-      events.on(authApiEvents.logoutSuccess).subscribe(() => {
-        tokenService.clearAll();
-        router.navigate(['/auth/signin']);
-      });
-      events.on(authApiEvents.tokenRefreshFailure).subscribe(() => {
-        tokenService.clearAll();
-        router.navigate(['/auth/signin']);
-      });
-      return {};
+      events
+        .on(authApiEvents.signinSuccess)
+        .pipe(takeUntilDestroyed())
+        .subscribe((event) => {
+          tokenService.saveTokens(event.payload.accessToken, event.payload.refreshToken);
+          if (event.payload.user) {
+            tokenService.saveUser(event.payload.user);
+          }
+          router.navigate(['/books']);
+        });
+      events
+        .on(authApiEvents.tokenRefreshSuccess)
+        .pipe(takeUntilDestroyed())
+        .subscribe((event) => {
+          tokenService.saveTokens(event.payload.accessToken, event.payload.refreshToken);
+        });
+      events
+        .on(authApiEvents.signupSuccess)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() =>
+          router.navigate(['/auth/signin'], {
+            queryParams: { signup: 'success' },
+          }),
+        );
+      events
+        .on(authApiEvents.logoutSuccess)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          tokenService.clearAll();
+          router.navigate(['/auth/signin']);
+        });
+      events
+        .on(authApiEvents.tokenRefreshFailure)
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          tokenService.clearAll();
+          router.navigate(['/auth/signin']);
+        });
+      return {
+        clearError: () => patchState(store, { error: null }),
+      };
     },
   ),
 
@@ -197,7 +215,7 @@ export const AuthStore = signalStore(
       const accessToken = tokenService.getAccessToken();
       const refreshToken = tokenService.getRefreshToken();
       const user = tokenService.getUser();
-      if (accessToken && refreshToken) {
+      if (accessToken && refreshToken && !tokenService.isTokenExpired(refreshToken)) {
         patchState(store, {
           accessToken,
           refreshToken,

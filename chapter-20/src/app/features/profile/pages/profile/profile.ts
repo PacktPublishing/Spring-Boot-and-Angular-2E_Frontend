@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef, Component, inject, signal, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthStore } from '../../../auth/store/auth.store';
@@ -15,6 +16,7 @@ import { normalizeApiErrorMessage } from '../../../../shared/utils/error-message
 })
 export class Profile implements OnInit {
   private authService = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
   private snackBar = inject(MatSnackBar);
   protected readonly store = inject(AuthStore);
 
@@ -29,7 +31,7 @@ export class Profile implements OnInit {
 
   private loadProfile() {
     this.pageLoading.set(true);
-    this.authService.getProfile().subscribe({
+    this.authService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (profile: UserProfile) => {
         this.profileData.set(profile);
         this.pageLoading.set(false);
@@ -44,7 +46,7 @@ export class Profile implements OnInit {
 
   handleProfileSubmit(profile: UserProfile) {
     this.loading.set(true);
-    this.authService.updateProfile(profile).subscribe({
+    this.authService.updateProfile(profile).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updated: UserProfile) => {
         this.profileData.set(updated);
         this.loading.set(false);

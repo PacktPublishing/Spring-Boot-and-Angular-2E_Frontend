@@ -23,6 +23,8 @@ export class Signin implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
 
   ngOnInit() {
+    this.store.clearError();
+
     if (this.route.snapshot.queryParamMap.get('signup') === 'success') {
       this.snackBar.open('Your sign up was successful, you can sign in now.', 'Close', {
         duration: 3500,
