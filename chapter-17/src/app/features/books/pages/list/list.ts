@@ -23,8 +23,6 @@ export class List implements OnInit {
   private snackBar = inject(MatSnackBar);
   protected readonly dispatch = injectDispatch(bookPageEvents);
 
-  displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
-
   ngOnInit() {
     this.dispatch.loadBooks({
       page: 0,
