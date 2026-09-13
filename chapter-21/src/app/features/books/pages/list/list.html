@@ -14,6 +14,21 @@
   }
 </div>
 
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>Search by title</mat-label>
+  <input
+    matInput
+    [(ngModel)]="searchTerm"
+    (keyup.enter)="onSearch()"
+    placeholder="Enter book title…"
+  />
+  @if (searchTerm) {
+    <button matSuffix mat-icon-button (click)="clearSearch()">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+</mat-form-field>
+
 <book-list
   [books]="store.books()"
   (book)="selectBook($event)"
