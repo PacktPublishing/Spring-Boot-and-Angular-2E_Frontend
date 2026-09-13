@@ -99,6 +99,35 @@ describe('AuthorStore', () => {
       expect(store.error()).toContain('Network error');
       expect(store.loading()).toBe(false);
     });
+
+    it('should reset searchTerm and isSearching when loadAuthors is dispatched after a search', async () => {
+      authorService.searchByName.mockReturnValue(of([mockAuthors[0]]));
+
+      dispatcher.dispatch(
+        authorPageEvents.searchByName({
+          name: 'Ahmad',
+        }),
+      );
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(store.searchTerm()).toBe('Ahmad');
+      expect(store.isSearching()).toBe(true);
+
+      authorService.getPaged.mockReturnValue(of(mockPagedResponse));
+
+      dispatcher.dispatch(
+        authorPageEvents.loadAuthors({
+          page: 0,
+          size: 10,
+        }),
+      );
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(store.searchTerm()).toBe('');
+      expect(store.isSearching()).toBe(false);
+    });
   });
 
   describe('Create Author', () => {

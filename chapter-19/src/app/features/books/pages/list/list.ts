@@ -1,9 +1,12 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BookList } from '../../components/book-list/book-list';
 import { Book } from '../../../../shared/models/book';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { BookForm } from '../../components/book-form/book-form';
 import { AuthorListDialog } from '../../components/author-list-dialog/author-list-dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,7 +19,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'book-list-page',
-  imports: [BookList, MatButtonModule, MatIconModule],
+  imports: [
+    BookList,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+  ],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })
@@ -33,6 +43,8 @@ export class List implements OnInit {
   displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
 
   private locallyCreatedIsbns = new Set<string>();
+
+  searchTerm = '';
 
   ngOnInit() {
     this.dispatch.loadBooks({
@@ -55,6 +67,27 @@ export class List implements OnInit {
           size: this.store.pageSize(),
         });
       });
+  }
+
+  onSearch() {
+    if (this.searchTerm.trim()) {
+      this.dispatch.searchByTitle({
+        title: this.searchTerm,
+      });
+    } else {
+      this.dispatch.loadBooks({
+        page: 0,
+        size: 10,
+      });
+    }
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.dispatch.loadBooks({
+      page: 0,
+      size: 10,
+    });
   }
 
   openAuthorManagement() {
