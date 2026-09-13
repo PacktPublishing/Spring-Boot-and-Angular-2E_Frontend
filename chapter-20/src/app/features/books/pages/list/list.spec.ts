@@ -16,6 +16,7 @@ describe('List', () => {
   let notifications$: Subject<BookNotification>;
   let snackBarOpenSpy: ReturnType<typeof vi.fn>;
   let loadBooksPayloads: Array<{ page: number; size: number }>;
+  let searchByTitlePayloads: Array<{ title: string }>;
 
   beforeEach(async () => {
     notifications$ = new Subject<BookNotification>();
@@ -40,12 +41,15 @@ describe('List', () => {
     fixture = TestBed.createComponent(List);
     component = fixture.componentInstance;
     loadBooksPayloads = [];
+    searchByTitlePayloads = [];
 
-    TestBed.inject(Events)
-      .on(bookPageEvents.loadBooks)
-      .subscribe((event) => {
-        loadBooksPayloads.push(event.payload);
-      });
+    const events = TestBed.inject(Events);
+    events.on(bookPageEvents.loadBooks).subscribe((event) => {
+      loadBooksPayloads.push(event.payload);
+    });
+    events.on(bookPageEvents.searchByTitle).subscribe((event) => {
+      searchByTitlePayloads.push(event.payload);
+    });
 
     await fixture.whenStable();
     loadBooksPayloads = [];
@@ -126,5 +130,27 @@ describe('List', () => {
 
     expect(snackBarOpenSpy).not.toHaveBeenCalled();
     expect(loadBooksPayloads).toEqual([]);
+  });
+
+  it('should dispatch searchByTitle when the search term is non-blank', () => {
+    component.searchTerm = 'Clean Code';
+    component.onSearch();
+
+    expect(searchByTitlePayloads).toContainEqual({ title: 'Clean Code' });
+  });
+
+  it('should dispatch loadBooks when the search term is blank', () => {
+    component.searchTerm = '   ';
+    component.onSearch();
+
+    expect(loadBooksPayloads).toContainEqual({ page: 0, size: 10 });
+  });
+
+  it('should reset the search term and reload on clearSearch', () => {
+    component.searchTerm = 'Clean Code';
+    component.clearSearch();
+
+    expect(component.searchTerm).toBe('');
+    expect(loadBooksPayloads).toContainEqual({ page: 0, size: 10 });
   });
 });

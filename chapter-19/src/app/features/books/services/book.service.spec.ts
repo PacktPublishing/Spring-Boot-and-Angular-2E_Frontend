@@ -101,4 +101,28 @@ describe('BookService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null, { status: 204, statusText: 'No Content' });
   });
+
+  it('should search books by title against the by-title-ignore-case endpoint', () => {
+    service.searchByTitleIgnoreCase('spring').subscribe((res) => {
+      expect(res.length).toBe(1);
+      expect(res[0].title).toBe('Spring in Action');
+    });
+
+    const req = httpMock.expectOne(
+      (r) => r.url === 'http://localhost:8080/packt/inventory/api/books/by-title-ignore-case',
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('title')).toBe('spring');
+    req.flush([
+      {
+        id: 3,
+        title: 'Spring in Action',
+        author: { id: 3, name: 'Craig Walls', nationality: '' },
+        genre: 'Software Engineering',
+        isbn: '9781617294945',
+        published: '2018-11-28',
+        price: 44.99,
+      },
+    ]);
+  });
 });
