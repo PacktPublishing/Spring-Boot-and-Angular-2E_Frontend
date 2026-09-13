@@ -16,6 +16,7 @@ export const AuthorStore = signalStore(
     on(authorPageEvents.loadAuthors, (event) => ({
       loading: true,
       error: null,
+      searchTerm: '',
       currentPage: event.payload.page,
       pageSize: event.payload.size,
     })),

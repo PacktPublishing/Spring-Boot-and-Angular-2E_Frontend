@@ -16,6 +16,7 @@ export const BookStore = signalStore(
     on(bookPageEvents.loadBooks, (event) => ({
       loading: true,
       error: null,
+      searchTerm: '',
       currentPage: event.payload.page,
       pageSize: event.payload.size,
     })),
