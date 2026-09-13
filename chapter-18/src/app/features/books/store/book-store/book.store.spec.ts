@@ -167,6 +167,51 @@ describe('BookStore', () => {
       expect(store.error()).toContain('Search error');
       expect(store.loading()).toBe(false);
     });
+
+    it('should report zero total pages for a search that returns no books', async () => {
+      bookService.searchByTitleIgnoreCase.mockReturnValue(of([]));
+
+      dispatcher.dispatch(
+        bookPageEvents.searchByTitle({
+          title: 'Nonexistent',
+        }),
+      );
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(store.books()).toEqual([]);
+      expect(store.totalElements()).toBe(0);
+      expect(store.totalPages()).toBe(0);
+    });
+
+    it('should reset searchTerm and isSearching when loadBooks is dispatched after a search', async () => {
+      bookService.searchByTitleIgnoreCase.mockReturnValue(of([mockBooks[0]]));
+
+      dispatcher.dispatch(
+        bookPageEvents.searchByTitle({
+          title: 'Clean',
+        }),
+      );
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(store.searchTerm()).toBe('Clean');
+      expect(store.isSearching()).toBe(true);
+
+      bookService.getPaged.mockReturnValue(of(mockPagedResponse));
+
+      dispatcher.dispatch(
+        bookPageEvents.loadBooks({
+          page: 0,
+          size: 10,
+        }),
+      );
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(store.searchTerm()).toBe('');
+      expect(store.isSearching()).toBe(false);
+    });
   });
 
   describe('Create Book', () => {
