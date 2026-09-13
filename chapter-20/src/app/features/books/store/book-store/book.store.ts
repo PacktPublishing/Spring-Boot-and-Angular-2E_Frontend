@@ -121,7 +121,7 @@ export const BookStore = signalStore(
             }),
           );
         }
-        return bookService.searchByTitle(event.payload.title).pipe(
+        return bookService.searchByTitleIgnoreCase(event.payload.title).pipe(
           map((books) =>
             bookApiEvents.searchSuccess({
               books,

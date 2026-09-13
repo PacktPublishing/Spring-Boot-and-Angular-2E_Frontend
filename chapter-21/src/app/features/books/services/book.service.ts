@@ -19,9 +19,9 @@ export class BookService {
     return this.http.get<PaginatedResponse<Book>>(`${this.baseUrl}/paged`, { params });
   }
 
-  searchByTitle(title: string): Observable<Book[]> {
+  searchByTitleIgnoreCase(title: string): Observable<Book[]> {
     const params = new HttpParams().set('title', title);
-    return this.http.get<Book[]>(`${this.baseUrl}/by-title`, { params });
+    return this.http.get<Book[]>(`${this.baseUrl}/by-title-ignore-case`, { params });
   }
 
   getById(id: number): Observable<Book> {
