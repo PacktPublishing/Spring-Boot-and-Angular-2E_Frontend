@@ -7,7 +7,6 @@ export interface BookState {
   currentPage: number;
   pageSize: number;
   searchTerm: string;
-  genreFilter: string;
   loading: boolean;
   error: string | null;
 }
@@ -19,7 +18,6 @@ export const initialBookState: BookState = {
   currentPage: 0,
   pageSize: 10,
   searchTerm: '',
-  genreFilter: '',
   loading: false,
   error: null,
 };
