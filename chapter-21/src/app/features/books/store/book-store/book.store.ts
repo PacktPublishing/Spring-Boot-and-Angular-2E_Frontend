@@ -41,7 +41,7 @@ export const BookStore = signalStore(
     on(bookApiEvents.searchSuccess, (event) => ({
       books: event.payload.books,
       totalElements: event.payload.books.length,
-      totalPages: 1,
+      totalPages: event.payload.books.length ? 1 : 0,
       currentPage: 0,
       loading: false,
       error: null,

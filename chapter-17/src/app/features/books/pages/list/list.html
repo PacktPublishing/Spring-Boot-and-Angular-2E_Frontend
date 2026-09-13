@@ -19,7 +19,7 @@
       matInput
       [(ngModel)]="searchTerm"
       (keyup.enter)="onSearch()"
-      placeholder="Enter book title…"
+      placeholder="Enter book title..."
     />
     @if (searchTerm) {
       <button matSuffix mat-icon-button (click)="clearSearch()">
