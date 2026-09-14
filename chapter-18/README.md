@@ -137,10 +137,18 @@ npm run serve:ssr:chapter-18
 `/books` is server-rendered, so a healthy build can still ship a broken page if the
 backend API is unreachable at render time — the server would happily render an empty
 `<table>` and return `200 OK`. `scripts/verify-ssr.sh` guards against that by asserting
-the server-rendered HTML contains a real book title, not just a `<table>` element:
+the server-rendered HTML contains a real book title, not just a `<table>` element.
+
+Build with the **development** configuration for local verification. `environment.prod.ts`
+sets `apiUrl` to the relative path `/packt`, which only resolves when the app is served
+behind the Nginx gateway introduced in Chapter 21; Node's `fetch` during a local SSR
+render has no host to resolve a relative URL against, so a production build's `/books`
+page always server-renders an empty table on its own. `environment.ts` (the development
+configuration) uses the absolute `http://localhost:8080/packt`, which Node can reach
+directly against a locally running backend:
 
 ```bash
-npm run build
+npm run build -- --configuration development
 npm run serve:ssr:chapter-18 &
 ./scripts/verify-ssr.sh http://localhost:4000 "Clean Code"
 ```
