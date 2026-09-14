@@ -35,7 +35,7 @@ export class BookList {
 
   protected readonly authStore = inject(AuthStore);
   private readonly baseColumns = ['title', 'author', 'genre', 'price', 'published'];
-  readonly columns = computed(() =>
+  protected readonly columns = computed(() =>
     this.authStore.isAuthenticated() ? [...this.baseColumns, 'actions'] : this.baseColumns,
   );
 
