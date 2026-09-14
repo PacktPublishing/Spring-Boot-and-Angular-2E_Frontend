@@ -132,6 +132,26 @@ npm run build
 npm run serve:ssr:chapter-18
 ```
 
+### SSR Data Verification
+
+`/books` is server-rendered, so a healthy build can still ship a broken page if the
+backend API is unreachable at render time — the server would happily render an empty
+`<table>` and return `200 OK`. `scripts/verify-ssr.sh` guards against that by asserting
+the server-rendered HTML contains a real book title, not just a `<table>` element:
+
+```bash
+npm run build
+npm run serve:ssr:chapter-18 &
+./scripts/verify-ssr.sh http://localhost:4000 "Clean Code"
+```
+
+The script fails if the `<table>` is missing entirely, and it separately fails if the
+`<table>` is present but the expected title never appears (the empty-table-from-a-
+dead-backend case). If your server binds to a host other than `localhost`, set
+`NG_ALLOWED_HOSTS` (or configure `security.allowedHosts` in `angular.json`) before
+starting the server — `AngularNodeAppEngine` rejects requests for hosts it doesn't
+recognize as an SSRF safeguard.
+
 ## Testing
 
 Run tests:

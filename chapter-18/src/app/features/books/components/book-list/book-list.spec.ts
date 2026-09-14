@@ -67,14 +67,11 @@ describe('BookList', () => {
   });
 
   it('should define the correct column definitions', () => {
-    expect(component.columns()).toEqual([
-      'title',
-      'author',
-      'genre',
-      'price',
-      'published',
-      'actions',
-    ]);
+    fixture.componentRef.setInput('books', mockBooks);
+    fixture.detectChanges();
+    const headerCells = fixture.debugElement.queryAll(By.css('th[mat-header-cell]'));
+    const headerText = headerCells.map((cell) => cell.nativeElement.textContent.trim());
+    expect(headerText).toEqual(['Title', 'Author', 'Genre', 'Price', 'Published', 'Actions']);
   });
 
   describe('Rendering', () => {
@@ -313,7 +310,7 @@ describe('BookList', () => {
         expect(deleteButtons.length).toBe(mockBooks.length);
       } else {
         // The "actions" column is declared
-        expect(component.columns()).toContain('actions');
+        expect(fixture.debugElement.query(By.css('th.actions-cell'))).toBeTruthy();
       }
     });
   });
@@ -370,13 +367,9 @@ describe('BookList SSR', () => {
 
     expect(table).toBeTruthy();
     expect(rows.length).toBe(ssrBooks.length);
-    expect(fixture.componentInstance.columns()).toEqual([
-      'title',
-      'author',
-      'genre',
-      'price',
-      'published',
-    ]);
+    const headerCells = fixture.debugElement.queryAll(By.css('th[mat-header-cell]'));
+    const headerText = headerCells.map((cell) => cell.nativeElement.textContent.trim());
+    expect(headerText).toEqual(['Title', 'Author', 'Genre', 'Price', 'Published']);
     expect(editButtons.length).toBe(0);
     expect(deleteButtons.length).toBe(0);
 

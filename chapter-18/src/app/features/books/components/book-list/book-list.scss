@@ -18,6 +18,11 @@
   place-items: center;
 }
 
+.paginator-error {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 0.875rem;
+}
+
 @media (max-width: 768px) {
   .paginator-shell {
     min-height: 96px;
