@@ -35,8 +35,6 @@ export class List implements OnInit {
   protected readonly dispatch = injectDispatch(bookPageEvents);
   protected readonly authStore = inject(AuthStore);
 
-  displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
-
   searchTerm = '';
 
   ngOnInit() {
