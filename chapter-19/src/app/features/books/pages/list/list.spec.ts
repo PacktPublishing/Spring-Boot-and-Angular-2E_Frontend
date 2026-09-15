@@ -17,12 +17,13 @@ describe('List', () => {
   let snackBarOpenSpy: ReturnType<typeof vi.fn>;
   let loadBooksPayloads: Array<{ page: number; size: number }>;
   let searchByTitlePayloads: Array<{ title: string }>;
+  let dialogOpenSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     notifications$ = new Subject<BookNotification>();
     snackBarOpenSpy = vi.fn();
 
-    const dialogOpenSpy = vi.fn(() => ({
+    dialogOpenSpy = vi.fn(() => ({
       afterClosed: () => new Subject<unknown>(),
     }));
 
@@ -110,6 +111,74 @@ describe('List', () => {
     expect((component as any).locallyCreatedIsbns.has(isbn)).toBe(false);
     expect(snackBarOpenSpy).not.toHaveBeenCalled();
     expect(loadBooksPayloads).toEqual([]);
+  });
+
+  it('should suppress a notification whose ISBN is normalized when the locally created one was hyphenated', async () => {
+    const dialogResult$ = new Subject<any>();
+    dialogOpenSpy.mockReturnValueOnce({ afterClosed: () => dialogResult$ });
+
+    component.openCreateDialog();
+    dialogResult$.next({ isbn: '978-1491950296', title: 'Hyphenated ISBN Book' });
+    dialogResult$.complete();
+
+    notifications$.next({
+      eventType: 'NEW_BOOK',
+      bookId: 105,
+      bookTitle: 'Hyphenated ISBN Book',
+      isbn: '9781491950296',
+    });
+
+    await fixture.whenStable();
+
+    expect(snackBarOpenSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('New book added'),
+      expect.anything(),
+      expect.anything(),
+    );
+    expect(loadBooksPayloads).toEqual([]);
+  });
+
+  it('should skip the reload but still show the snackbar when a search is active', async () => {
+    component.searchTerm = 'Clean Code';
+    component.onSearch();
+    loadBooksPayloads = [];
+
+    notifications$.next({
+      eventType: 'NEW_BOOK',
+      bookId: 106,
+      bookTitle: 'Book While Searching',
+      isbn: '9780262033848',
+    });
+
+    await fixture.whenStable();
+
+    expect(snackBarOpenSpy).toHaveBeenCalledWith(
+      '📚 New book added: Book While Searching',
+      'Dismiss',
+      { duration: 5000 },
+    );
+    expect(loadBooksPayloads).toEqual([]);
+  });
+
+  it('should reload as before when no search is active', async () => {
+    notifications$.next({
+      eventType: 'NEW_BOOK',
+      bookId: 107,
+      bookTitle: 'Book While Not Searching',
+      isbn: '9780262033849',
+    });
+
+    await fixture.whenStable();
+
+    expect(snackBarOpenSpy).toHaveBeenCalledWith(
+      '📚 New book added: Book While Not Searching',
+      'Dismiss',
+      { duration: 5000 },
+    );
+    expect(loadBooksPayloads).toContainEqual({
+      page: (component as any).store.currentPage(),
+      size: (component as any).store.pageSize(),
+    });
   });
 
   it('should clean up notification subscription when component is destroyed', async () => {
