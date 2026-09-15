@@ -16,20 +16,13 @@ export class NotificationService {
         return;
       }
       const eventSource = new EventSource(this.streamUrl);
-      const handleMessage = (event: MessageEvent) => {
+      eventSource.addEventListener('NEW_BOOK', (event: Event) => {
         try {
-          const parsed = JSON.parse(event.data);
-          if (parsed.eventType !== 'NEW_BOOK') {
-            return;
-          }
+          const parsed = JSON.parse((event as MessageEvent).data);
           subscriber.next(parsed as BookNotification);
         } catch (error) {
           console.error('Failed to parse notification:', error);
         }
-      };
-      eventSource.onmessage = handleMessage;
-      eventSource.addEventListener('NEW_BOOK', (event: Event) => {
-        handleMessage(event as MessageEvent);
       });
       eventSource.onerror = () => {
         console.warn('SSE connection error. ' + 'Reconnecting...');

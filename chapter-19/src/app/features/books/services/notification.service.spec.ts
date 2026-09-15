@@ -5,7 +5,6 @@ import { BookNotification } from '../../../shared/models/notification';
 import { NotificationService } from './notification.service';
 
 interface MockEventSource {
-  onmessage: ((event: MessageEvent) => void) | null;
   onerror: (() => void) | null;
   close: ReturnType<typeof vi.fn>;
   addEventListener: ReturnType<typeof vi.fn>;
@@ -14,7 +13,6 @@ interface MockEventSource {
 
 function createMockEventSource(): MockEventSource {
   const mock: MockEventSource = {
-    onmessage: null,
     onerror: null,
     close: vi.fn(),
     listeners: {},
@@ -68,21 +66,6 @@ describe('NotificationService', () => {
     expect(EventSourceConstructor).toHaveBeenCalledOnce();
   });
 
-  it('should emit a NEW_BOOK notification received via onmessage', () => {
-    const received: BookNotification[] = [];
-
-    const subscription = service.connect().subscribe((n) => received.push(n));
-
-    mockEventSourceInstance.onmessage!(
-      new MessageEvent('message', { data: JSON.stringify(newBookNotification) }),
-    );
-
-    expect(received).toHaveLength(1);
-    expect(received[0]).toEqual(newBookNotification);
-
-    subscription.unsubscribe();
-  });
-
   it('should emit a NEW_BOOK notification received via the named addEventListener handler', () => {
     const received: BookNotification[] = [];
 
@@ -98,22 +81,6 @@ describe('NotificationService', () => {
 
     expect(received).toHaveLength(1);
     expect(received[0]).toEqual(newBookNotification);
-
-    subscription.unsubscribe();
-  });
-
-  it('should ignore events whose eventType is not NEW_BOOK', () => {
-    const received: BookNotification[] = [];
-
-    const subscription = service.connect().subscribe((n) => received.push(n));
-
-    mockEventSourceInstance.onmessage!(
-      new MessageEvent('message', {
-        data: JSON.stringify({ eventType: 'PRICE_CHANGE', bookId: 7, bookTitle: 'Some Book' }),
-      }),
-    );
-
-    expect(received).toHaveLength(0);
 
     subscription.unsubscribe();
   });
