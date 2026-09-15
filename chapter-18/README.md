@@ -155,10 +155,9 @@ npm run serve:ssr:chapter-18 &
 
 The script fails if the `<table>` is missing entirely, and it separately fails if the
 `<table>` is present but the expected title never appears (the empty-table-from-a-
-dead-backend case). If your server binds to a host other than `localhost`, set
-`NG_ALLOWED_HOSTS` (or configure `security.allowedHosts` in `angular.json`) before
-starting the server — `AngularNodeAppEngine` rejects requests for hosts it doesn't
-recognize as an SSRF safeguard.
+dead-backend case). If your server binds to a host other than `localhost`, add it to the
+`allowedHosts` array passed to `AngularNodeAppEngine` in `src/server.ts` — it rejects
+requests for hosts it doesn't recognize as an SSRF safeguard.
 
 ## Testing
 
