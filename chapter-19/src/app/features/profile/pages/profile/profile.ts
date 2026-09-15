@@ -31,32 +31,38 @@ export class Profile implements OnInit {
 
   private loadProfile() {
     this.pageLoading.set(true);
-    this.authService.getProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (profile: UserProfile) => {
-        this.profileData.set(profile);
-        this.pageLoading.set(false);
-      },
-      error: (err: unknown) => {
-        const message = normalizeApiErrorMessage(err, 'Failed to load profile');
-        this.error.set(message);
-        this.pageLoading.set(false);
-      },
-    });
+    this.authService
+      .getProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile: UserProfile) => {
+          this.profileData.set(profile);
+          this.pageLoading.set(false);
+        },
+        error: (err: unknown) => {
+          const message = normalizeApiErrorMessage(err, 'Failed to load profile');
+          this.error.set(message);
+          this.pageLoading.set(false);
+        },
+      });
   }
 
   handleProfileSubmit(profile: UserProfile) {
     this.loading.set(true);
-    this.authService.updateProfile(profile).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (updated: UserProfile) => {
-        this.profileData.set(updated);
-        this.loading.set(false);
-        this.snackBar.open('Profile updated successfully', 'Close', { duration: 3000 });
-      },
-      error: (err: unknown) => {
-        const message = normalizeApiErrorMessage(err, 'Failed to update profile');
-        this.loading.set(false);
-        this.snackBar.open(message, 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
-      },
-    });
+    this.authService
+      .updateProfile(profile)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated: UserProfile) => {
+          this.profileData.set(updated);
+          this.loading.set(false);
+          this.snackBar.open('Profile updated successfully', 'Close', { duration: 3000 });
+        },
+        error: (err: unknown) => {
+          const message = normalizeApiErrorMessage(err, 'Failed to update profile');
+          this.loading.set(false);
+          this.snackBar.open(message, 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+        },
+      });
   }
 }
