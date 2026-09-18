@@ -15,6 +15,7 @@ const angularApp = new AngularNodeAppEngine({
   allowedHosts: ['localhost', '127.0.0.1'],
 });
 
+// API proxy — forwards /packt/* to the backend gateway during SSR
 app.use(
   '/packt',
   createProxyMiddleware({
