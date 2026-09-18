@@ -126,6 +126,58 @@ Open the application at:
 http://localhost
 ```
 
+### Troubleshooting: MongoDB Exits Immediately on Startup
+
+Symptom:
+
+- `bookstore-mongo` exits with code 1 immediately, and every service that
+  depends on it fails with `dependency failed to start: container bookstore-mongo exited (1)`.
+- `docker compose logs mongodb` shows:
+
+```
+MongoDB cannot start: Linux kernel versions 6.19 and newer has a known
+incompatibility with this version of MongoDB.
+See https://jira.mongodb.org/browse/SERVER-121912 for more information.
+```
+
+Cause:
+
+- MongoDB 8.x aborts on startup on Linux kernels 6.19 through 7.0.13, because
+  its bundled TCMalloc violates the kernel's `rseq` ABI. This is a hard check on
+  the reported kernel version, so it fails before any configuration is read.
+- **Docker Desktop 4.87+ ships VM kernel 7.0.12**, which falls inside that
+  range. Earlier releases shipped 6.12.x, below the threshold, which is why the
+  same compose file worked before upgrading Docker Desktop.
+- Checking your kernel: `docker info --format '{{.KernelVersion}}'`.
+
+Fix:
+
+- Run MongoDB 7.0, which predates the affected TCMalloc:
+
+```bash
+MONGO_IMAGE_TAG=7.0 docker compose up -d
+```
+
+- Or persist it for your environment by adding this to a `.env` file next to
+  `docker-compose.yml`:
+
+```
+MONGO_IMAGE_TAG=7.0
+```
+
+MongoDB 7.0 covers everything the bookstore `user-service` uses (plain Spring
+Data MongoDB documents), so no application change is needed.
+
+Notes:
+
+- Upgrading Docker Desktop does **not** currently help: MongoDB only lifts the
+  check for kernel 7.0.14 and above, and no Docker Desktop release ships that
+  yet. Revert to the default `8.0` once one does.
+- Neither `GLIBC_TUNABLES=glibc.pthread.rseq=0` nor a newer 8.x patch release
+  bypasses it — the check runs before startup regardless.
+- If you had already started a MongoDB 8.x volume, wipe it before downgrading:
+  `docker compose down -v` (destroys local DB data).
+
 ### Stop the Platform
 
 ```bash
