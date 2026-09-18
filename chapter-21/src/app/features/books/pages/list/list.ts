@@ -40,8 +40,6 @@ export class List implements OnInit {
   private destroyRef = inject(DestroyRef);
   private notificationService = inject(NotificationService);
 
-  displayedColumns = ['title', 'author', 'genre', 'price', 'published', 'actions'];
-
   private locallyCreatedIsbns = new Set<string>();
 
   searchTerm = '';
@@ -55,18 +53,25 @@ export class List implements OnInit {
       .connect()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((notification) => {
-        if (notification.isbn && this.locallyCreatedIsbns.has(notification.isbn)) {
-          this.locallyCreatedIsbns.delete(notification.isbn);
+        const normalizedIsbn = notification.isbn ? this.normalizeIsbn(notification.isbn) : null;
+        if (normalizedIsbn && this.locallyCreatedIsbns.has(normalizedIsbn)) {
+          this.locallyCreatedIsbns.delete(normalizedIsbn);
           return;
         }
         this.snackBar.open(`📚 New book added: ` + `${notification.bookTitle}`, 'Dismiss', {
           duration: 5000,
         });
-        this.dispatch.loadBooks({
-          page: this.store.currentPage(),
-          size: this.store.pageSize(),
-        });
+        if (!this.store.isSearching()) {
+          this.dispatch.loadBooks({
+            page: this.store.currentPage(),
+            size: this.store.pageSize(),
+          });
+        }
       });
+  }
+
+  private normalizeIsbn(isbn: string): string {
+    return isbn.replace(/[-\s]/g, '');
   }
 
   onSearch() {
@@ -103,7 +108,7 @@ export class List implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.locallyCreatedIsbns.add(result.isbn);
+        this.locallyCreatedIsbns.add(this.normalizeIsbn(result.isbn));
         this.dispatch.createSubmitted(result);
         this.snackBar.open('Book created successfully', 'Close', { duration: 3000 });
       }
