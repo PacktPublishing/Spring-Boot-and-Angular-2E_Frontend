@@ -302,7 +302,7 @@ Chapter 12 focuses extensively on AI-assisted development workflows, including c
 Specialized instruction files for specific development areas:
 
 - **`architecture.instructions.md`**: Component structure patterns, smart/dumb component guidelines, and folder organization rules
-- **`form.instructions.md`**: Reactive forms patterns, validation strategies, and error handling approaches
+- **`forms.instructions.md`**: Reactive forms patterns, validation strategies, and error handling approaches
 - **`angular-material.instructions.md`**: Material Design component usage, theming, and UI consistency guidelines
 
 ### Why GitHub Copilot Instructions Are Essential

@@ -57,7 +57,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ### Prerequisites
 
-- Node.js (v24.2.0 or higher)
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
 - Angular CLI v21.1.4
 - VS Code with Angular Language Service extension
 - GitHub Copilot extension (recommended for AI assistance)

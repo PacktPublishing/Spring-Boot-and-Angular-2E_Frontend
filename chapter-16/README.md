@@ -1,6 +1,6 @@
 # Chapter 16 - HTTP Communication, Interceptors, Guards, and Profile Management
 
-This chapter extends the bookstore app with production-style authentication flow patterns on Angular 21:
+This chapter extends the bookstore app with production-style authentication flow patterns on Angular 22:
 
 - API-driven authentication and profile endpoints
 - Route protection with guards
@@ -74,7 +74,7 @@ This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `Re
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs)
+- Angular 22 (standalone APIs)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
 - RxJS
@@ -84,8 +84,8 @@ This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `Re
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
+- Angular CLI 22.x
 
 ### Installation
 

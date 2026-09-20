@@ -1,6 +1,6 @@
 # Chapter 17 - API-Driven Books and Authors with NgRx Signal Store
 
-This chapter extends the bookstore app by replacing mock book data with a fully API-driven books and authors feature on Angular 21:
+This chapter extends the bookstore app by replacing mock book data with a fully API-driven books and authors feature on Angular 22:
 
 - Full CRUD operations for books and authors via HTTP API
 - Paginated and searchable book and author lists
@@ -82,7 +82,7 @@ This chapter project showcases:
 
 This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `RenderMode.Client` in `app.routes.server.ts`. As a result, `TokenService` accesses `localStorage` directly without platform guards. SSR-safe storage is a natural next step for a production hardening iteration.
 
-- Angular 21 (standalone APIs)
+- Angular 22 (standalone APIs)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
 - RxJS
@@ -92,8 +92,8 @@ This chapter runs in **Client-Side Rendering (CSR) mode** — all routes use `Re
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
+- Angular CLI 22.x
 
 ### Installation
 

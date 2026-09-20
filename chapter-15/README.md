@@ -1,6 +1,6 @@
 # Chapter 15 - Angular State Management with Signals and Stores
 
-This chapter demonstrates state management in Angular 21 using signals and NgRx Signal Store to manage authentication state for the Packt Bookstore. Building on the reactive forms foundation from Chapter 14, this chapter adds centralized auth state management with event-driven architecture, dialog-based book and author forms, and advanced form patterns with custom validators.
+This chapter demonstrates state management in Angular 22 using signals and NgRx Signal Store to manage authentication state for the Packt Bookstore. Building on the reactive forms foundation from Chapter 14, this chapter adds centralized auth state management with event-driven architecture, dialog-based book and author forms, and advanced form patterns with custom validators.
 
 ## What You'll Learn
 
@@ -54,7 +54,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ### Prerequisites
 
-- Node.js (v24.2.0 or higher)
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
 - Angular CLI v21.1.4
 - VS Code with Angular Language Service extension (recommended)
 
