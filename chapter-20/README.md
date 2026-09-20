@@ -79,12 +79,12 @@ This approach mirrors the containerization strategy from Chapter 10 (Spring Boot
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs, SSR)
+- Angular 22 (standalone APIs, SSR)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
 - RxJS for reactive streams
 - Express.js for proxy middleware
-- Node.js 20+
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
 - Docker & Docker Hub
 - Multi-stage Dockerfile builds
 
@@ -92,8 +92,8 @@ This approach mirrors the containerization strategy from Chapter 10 (Spring Boot
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
+- Angular CLI 22.x
 - Docker (for containerization)
 - Docker Hub account (for publishing images)
 

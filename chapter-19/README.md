@@ -76,7 +76,7 @@ Together with SSR and API CRUD, the app now demonstrates three complementary dat
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs)
+- Angular 22 (standalone APIs)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
 - RxJS + EventSource bridge for SSE
@@ -86,8 +86,8 @@ Together with SSR and API CRUD, the app now demonstrates three complementary dat
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
+- Angular CLI 22.x
 
 ### Installation
 

@@ -1,6 +1,6 @@
 # Chapter 18 - Hybrid Rendering, Hydration, and Deferred Loading
 
-This chapter evolves the bookstore app from a CSR-only workaround into a hybrid-rendered Angular 21 application with per-route rendering strategies:
+This chapter evolves the bookstore app from a CSR-only workaround into a hybrid-rendered Angular 22 application with per-route rendering strategies:
 
 - Public book catalog rendered on the server for SEO and faster first content
 - Static legal pages (`/privacy`, `/terms`) pre-rendered at build time
@@ -93,7 +93,7 @@ This chapter project showcases:
 
 ## Tech Stack
 
-- Angular 21 (standalone APIs)
+- Angular 22 (standalone APIs)
 - Angular Material
 - NgRx Signal Store plus NgRx Events
 - RxJS
@@ -103,8 +103,8 @@ This chapter project showcases:
 
 ### Prerequisites
 
-- Node.js 20+
-- Angular CLI 21.x
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
+- Angular CLI 22.x
 
 ### Installation
 

@@ -78,8 +78,8 @@ Without this dedicated configuration, notifications can stall, buffer, or discon
 
 ## Tech Stack
 
-- Angular 21 with SSR
-- Node.js 22 runtime for the frontend container
+- Angular 22 with SSR
+- Node.js 24 runtime for the frontend container
 - Spring Boot microservices
 - Spring Cloud Gateway
 - Eureka Server

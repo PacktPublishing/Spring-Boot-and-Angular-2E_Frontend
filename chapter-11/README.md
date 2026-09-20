@@ -1,6 +1,6 @@
 # Chapter 11 - Angular Frontend Foundation
 
-This project demonstrates the foundational concepts of Angular 21 by building the frontend for the Packt Bookstore application. The chapter covers Angular's core concepts, modern features, and best practices for creating maintainable and scalable applications.
+This project demonstrates the foundational concepts of Angular 22 by building the frontend for the Packt Bookstore application. The chapter covers Angular's core concepts, modern features, and best practices for creating maintainable and scalable applications.
 
 ## What You'll Learn
 
@@ -28,7 +28,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ### Prerequisites
 
-- Node.js (v24.2.0 or higher)
+- Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`
 - Angular CLI v21.1.4
 - VS Code with Angular Language Service extension (recommended)
 
