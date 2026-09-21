@@ -53,7 +53,10 @@ describe('Auth Guards', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthStore,
-        provideRouter([{ path: 'books', children: [] }, { path: 'auth/signin', children: [] }]),
+        provideRouter([
+          { path: 'books', children: [] },
+          { path: 'auth/signin', children: [] },
+        ]),
         { provide: TokenService, useValue: mockTokenService },
         { provide: AuthService, useValue: mockAuthService },
       ],

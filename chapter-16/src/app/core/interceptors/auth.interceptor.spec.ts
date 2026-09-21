@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { Dispatcher } from '@ngrx/signals/events';
-import { authInterceptor } from './auth.interceptors';
+import { authInterceptor } from './auth.interceptor';
 import { TokenService } from '../services/token.service';
 import { AuthService } from '../../features/auth/services/auth.service';
 import { UserInfo } from '../../shared/models/auth';
