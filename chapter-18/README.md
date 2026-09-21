@@ -231,7 +231,7 @@ src/
     │   │   ├── auth.guard.ts              # authGuard and guestGuard
     │   │   └── auth.guard.spec.ts
     │   ├── interceptors/
-    │   │   ├── auth.interceptors.ts       # Bearer + refresh retry strategy
+    │   │   ├── auth.interceptor.ts       # Bearer + refresh retry strategy
     │   │   └── auth.interceptor.spec.ts
     │   └── services/
     │       ├── authentication.ts          # Legacy helper kept for continuity
